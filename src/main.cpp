@@ -13,9 +13,9 @@
 
 #include <userver/utils/daemon_run.hpp>
 
-#include "handlers/content_handling/pack/create.hpp"
+#include "handlers/content_handling/pack/create_pack.hpp"
 #include "handlers/content_handling/pack/get_all_packs.hpp"
-#include "handlers/content_handling/pack/get.hpp"
+#include "handlers/content_handling/pack/get_pack_by_id.hpp"
 #include "handlers/content_handling/question/create_question.hpp"
 #include "handlers/content_handling/question/get_question_by_id.hpp"
 #include "handlers/content_handling/question/get_questions_by_pack_id.hpp"

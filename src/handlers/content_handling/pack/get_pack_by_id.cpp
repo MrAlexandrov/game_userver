@@ -1,4 +1,4 @@
-#include "get.hpp"
+#include "get_pack_by_id.hpp"
 
 #include "models/pack.hpp"
 #include "storage/pasks.hpp"
@@ -39,7 +39,7 @@ std::string GetPack::HandleRequestThrow(
         return "Incorrect uuid";
     }
 
-    const auto getPackOpt = NStorage::GetPack(pg_cluster_, uuid);
+    const auto getPackOpt = NStorage::GetPackById(pg_cluster_, uuid);
     if (!getPackOpt) {
         return {};
     }
