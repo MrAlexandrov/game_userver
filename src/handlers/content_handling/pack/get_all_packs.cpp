@@ -1,7 +1,7 @@
 #include "get_all_packs.hpp"
 
 #include "models/pack.hpp"
-#include "storage/get_all_packs.hpp"
+#include "storage/pasks.hpp"
 
 #include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>

@@ -48,7 +48,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/models/question.cpp
     src/models/variant.cpp
 
-    src/storage/get_all_packs.cpp
+    src/storage/pasks.cpp
 
     src/utils/string_to_uuid.cpp
 )
