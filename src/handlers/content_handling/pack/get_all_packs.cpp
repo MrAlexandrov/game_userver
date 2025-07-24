@@ -1,7 +1,7 @@
 #include "get_all_packs.hpp"
 
-#include "models/pack.hpp"
 #include "storage/pasks.hpp"
+#include "utils/string_to_uuid.hpp"
 
 #include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>
@@ -10,8 +10,6 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
-#include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 

@@ -6,6 +6,6 @@ import pytest
 
 
 async def test_grpc_service(grpc_service):
-    request = hello_protos.HelloRequest(name='Tester')
+    request = hello_protos.HelloRequest(name='Tester') # type: ignore
     response = await grpc_service.SayHello(request)
     assert response.text == 'Hello, Tester!\n'
