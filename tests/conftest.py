@@ -2,18 +2,18 @@ import pathlib
 import sys
 import os
 
-import handlers.hello_pb2_grpc as hello_services 
+import handlers.hello_pb2_grpc as hello_services
 import pytest
 
-from testsuite.databases.pgsql import discover 
+from testsuite.databases.pgsql import discover
 
 pytest_plugins = [
     'pytest_userver.plugins.core',
-    'pytest_userver.plugins.postgresql', 
-    'pytest_userver.plugins.grpc', 
+    'pytest_userver.plugins.postgresql',
+    'pytest_userver.plugins.grpc',
 ]
 USERVER_CONFIG_HOOKS = [
-    # 'prepare_service_config_grpc', 
+    # 'prepare_service_config_grpc',
 ]
 
 

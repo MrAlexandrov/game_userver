@@ -20,7 +20,7 @@ CreateQuestion::CreateQuestion(
     : HttpHandlerBase(config, component_context)
     , pg_cluster_(
         component_context.FindComponent<userver::components::Postgres>("postgres-db-1")
-            .GetCluster()) 
+            .GetCluster())
 {
 }
 
@@ -33,7 +33,7 @@ std::string CreateQuestion::HandleRequestThrow(
     const auto& pack_id = request.GetArg("pack_id");
     const auto& text = request.GetArg("text");
     const auto& image_url = request.GetArg("image_url");
-    
+
     const auto createdQuestionOpt = NStorage::CreateQuestion(
         pg_cluster_,
         NUtils::StringToUuid(pack_id),

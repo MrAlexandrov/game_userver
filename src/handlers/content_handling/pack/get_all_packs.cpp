@@ -20,7 +20,7 @@ GetAllPacks::GetAllPacks(
     : HttpHandlerBase(config, component_context)
     , pg_cluster_(
         component_context.FindComponent<userver::components::Postgres>("postgres-db-1")
-            .GetCluster()) 
+            .GetCluster())
 {
 }
 

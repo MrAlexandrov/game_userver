@@ -36,8 +36,8 @@
       "hidden": true,
       "generator": "Ninja",
       "cacheVariables": {
-        "USERVER_FEATURE_GRPC": "ON", 
-        "USERVER_FEATURE_POSTGRESQL": "ON", 
+        "USERVER_FEATURE_GRPC": "ON",
+        "USERVER_FEATURE_POSTGRESQL": "ON",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     }

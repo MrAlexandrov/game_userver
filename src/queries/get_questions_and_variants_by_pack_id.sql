@@ -1,4 +1,4 @@
-SELECT 
+SELECT
     q.id AS question_id,
     q.pack_id,
     q.text AS question_text,

@@ -25,7 +25,7 @@ userver::formats::json::Value Serialize(
 Question Parse(
       const userver::formats::json::Value& json
     , userver::formats::parse::To<Question>
-) {    
+) {
     Question question;
     question.id             = NUtils::StringToUuid(json["id"].As<std::string>());
     question.pack_id        = NUtils::StringToUuid(json["pack_id"].As<std::string>());

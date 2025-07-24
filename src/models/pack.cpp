@@ -24,10 +24,10 @@ userver::formats::json::Value Serialize(
 Pack Parse(
       const userver::formats::json::Value& json
     , userver::formats::parse::To<Pack>
-) {    
+) {
     Pack pack;
     pack.id                 = NUtils::StringToUuid(json["id"].As<std::string>());
-    pack.title              = json["title"].As<std::string>();    
+    pack.title              = json["title"].As<std::string>();
     return pack;
 }
 

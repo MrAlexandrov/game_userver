@@ -70,11 +70,11 @@ UTEST(FromStringBoolTest, InvalidStringThrowsException) {
     EXPECT_THROW({
         NUtils::StringToBool("invalid");
     }, std::invalid_argument);
-    
+
     EXPECT_THROW({
         NUtils::StringToBool("maybe");
     }, std::invalid_argument);
-    
+
     EXPECT_THROW({
         NUtils::StringToBool("2");
     }, std::invalid_argument);
@@ -84,7 +84,7 @@ UTEST(FromStringBoolTest, WhitespaceStringsThrowException) {
     EXPECT_THROW({
         NUtils::StringToBool(" ");
     }, std::invalid_argument);
-    
+
     EXPECT_THROW({
         NUtils::StringToBool(" true ");
     }, std::invalid_argument);
@@ -94,7 +94,7 @@ UTEST(FromStringBoolTest, WhitespaceStringsThrowException) {
 UTEST(FromStringBoolTest, SingleCharacters) {
     EXPECT_TRUE(NUtils::StringToBool("1"));
     EXPECT_FALSE(NUtils::StringToBool("0"));
-    
+
     EXPECT_THROW({
         NUtils::StringToBool("2");
     }, std::invalid_argument);

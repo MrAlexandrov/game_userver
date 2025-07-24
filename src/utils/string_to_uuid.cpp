@@ -19,9 +19,9 @@ bool StringToBool(const std::string& str) {
     }
 
     std::string lower_str = str;
-    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(), 
+    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(),
                    [](unsigned char c) { return std::tolower(c); });
-    
+
     if (lower_str == "true" || lower_str == "1" || lower_str == "yes" || lower_str == "on") {
         return true;
     } else if (lower_str == "false" || lower_str == "0" || lower_str == "no" || lower_str == "off") {

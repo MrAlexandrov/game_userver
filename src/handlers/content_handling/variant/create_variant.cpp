@@ -20,7 +20,7 @@ CreateVariant::CreateVariant(
     : HttpHandlerBase(config, component_context)
     , pg_cluster_(
         component_context.FindComponent<userver::components::Postgres>("postgres-db-1")
-            .GetCluster()) 
+            .GetCluster())
 {
 }
 
@@ -33,7 +33,7 @@ std::string CreateVariant::HandleRequestThrow(
     const auto& question_id = request.GetArg("question_id");
     const auto& text = request.GetArg("text");
     const auto& is_correct = request.GetArg("is_correct");
-    
+
     const auto createdVariantOpt = NStorage::CreateVariant(
         pg_cluster_,
         NUtils::StringToUuid(question_id),

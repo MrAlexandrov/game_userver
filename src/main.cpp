@@ -8,8 +8,8 @@
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 
-#include <userver/storages/postgres/component.hpp> 
-#include <userver/ugrpc/server/component_list.hpp> 
+#include <userver/storages/postgres/component.hpp>
+#include <userver/ugrpc/server/component_list.hpp>
 
 #include <userver/utils/daemon_run.hpp>
 
@@ -25,7 +25,7 @@
 
 #include "handlers/hello/hello.hpp"
 #include "components/hello_grpc/hello_grpc.hpp"
-#include "handlers/hello_postgres/hello_postgres.hpp" 
+#include "handlers/hello_postgres/hello_postgres.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list = userver::components::MinimalServerComponentList()
