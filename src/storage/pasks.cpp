@@ -9,15 +9,6 @@
 
 #include <userver/storages/postgres/io/io_fwd.hpp>
 
-namespace userver::storages::postgres::io {
-
-template <>
-struct userver::storages::postgres::io::CppToUserPg<boost::uuids::uuid> {
-    using type = boost::uuids::uuid;
-};
-
-} // namespace userver::storages::postgres::io
-
 namespace NStorage {
 
 using userver::storages::postgres::ClusterPtr;
