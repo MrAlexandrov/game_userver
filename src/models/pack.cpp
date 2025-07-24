@@ -16,8 +16,8 @@ userver::formats::json::Value Serialize(
     , userver::formats::serialize::To<userver::formats::json::Value>
 ) {
     userver::formats::json::ValueBuilder item;
-    item["id"]      = boost::uuids::to_string(pack.id);
-    item["title"]   = pack.title;
+    item["id"]              = boost::uuids::to_string(pack.id);
+    item["title"]           = pack.title;
     return item.ExtractValue();
 }
 
@@ -26,8 +26,8 @@ Pack Parse(
     , userver::formats::parse::To<Pack>
 ) {    
     Pack pack;
-    pack.id = NUtils::GetUuidByString(json["id"].As<std::string>());
-    pack.title = json["title"].As<std::string>();    
+    pack.id                 = NUtils::StringToUuid(json["id"].As<std::string>());
+    pack.title              = json["title"].As<std::string>();    
     return pack;
 }
 

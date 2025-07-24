@@ -80,45 +80,29 @@ components_manager:
             path: /get-all-packs
             method: GET
 
-        # handler-update-pack:
-        #     path: /update-pack
-        #     method: UPDATE
+        handler-create-question:
+            path: /create-question
+            method: POST
 
-        # handler-delete-pack:
-        #     path: /delete-pack
-        #     method: DELETE
+        handler-get-question-by-id:
+            path: /get-question-by-id
+            method: GET
 
-        # handler-create-question:
-        #     path: /create-question
-        #     method: POST
+        handler-get-questions-by-pack-id:
+            path: /get-questions-by-pack-id
+            method: GET
 
-        # handler-get-question:
-        #     path: /get-question
-        #     method: GET
+        handler-create-variant:
+            path: /create-variant
+            method: POST
 
-        # handler-update-question:
-        #     path: /update-question
-        #     method: UPDATE
+        handler-get-variant-by-id:
+            path: /get-variant-by-id
+            method: GET
 
-        # handler-delete-question:
-        #     path: /delete-question
-        #     method: DELETE
-
-        # handler-create-variant:
-        #     path: /create-variant
-        #     method: POST
-
-        # handler-get-variant:
-        #     path: /get-variant
-        #     method: GET
-
-        # handler-update-variant:
-        #     path: /update-variant
-        #     method: UPDATE
-
-        # handler-delete-variant:
-        #     path: /delete-variant
-        #     method: DELETE
+        handler-get-variants-by-question-id:
+            path: /get-variants-by-question-id
+            method: GET
 
         postgres-db-1:
             dbconnection: $pg-connection

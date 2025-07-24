@@ -16,6 +16,12 @@
 #include "handlers/content_handling/pack/create.hpp"
 #include "handlers/content_handling/pack/get_all_packs.hpp"
 #include "handlers/content_handling/pack/get.hpp"
+#include "handlers/content_handling/question/create_question.hpp"
+#include "handlers/content_handling/question/get_question_by_id.hpp"
+#include "handlers/content_handling/question/get_questions_by_pack_id.hpp"
+#include "handlers/content_handling/variant/create_variant.hpp"
+#include "handlers/content_handling/variant/get_variant_by_id.hpp"
+#include "handlers/content_handling/variant/get_variants_by_question_id.hpp"
 
 #include "handlers/hello/hello.hpp"
 #include "components/hello_grpc/hello_grpc.hpp"
@@ -37,6 +43,12 @@ int main(int argc, char* argv[]) {
                               .Append<game_userver::CreatePack>()
                               .Append<game_userver::GetAllPacks>()
                               .Append<game_userver::GetPack>()
+                              .Append<game_userver::CreateQuestion>()
+                              .Append<game_userver::GetQuestionById>()
+                              .Append<game_userver::GetQuestionsByPackId>()
+                              .Append<game_userver::CreateVariant>()
+                              .Append<game_userver::GetVariantById>()
+                              .Append<game_userver::GetVariantsByQuestionId>()
         ;
 
     return userver::utils::DaemonMain(argc, argv, component_list);

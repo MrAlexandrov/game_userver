@@ -1,6 +1,6 @@
-#include "get_all_packs.hpp"
+#include "get_questions_by_pack_id.hpp"
 
-#include "storage/pasks.hpp"
+#include "storage/questions.hpp"
 #include "utils/string_to_uuid.hpp"
 
 #include <userver/storages/postgres/component.hpp>
@@ -13,8 +13,8 @@
 
 namespace game_userver {
 
-GetAllPacks::GetAllPacks(
-    const userver::components::ComponentConfig& config
+GetQuestionsByPackId::GetQuestionsByPackId(
+      const userver::components::ComponentConfig& config
     , const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context)
@@ -24,17 +24,23 @@ GetAllPacks::GetAllPacks(
 {
 }
 
-std::string GetAllPacks::HandleRequestThrow(
+std::string GetQuestionsByPackId::HandleRequestThrow(
       const userver::server::http::HttpRequest& request
     , userver::server::request::RequestContext&
 ) const {
     using userver::logging::Level::kDebug;
 
-    const auto getAllPacks = NStorage::GetAllPacks(pg_cluster_);
+    const auto& stringPackId = request.GetArg("pack_id");
 
-    return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{getAllPacks}.ExtractValue()
-    );
+    const auto GetQuestionsByPackId = NStorage::GetQuestionsByPackId(pg_cluster_, NUtils::StringToUuid(stringPackId));
+
+    userver::formats::json::ValueBuilder result{userver::formats::common::Type::kArray};
+
+    for (const auto& i : GetQuestionsByPackId) {
+        result.PushBack(i);
+    }
+
+    return userver::formats::json::ToPrettyString(result.ExtractValue());
 }
 
 } // namespace game_userver

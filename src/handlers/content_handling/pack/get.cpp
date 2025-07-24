@@ -14,7 +14,7 @@
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
-
+    
 GetPack::GetPack(
     const userver::components::ComponentConfig& config
     , const userver::components::ComponentContext& component_context
@@ -34,7 +34,7 @@ std::string GetPack::HandleRequestThrow(
 
     const auto& stringUuid = request.GetArg("uuid");
 
-    const auto uuid = NUtils::GetUuidByString(stringUuid);
+    const auto uuid = NUtils::StringToUuid(stringUuid);
     if (uuid.is_nil()) {
         return "Incorrect uuid";
     }
@@ -45,7 +45,7 @@ std::string GetPack::HandleRequestThrow(
     }
     const auto getPack = getPackOpt.value();
 
-    return userver::formats::json::ToString(
+    return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{getPack}.ExtractValue()
     );
 }

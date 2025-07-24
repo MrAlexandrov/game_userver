@@ -1,7 +1,7 @@
-#include "create.hpp"
+#include "create_question.hpp"
 
-#include "models/pack.hpp"
-#include "storage/pasks.hpp"
+#include "storage/questions.hpp"
+#include "utils/string_to_uuid.hpp"
 
 #include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>
@@ -13,8 +13,8 @@
 
 namespace game_userver {
 
-CreatePack::CreatePack(
-    const userver::components::ComponentConfig& config
+CreateQuestion::CreateQuestion(
+      const userver::components::ComponentConfig& config
     , const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context)
@@ -24,26 +24,26 @@ CreatePack::CreatePack(
 {
 }
 
-std::string CreatePack::HandleRequestThrow(
+std::string CreateQuestion::HandleRequestThrow(
       const userver::server::http::HttpRequest& request
     , userver::server::request::RequestContext&
 ) const {
     using userver::logging::Level::kDebug;
 
-    const auto& title = request.GetArg("title");
-    LOG(kDebug) << "title: " << title;
-
-    const auto createdPackOpt = NStorage::CreatePack(pg_cluster_, title);
-    const auto createdPack = createdPackOpt.value();
-    if (createdPackOpt) {
-        LOG(kDebug)
-            << "inserted pack:\n" 
-            << boost::uuids::to_string(createdPack.id)
-            << " " << createdPack.title;
-    }
+    const auto& pack_id = request.GetArg("pack_id");
+    const auto& text = request.GetArg("text");
+    const auto& image_url = request.GetArg("image_url");
+    
+    const auto createdQuestionOpt = NStorage::CreateQuestion(
+        pg_cluster_,
+        NUtils::StringToUuid(pack_id),
+        text,
+        image_url
+    );
+    const auto createdQuestion = createdQuestionOpt.value();
 
     return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{createdPack}.ExtractValue()
+        userver::formats::json::ValueBuilder{createdQuestion}.ExtractValue()
     );
 }
 

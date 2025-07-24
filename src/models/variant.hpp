@@ -10,9 +10,9 @@ namespace NModels {
 
 struct Variant final {
     boost::uuids::uuid id;
-    boost::uuids::uuid pack_id;
+    boost::uuids::uuid question_id;
     std::string text;
-    std::string image_url;
+    bool is_correct;
 
     auto Introspect() const;
 };
@@ -20,6 +20,11 @@ struct Variant final {
 userver::formats::json::Value Serialize(
       const Variant& variant
     , userver::formats::serialize::To<userver::formats::json::Value>
+);
+
+Variant Parse(
+      const userver::formats::json::Value& json
+    , userver::formats::parse::To<Variant>
 );
 
 } // NModels

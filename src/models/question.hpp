@@ -22,6 +22,11 @@ userver::formats::json::Value Serialize(
     , userver::formats::serialize::To<userver::formats::json::Value>
 );
 
+Question Parse(
+      const userver::formats::json::Value& json
+    , userver::formats::parse::To<Question>
+);
+
 } // NModels
 
 

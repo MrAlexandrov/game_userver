@@ -1,7 +1,7 @@
-#include "create.hpp"
+#include "create_variant.hpp"
 
-#include "models/pack.hpp"
-#include "storage/pasks.hpp"
+#include "storage/variants.hpp"
+#include "utils/string_to_uuid.hpp"
 
 #include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>
@@ -13,8 +13,8 @@
 
 namespace game_userver {
 
-CreatePack::CreatePack(
-    const userver::components::ComponentConfig& config
+CreateVariant::CreateVariant(
+      const userver::components::ComponentConfig& config
     , const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context)
@@ -24,26 +24,26 @@ CreatePack::CreatePack(
 {
 }
 
-std::string CreatePack::HandleRequestThrow(
+std::string CreateVariant::HandleRequestThrow(
       const userver::server::http::HttpRequest& request
     , userver::server::request::RequestContext&
 ) const {
     using userver::logging::Level::kDebug;
 
-    const auto& title = request.GetArg("title");
-    LOG(kDebug) << "title: " << title;
-
-    const auto createdPackOpt = NStorage::CreatePack(pg_cluster_, title);
-    const auto createdPack = createdPackOpt.value();
-    if (createdPackOpt) {
-        LOG(kDebug)
-            << "inserted pack:\n" 
-            << boost::uuids::to_string(createdPack.id)
-            << " " << createdPack.title;
-    }
+    const auto& question_id = request.GetArg("question_id");
+    const auto& text = request.GetArg("text");
+    const auto& is_correct = request.GetArg("is_correct");
+    
+    const auto createdVariantOpt = NStorage::CreateVariant(
+        pg_cluster_,
+        NUtils::StringToUuid(question_id),
+        text,
+        NUtils::StringToBool(is_correct)
+    );
+    const auto createdVariant = createdVariantOpt.value();
 
     return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{createdPack}.ExtractValue()
+        userver::formats::json::ValueBuilder{createdVariant}.ExtractValue()
     );
 }
 

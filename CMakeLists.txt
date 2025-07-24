@@ -41,6 +41,12 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers/content_handling/pack/create.cpp
     src/handlers/content_handling/pack/get_all_packs.cpp
     src/handlers/content_handling/pack/get.cpp
+    src/handlers/content_handling/question/create_question.cpp
+    src/handlers/content_handling/question/get_question_by_id.cpp
+    src/handlers/content_handling/question/get_questions_by_pack_id.cpp
+    src/handlers/content_handling/variant/create_variant.cpp
+    src/handlers/content_handling/variant/get_variant_by_id.cpp
+    src/handlers/content_handling/variant/get_variants_by_question_id.cpp
 
     src/logic/greeting/greeting.cpp
 
@@ -49,6 +55,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/models/variant.cpp
 
     src/storage/pasks.cpp
+    src/storage/questions.cpp
+    src/storage/variants.cpp
 
     src/utils/string_to_uuid.cpp
 )
@@ -72,6 +80,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 # Unit Tests
 add_executable(${PROJECT_NAME}_unittest
+    tests/unit/string_to_bool_test.cpp
+    tests/unit/string_to_uuid_test.cpp
     tests/unit/greeting_test.cpp
 )
 target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver::utest)
