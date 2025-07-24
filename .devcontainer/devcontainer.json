@@ -24,7 +24,9 @@
                 "ms-vscode.cmake-tools",
                 "ms-vscode.makefile-tools",
                 "vadimcn.vscode-lldb",
-                "ms-azuretools.vscode-docker"
+                "ms-azuretools.vscode-docker",
+                "ms-python.python",
+                "ms-python.vscode-pylance"
             ],
             "settings": {
                 "cmake.automaticReconfigure": false,
@@ -38,6 +40,16 @@
                     "--clang-tidy",
                     "--completion-style=detailed",
                     "--header-insertion=never"
+                ],
+                "python.defaultInterpreterPath": "/usr/bin/python3",
+                "python.analysis.autoSearchPaths": true,
+                "python.analysis.diagnosticMode": "workspace",
+                "python.analysis.extraPaths": [
+                    "${workspaceFolder}/build-debug/testsuite",
+                    "${workspaceFolder}/build-debug/proto",
+                    "${workspaceFolder}/build-debug/proto/handlers",
+                    "${workspaceFolder}/tests",
+                    "${workspaceFolder}/tests/helpers"
                 ]
             }
         }

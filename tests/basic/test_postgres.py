@@ -34,10 +34,3 @@ async def test_db_initial_data(service_client):
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     assert response.status == 200
     assert response.text == 'Hi again, user-from-initial_data.sql!\n'
-
-
-@pytest.mark.pgsql('db_1', files=['initial_data.sql'])
-async def test_db_initial_data(service_client):
-    response = await service_client.post(
-        '/hello-postgres'
-    )
