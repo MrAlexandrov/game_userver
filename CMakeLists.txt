@@ -39,6 +39,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers/hello_postgres/hello_postgres.cpp
 
     src/handlers/content_handling/pack/create.cpp
+    src/handlers/content_handling/pack/get_all_packs.cpp
     src/handlers/content_handling/pack/get.cpp
 
     src/logic/greeting/greeting.cpp

@@ -76,6 +76,10 @@ components_manager:
             path: /get-pack
             method: GET
 
+        handler-get-all-packs:
+            path: /get-all-packs
+            method: GET
+
         # handler-update-pack:
         #     path: /update-pack
         #     method: UPDATE

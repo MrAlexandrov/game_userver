@@ -30,3 +30,9 @@ async def get_pack(service_client, uuid: str):
     assert json_response["title"] is not None
 
     return json_response
+
+async def get_all_packs(service_client):
+    response = await service_client.get(Routes.GET_ALL_PACKS)
+    json_response = response.json()
+
+    return json_response

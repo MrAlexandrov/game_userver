@@ -61,12 +61,12 @@ auto GetPack(ClusterPtr pg_cluster_, const boost::uuids::uuid& uuid) -> std::opt
 //     );
 // }
 
-// auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<NModels::Pack> {
-//     auto result = pg_cluster_->Execute(
-//         kSlave,
-//         kGetAllPacks
-//     );
-//     return result.AsContainer<std::vector<NModels::Pack>>(userver::storages::postgres::kRowTag);
-// }
+auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<NModels::Pack> {
+    auto result = pg_cluster_->Execute(
+        kSlave,
+        kGetAllPacks
+    );
+    return result.AsContainer<std::vector<NModels::Pack>>(userver::storages::postgres::kRowTag);
+}
 
 } // namespace NStorage

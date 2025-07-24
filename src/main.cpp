@@ -14,6 +14,7 @@
 #include <userver/utils/daemon_run.hpp>
 
 #include "handlers/content_handling/pack/create.hpp"
+#include "handlers/content_handling/pack/get_all_packs.hpp"
 #include "handlers/content_handling/pack/get.hpp"
 
 #include "handlers/hello/hello.hpp"
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]) {
                               .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
                               .Append<game_userver::HelloGrpc>()
                               .Append<game_userver::CreatePack>()
+                              .Append<game_userver::GetAllPacks>()
                               .Append<game_userver::GetPack>()
         ;
 
