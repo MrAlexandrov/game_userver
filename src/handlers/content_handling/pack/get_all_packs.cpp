@@ -32,9 +32,13 @@ std::string GetAllPacks::HandleRequestThrow(
 
     const auto getAllPacks = NStorage::GetAllPacks(pg_cluster_);
 
-    return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{getAllPacks}.ExtractValue()
-    );
+    userver::formats::json::ValueBuilder result{userver::formats::common::Type::kArray};
+
+    for (const auto& i : getAllPacks) {
+        result.PushBack(i);
+    }
+
+    return userver::formats::json::ToPrettyString(result.ExtractValue());
 }
 
 } // namespace game_userver

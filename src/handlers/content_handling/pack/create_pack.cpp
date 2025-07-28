@@ -1,6 +1,5 @@
 #include "create_pack.hpp"
 
-#include "models/pack.hpp"
 #include "storage/pasks.hpp"
 
 #include <userver/storages/postgres/component.hpp>
@@ -14,7 +13,7 @@
 namespace game_userver {
 
 CreatePack::CreatePack(
-    const userver::components::ComponentConfig& config
+      const userver::components::ComponentConfig& config
     , const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context)

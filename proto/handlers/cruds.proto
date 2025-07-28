@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package handlers.api;
+
+import "models/models.proto";
+
+// Запросы и ответы для Pack
+message CreatePackRequest {
+  string title = 1;
+}
+
+message CreatePackResponse {
+  NModels.Proto.Pack pack = 1;
+}
+
+message GetPackRequest {
+  string id = 1;
+}
+
+message GetPackResponse {
+  NModels.Proto.Pack pack = 1;
+}
+
+message GetAllPacksRequest {
+}
+
+message GetAllPacksResponse {
+  repeated NModels.Proto.Pack packs = 1;
+}
+
+// Запросы и ответы для Question
+message CreateQuestionRequest {
+  string pack_id = 1;
+  string text = 2;
+  string image_url = 3;
+}
+
+message CreateQuestionResponse {
+  NModels.Proto.Question question = 1;
+}
+
+message GetQuestionByIdRequest {
+  string id = 1;
+}
+
+message GetQuestionByIdResponse {
+  NModels.Proto.Question question = 1;
+}
+
+message GetQuestionsByPackIdRequest {
+  string pack_id = 1;
+}
+
+message GetQuestionsByPackIdResponse {
+  repeated NModels.Proto.Question questions = 1;
+}
+
+// Запросы и ответы для Variant
+message CreateVariantRequest {
+  string question_id = 1;
+  string text = 2;
+  bool is_correct = 3;
+}
+
+message CreateVariantResponse {
+  NModels.Proto.Variant variant = 1;
+}
+
+message GetVariantByIdRequest {
+  string id = 1;
+}
+
+message GetVariantByIdResponse {
+  NModels.Proto.Variant variant = 1;
+}
+
+message GetVariantsByQuestionIdRequest {
+  string question_id = 1;
+}
+
+message GetVariantsByQuestionIdResponse {
+  repeated NModels.Proto.Variant variants = 1;
+}
+
+// gRPC сервис
+service QuizService {
+  // Pack operations
+  rpc CreatePack(CreatePackRequest) returns (CreatePackResponse) {};
+//   rpc GetPack(GetPackRequest) returns (GetPackResponse);
+//   rpc GetAllPacks(GetAllPacksRequest) returns (GetAllPacksResponse);
+
+//   // Question operations
+//   rpc CreateQuestion(CreateQuestionRequest) returns (CreateQuestionResponse);
+//   rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
+//   rpc GetQuestionsByPackId(GetQuestionsByPackIdRequest)
+//       returns (GetQuestionsByPackIdResponse);
+
+//   // Variant operations
+//   rpc CreateVariant(CreateVariantRequest) returns (CreateVariantResponse);
+//   rpc GetVariantById(GetVariantByIdRequest) returns (GetVariantByIdResponse);
+//   rpc GetVariantsByQuestionId(GetVariantsByQuestionIdRequest)
+//       returns (GetVariantsByQuestionIdResponse);
+}

@@ -35,6 +35,9 @@ userver_add_sql_library(
 add_library(${PROJECT_NAME}_objs OBJECT
     src/components/hello_grpc/hello_grpc.cpp
 
+    src/handlers/grpc/pack/create_pack.cpp
+    src/handlers/grpc/pack/responce.cpp
+
     src/handlers/hello/hello.cpp
     src/handlers/hello_postgres/hello_postgres.cpp
 
@@ -69,7 +72,14 @@ target_link_libraries(${PROJECT_NAME}_objs PUBLIC
 
 
 # Create a proto library with userver extensions
-userver_add_grpc_library(${PROJECT_NAME}_proto PROTOS handlers/hello.proto)
+userver_add_grpc_library(
+    ${PROJECT_NAME}_proto
+    PROTOS
+    models/models.proto
+
+    handlers/hello.proto
+    handlers/cruds.proto
+)
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC ${PROJECT_NAME}_proto)
 
 

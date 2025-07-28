@@ -119,3 +119,6 @@ components_manager:
 
         handler-hello-grpc:
             task-processor: main-task-processor
+
+        handler-create-pack-grpc:
+            task-processor: main-task-processor

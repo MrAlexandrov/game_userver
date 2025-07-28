@@ -3,6 +3,7 @@ import sys
 import os
 
 import handlers.hello_pb2_grpc as hello_services
+import handlers.cruds_pb2_grpc as grpc_handlers_service
 import pytest
 
 from testsuite.databases.pgsql import discover
@@ -23,6 +24,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'helpers'))
 @pytest.fixture
 def grpc_service(grpc_channel, service_client):
     return hello_services.HelloServiceStub(grpc_channel)
+
+
+@pytest.fixture
+def grpc_handlers(grpc_channel, service_client):
+    return grpc_handlers_service.QuizServiceStub(grpc_channel)
 
 
 def pytest_configure(config):

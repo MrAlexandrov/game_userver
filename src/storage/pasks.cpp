@@ -17,6 +17,7 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto CreatePack(ClusterPtr pg_cluster_, const std::string& title) -> std::optional<NModels::Pack> {
+    // TODO: handle empty title
     auto result = pg_cluster_->Execute(
         kMaster,
         kCreatePack,

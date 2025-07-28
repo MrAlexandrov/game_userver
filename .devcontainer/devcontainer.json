@@ -50,7 +50,12 @@
                     "${workspaceFolder}/build-debug/proto/handlers",
                     "${workspaceFolder}/tests",
                     "${workspaceFolder}/tests/helpers"
-                ]
+                ],
+                "protoc": {
+                    "options": [
+                        "--proto_path=${workspaceFolder}/proto"
+                    ]
+                }
             }
         }
     },
