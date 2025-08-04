@@ -33,6 +33,37 @@ public:
         , handlers::api::GetAllPacksRequest&&
     ) override;
 
+    CreateQuestionResult CreateQuestion(
+        CallContext&,
+        handlers::api::CreateQuestionRequest&&
+    ) override;
+
+    GetQuestionByIdResult GetQuestionById(
+        CallContext&,
+        handlers::api::GetQuestionByIdRequest&&
+    ) override;
+
+    GetQuestionsByPackIdResult GetQuestionsByPackId(
+        CallContext&,
+        handlers::api::GetQuestionsByPackIdRequest&&
+    ) override;
+
+    // === Variant operations ===
+    CreateVariantResult CreateVariant(
+        CallContext&,
+        handlers::api::CreateVariantRequest&&
+    ) override;
+
+    GetVariantByIdResult GetVariantById(
+        CallContext&,
+        handlers::api::GetVariantByIdRequest&&
+    ) override;
+
+    GetVariantsByQuestionIdResult GetVariantsByQuestionId(
+        CallContext&,
+        handlers::api::GetVariantsByQuestionIdRequest&&
+    ) override;
+
 private:
     userver::storages::postgres::ClusterPtr pg_cluster_;
 };

@@ -89,15 +89,15 @@ service QuizService {
   rpc GetPackById(GetPackByIdRequest) returns (GetPackByIdResponse) {};
   rpc GetAllPacks(GetAllPacksRequest) returns (GetAllPacksResponse) {};
 
-//   // Question operations
-//   rpc CreateQuestion(CreateQuestionRequest) returns (CreateQuestionResponse);
-//   rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
-//   rpc GetQuestionsByPackId(GetQuestionsByPackIdRequest)
-//       returns (GetQuestionsByPackIdResponse);
+  // Question operations
+  rpc CreateQuestion(CreateQuestionRequest) returns (CreateQuestionResponse);
+  rpc GetQuestionById(GetQuestionByIdRequest) returns (GetQuestionByIdResponse);
+  rpc GetQuestionsByPackId(GetQuestionsByPackIdRequest)
+      returns (GetQuestionsByPackIdResponse);
 
-//   // Variant operations
-//   rpc CreateVariant(CreateVariantRequest) returns (CreateVariantResponse);
-//   rpc GetVariantById(GetVariantByIdRequest) returns (GetVariantByIdResponse);
-//   rpc GetVariantsByQuestionId(GetVariantsByQuestionIdRequest)
-//       returns (GetVariantsByQuestionIdResponse);
+  // Variant operations
+  rpc CreateVariant(CreateVariantRequest) returns (CreateVariantResponse);
+  rpc GetVariantById(GetVariantByIdRequest) returns (GetVariantByIdResponse);
+  rpc GetVariantsByQuestionId(GetVariantsByQuestionIdRequest)
+      returns (GetVariantsByQuestionIdResponse);
 }
