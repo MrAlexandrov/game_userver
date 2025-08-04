@@ -35,8 +35,7 @@ userver_add_sql_library(
 add_library(${PROJECT_NAME}_objs OBJECT
     src/components/hello_grpc/hello_grpc.cpp
 
-    src/handlers/grpc/pack/create_pack.cpp
-    src/handlers/grpc/pack/responce.cpp
+    src/handlers/grpc/service.cpp
 
     src/handlers/hello/hello.cpp
     src/handlers/hello_postgres/hello_postgres.cpp

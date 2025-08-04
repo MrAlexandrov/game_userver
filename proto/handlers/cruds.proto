@@ -13,11 +13,11 @@ message CreatePackResponse {
   NModels.Proto.Pack pack = 1;
 }
 
-message GetPackRequest {
+message GetPackByIdRequest {
   string id = 1;
 }
 
-message GetPackResponse {
+message GetPackByIdResponse {
   NModels.Proto.Pack pack = 1;
 }
 
@@ -86,8 +86,8 @@ message GetVariantsByQuestionIdResponse {
 service QuizService {
   // Pack operations
   rpc CreatePack(CreatePackRequest) returns (CreatePackResponse) {};
-//   rpc GetPack(GetPackRequest) returns (GetPackResponse);
-//   rpc GetAllPacks(GetAllPacksRequest) returns (GetAllPacksResponse);
+  rpc GetPackById(GetPackByIdRequest) returns (GetPackByIdResponse) {};
+  rpc GetAllPacks(GetAllPacksRequest) returns (GetAllPacksResponse) {};
 
 //   // Question operations
 //   rpc CreateQuestion(CreateQuestionRequest) returns (CreateQuestionResponse);

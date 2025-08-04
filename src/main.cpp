@@ -23,7 +23,8 @@
 #include "handlers/content_handling/variant/get_variant_by_id.hpp"
 #include "handlers/content_handling/variant/get_variants_by_question_id.hpp"
 
-#include "handlers/grpc/pack/create_pack.hpp"
+#include "handlers/grpc/service.hpp"
+
 #include "handlers/hello/hello.hpp"
 #include "components/hello_grpc/hello_grpc.hpp"
 #include "handlers/hello_postgres/hello_postgres.hpp"
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
                               .Append<game_userver::CreateVariant>()
                               .Append<game_userver::GetVariantById>()
                               .Append<game_userver::GetVariantsByQuestionId>()
-                              .Append<game_userver::CreatePackGrpc>()
+                              .Append<game_userver::Service>()
         ;
 
     return userver::utils::DaemonMain(argc, argv, component_list);
