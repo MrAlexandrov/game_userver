@@ -4,6 +4,7 @@ import os
 
 import handlers.hello_pb2_grpc as hello_services
 import handlers.cruds_pb2_grpc as grpc_handlers_service
+import handlers.cruds_pb2 as service
 import pytest
 
 from testsuite.databases.pgsql import discover
@@ -29,6 +30,67 @@ def grpc_service(grpc_channel, service_client):
 @pytest.fixture
 def grpc_handlers(grpc_channel, service_client):
     return grpc_handlers_service.QuizServiceStub(grpc_channel)
+
+
+@pytest.fixture
+def sample_pack_title():
+    return "Science Quiz"
+
+
+@pytest.fixture
+def sample_question_text():
+    return "What is the capital of France?"
+
+
+@pytest.fixture
+def sample_image_url():
+    return "http://example.com/paris.jpg"
+
+
+@pytest.fixture
+def sample_variant_data():
+    return [
+        ("London", False),
+        ("Berlin", False),
+        ("Paris", True),
+        ("Madrid", False),
+    ]
+
+
+@pytest.fixture
+async def created_pack_id(grpc_handlers, sample_pack_title):
+    """Создаёт пак и возвращает его ID"""
+    request = service.CreatePackRequest(title=sample_pack_title) # type: ignore
+    response = await grpc_handlers.CreatePack(request)
+    return response.pack.id
+
+
+@pytest.fixture
+async def created_question_id(grpc_handlers, created_pack_id, sample_question_text, sample_image_url):
+    """Создаёт вопрос в паке и возвращает ID"""
+    request = service.CreateQuestionRequest(
+        pack_id=created_pack_id, # type: ignore
+        text=sample_question_text, # type: ignore
+        image_url=sample_image_url # type: ignore
+    )
+    response = await grpc_handlers.CreateQuestion(request)
+    return response.question.id
+
+
+@pytest.fixture
+async def created_variants_ids(grpc_handlers, created_question_id, sample_variant_data):
+    """Создаёт несколько вариантов для вопроса и возвращает их ID"""
+    variant_ids = []
+    for text, is_correct in sample_variant_data:
+        request = service.CreateVariantRequest(
+            question_id=created_question_id, # type: ignore
+            text=text, # type: ignore
+            is_correct=is_correct # type: ignore
+        )
+        response = await grpc_handlers.CreateVariant(request)
+        variant_ids.append(response.variant.id)
+    return variant_ids
+
 
 
 def pytest_configure(config):
