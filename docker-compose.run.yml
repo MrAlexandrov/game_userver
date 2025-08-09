@@ -1,0 +1,63 @@
+version: "3.8"
+
+networks:
+  game_network:
+    driver: bridge
+
+services:
+  # Сервис с базой данных PostgreSQL
+  db:
+    image: postgres:14
+    container_name: game_userver_db_run
+    networks:
+      - game_network
+    environment:
+      # Используем данные, которые ожидает ваше приложение
+      - POSTGRES_DB=game_userver_db_1
+      - POSTGRES_USER=testsuite
+      - POSTGRES_PASSWORD=password # Простое демо-значение, можно сменить
+    ports:
+      # Пробрасываем порт для консистентности с тестовым окружением
+      - "15433:5432"
+    volumes:
+      # Ключевой момент: монтируем ваши SQL схемы в директорию инициализации Postgres.
+      # При первом запуске все .sql файлы из этой папки будут выполнены.
+      - ./postgresql/schemas:/docker-entrypoint-initdb.d
+      # Сохраняем данные БД между перезапусками
+      - postgres_data_run:/var/lib/postgresql/data
+
+  # Сервис с вашим приложением
+  app:
+    image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg-dev
+    container_name: game_userver_app_run
+    networks:
+      - game_network
+    environment:
+      # Переменная для подключения к БД. `db` - это имя сервиса выше.
+      - DB_CONNECTION=postgresql://testsuite:password@db:5432/game_userver_db_1
+      # Задаем CPU_LIMIT, чтобы избежать ошибки с congestion-control
+      - CPU_LIMIT=1
+    volumes:
+      # Монтируем весь проект внутрь контейнера
+      - .:/home/user/game_userver:rw
+    working_dir: /home/user/game_userver
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    # Запускаем ваше приложение с нужными конфигами
+    command: >
+      bash -c "
+        # Ждем, пока база данных будет готова принимать соединения
+        until pg_isready -h db -p 5432 -U testsuite; do
+          echo 'Waiting for database...'
+          sleep 2
+        done
+        echo 'Database is ready!'
+        # Запускаем сервер
+        ./build-debug/game_userver --config_vars ./configs/config_vars.yaml --config ./configs/static_config.yaml
+      "
+    depends_on:
+      - db
+
+volumes:
+  postgres_data_run:
