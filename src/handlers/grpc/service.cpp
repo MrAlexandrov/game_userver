@@ -675,7 +675,9 @@ Service::SubmitAnswerResult Service::SubmitAnswer(
         };
     }
     
-    is_correct = result.AsSingleRow<bool>(userver::storages::postgres::kRowTag);
+    std::tuple<bool> row;
+    result.Front().To(row, userver::storages::postgres::kRowTag);
+    is_correct = std::get<0>(row);
     
     // Submit the player's answer
     auto playerAnswerOpt = NStorage::SubmitPlayerAnswer(
