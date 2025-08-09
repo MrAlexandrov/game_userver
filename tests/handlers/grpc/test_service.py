@@ -148,3 +148,7 @@ async def test_get_variants_by_question_id_grpc(
             correct_found = True
             assert variant.text == "Paris"
     assert correct_found
+
+
+# === Game Session Tests ===
+# These are tested in a separate file test_game_session.py
