@@ -78,6 +78,7 @@ userver_add_grpc_library(
     ${PROJECT_NAME}_proto
     PROTOS
     models/models.proto
+    models/game.proto
 
     handlers/hello.proto
     handlers/cruds.proto
