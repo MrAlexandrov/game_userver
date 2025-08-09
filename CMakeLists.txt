@@ -56,7 +56,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/models/question.cpp
     src/models/variant.cpp
 
-    src/storage/pasks.cpp
+    src/storage/packs.cpp
     src/storage/questions.cpp
     src/storage/variants.cpp
 

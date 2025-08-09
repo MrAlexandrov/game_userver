@@ -1,7 +1,7 @@
 #include "get_pack_by_id.hpp"
 
 #include "models/pack.hpp"
-#include "storage/pasks.hpp"
+#include "storage/packs.hpp"
 
 #include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>

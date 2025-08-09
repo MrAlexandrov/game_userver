@@ -1,6 +1,6 @@
 #include "service.hpp"
 
-#include "storage/pasks.hpp" // for db request CreatePack
+#include "storage/packs.hpp" // for db request CreatePack
 #include "storage/questions.hpp"
 #include "storage/variants.hpp"
 
@@ -30,6 +30,13 @@ Service::CreatePackResult Service::CreatePack(
       CallContext&
     , handlers::api::CreatePackRequest&& request
 ) {
+    if (request.title().empty()) {
+        return grpc::Status{
+            grpc::StatusCode::INVALID_ARGUMENT,
+            "Title cannot be empty"
+        };
+    }
+    
     auto createdPackOpt = NStorage::CreatePack(pg_cluster_, request.title());
 
     if (!createdPackOpt.has_value()) {
@@ -63,7 +70,7 @@ Service::GetPackByIdResult Service::GetPackById(
     if (!getPackByIdOpt.has_value()) {
         return grpc::Status{
             grpc::StatusCode::NOT_FOUND,
-            "Failed to parse request"
+            "Pack not found"
         };
     }
 
@@ -98,6 +105,13 @@ Service::CreateQuestionResult Service::CreateQuestion(
       CallContext&
     , handlers::api::CreateQuestionRequest&& request
 ) {
+    if (request.text().empty()) {
+        return grpc::Status{
+            grpc::StatusCode::INVALID_ARGUMENT,
+            "Question text cannot be empty"
+        };
+    }
+    
     auto pack_id = NUtils::StringToUuid(request.pack_id());
     if (pack_id.is_nil()) {
         return grpc::Status{
@@ -204,6 +218,13 @@ Service::CreateVariantResult Service::CreateVariant(
       CallContext&
     , handlers::api::CreateVariantRequest&& request
 ) {
+    if (request.text().empty()) {
+        return grpc::Status{
+            grpc::StatusCode::INVALID_ARGUMENT,
+            "Variant text cannot be empty"
+        };
+    }
+    
     auto question_id = NUtils::StringToUuid(request.question_id());
     if (question_id.is_nil()) {
         return grpc::Status{

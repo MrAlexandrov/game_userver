@@ -1,6 +1,6 @@
 #include "create_pack.hpp"
 
-#include "storage/pasks.hpp"
+#include "storage/packs.hpp"
 
 #include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>
@@ -33,13 +33,16 @@ std::string CreatePack::HandleRequestThrow(
     LOG(kDebug) << "title: " << title;
 
     const auto createdPackOpt = NStorage::CreatePack(pg_cluster_, title);
-    const auto createdPack = createdPackOpt.value();
-    if (createdPackOpt) {
-        LOG(kDebug)
-            << "inserted pack:\n"
-            << boost::uuids::to_string(createdPack.id)
-            << " " << createdPack.title;
+    if (!createdPackOpt) {
+        request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kInternalServerError);
+        return {};
     }
+    const auto createdPack = createdPackOpt.value();
+
+    LOG(kDebug)
+        << "inserted pack:\n"
+        << boost::uuids::to_string(createdPack.id)
+        << " " << createdPack.title;
 
     return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{createdPack}.ExtractValue()

@@ -1,6 +1,6 @@
 #include "get_all_packs.hpp"
 
-#include "storage/pasks.hpp"
+#include "storage/packs.hpp"
 #include "utils/string_to_uuid.hpp"
 
 #include <userver/storages/postgres/component.hpp>
