@@ -3,6 +3,7 @@ syntax = "proto3";
 package handlers.api;
 
 import "models/models.proto";
+import "models/game.proto";
 
 // Запросы и ответы для Pack
 message CreatePackRequest {
@@ -82,6 +83,84 @@ message GetVariantsByQuestionIdResponse {
   repeated NModels.Proto.Variant variants = 1;
 }
 
+// Запросы и ответы для GameSession
+message CreateGameSessionRequest {
+  string pack_id = 1;
+}
+
+message CreateGameSessionResponse {
+  NModels.Proto.GameSession game_session = 1;
+}
+
+message GetGameSessionRequest {
+  string id = 1;
+}
+
+message GetGameSessionResponse {
+  NModels.Proto.GameSession game_session = 1;
+}
+
+message StartGameSessionRequest {
+  string id = 1;
+}
+
+message StartGameSessionResponse {
+  NModels.Proto.GameSession game_session = 1;
+}
+
+message EndGameSessionRequest {
+  string id = 1;
+}
+
+message EndGameSessionResponse {
+  NModels.Proto.GameSession game_session = 1;
+}
+
+message GetGameSessionsRequest {
+}
+
+message GetGameSessionsResponse {
+  repeated NModels.Proto.GameSession game_sessions = 1;
+}
+
+// Запросы и ответы для Player
+message AddPlayerRequest {
+  string game_session_id = 1;
+  string name = 2;
+}
+
+message AddPlayerResponse {
+  NModels.Proto.Player player = 1;
+}
+
+message GetPlayersRequest {
+  string game_session_id = 1;
+}
+
+message GetPlayersResponse {
+  repeated NModels.Proto.Player players = 1;
+}
+
+// Запросы и ответы для PlayerAnswer
+message SubmitAnswerRequest {
+  string player_id = 1;
+  string question_id = 2;
+  string variant_id = 3;
+}
+
+message SubmitAnswerResponse {
+  bool is_correct = 1;
+  int32 points = 2;
+}
+
+message GetPlayerAnswersRequest {
+  string player_id = 1;
+}
+
+message GetPlayerAnswersResponse {
+  repeated NModels.Proto.PlayerAnswer answers = 1;
+}
+
 // gRPC сервис
 service QuizService {
   // Pack operations
@@ -100,4 +179,19 @@ service QuizService {
   rpc GetVariantById(GetVariantByIdRequest) returns (GetVariantByIdResponse);
   rpc GetVariantsByQuestionId(GetVariantsByQuestionIdRequest)
       returns (GetVariantsByQuestionIdResponse);
+
+  // GameSession operations
+  rpc CreateGameSession(CreateGameSessionRequest) returns (CreateGameSessionResponse);
+  rpc GetGameSession(GetGameSessionRequest) returns (GetGameSessionResponse);
+  rpc StartGameSession(StartGameSessionRequest) returns (StartGameSessionResponse);
+  rpc EndGameSession(EndGameSessionRequest) returns (EndGameSessionResponse);
+  rpc GetGameSessions(GetGameSessionsRequest) returns (GetGameSessionsResponse);
+
+  // Player operations
+  rpc AddPlayer(AddPlayerRequest) returns (AddPlayerResponse);
+  rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse);
+
+  // PlayerAnswer operations
+  rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
+  rpc GetPlayerAnswers(GetPlayerAnswersRequest) returns (GetPlayerAnswersResponse);
 }

@@ -59,6 +59,9 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/storage/packs.cpp
     src/storage/questions.cpp
     src/storage/variants.cpp
+    src/storage/game_sessions.cpp
+    src/storage/players.cpp
+    src/storage/player_answers.cpp
 
     src/utils/string_to_uuid.cpp
 )

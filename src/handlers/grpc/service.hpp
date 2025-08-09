@@ -7,6 +7,10 @@
 #include <models/pack.hpp> // for responce
 #include <userver/storages/postgres/postgres_fwd.hpp>
 
+#include <models/game_session.hpp>
+#include <models/player.hpp>
+#include <models/player_answer.hpp>
+
 namespace game_userver {
 
 class Service final : public handlers::api::QuizServiceBase::Component {
@@ -58,10 +62,57 @@ public:
         CallContext&,
         handlers::api::GetVariantByIdRequest&&
     ) override;
-
     GetVariantsByQuestionIdResult GetVariantsByQuestionId(
         CallContext&,
         handlers::api::GetVariantsByQuestionIdRequest&&
+    ) override;
+
+    // === Game Session operations ===
+    CreateGameSessionResult CreateGameSession(
+          CallContext&
+        , handlers::api::CreateGameSessionRequest&&
+    ) override;
+
+    GetGameSessionResult GetGameSession(
+          CallContext&
+        , handlers::api::GetGameSessionRequest&&
+    ) override;
+
+    StartGameSessionResult StartGameSession(
+          CallContext&
+        , handlers::api::StartGameSessionRequest&&
+    ) override;
+
+    EndGameSessionResult EndGameSession(
+          CallContext&
+        , handlers::api::EndGameSessionRequest&&
+    ) override;
+
+    GetGameSessionsResult GetGameSessions(
+          CallContext&
+        , handlers::api::GetGameSessionsRequest&&
+    ) override;
+
+    // === Player operations ===
+    AddPlayerResult AddPlayer(
+        CallContext&,
+        handlers::api::AddPlayerRequest&&
+    ) override;
+
+    GetPlayersResult GetPlayers(
+        CallContext&,
+        handlers::api::GetPlayersRequest&&
+    ) override;
+
+    // === Player Answer operations ===
+    SubmitAnswerResult SubmitAnswer(
+        CallContext&,
+        handlers::api::SubmitAnswerRequest&&
+    ) override;
+
+    GetPlayerAnswersResult GetPlayerAnswers(
+        CallContext&,
+        handlers::api::GetPlayerAnswersRequest&&
     ) override;
 
 private:
