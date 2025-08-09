@@ -1,5 +1,6 @@
 #include "service.hpp"
 
+#include "samples_postgres_service/sql_queries.hpp"
 #include "storage/packs.hpp" // for db request CreatePack
 #include "storage/questions.hpp"
 #include "storage/variants.hpp"
