@@ -11,6 +11,9 @@
     "forwardPorts": [
         8080
     ],
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh/github,target=/home/user/.ssh/github,type=bind,consistency=cached"
+    ],
     "containerEnv": {
         "SHELL": "/bin/bash",
         "PREFIX": "${PREFIX:-~/.local}",
@@ -59,6 +62,5 @@
             }
         }
     },
-    "onCreateCommand": "sudo git config --global --add safe.directory /home/user/game_userver",
-    "mounts": []
+    "postCreateCommand": "sudo apt-get install -y openssh-client && ssh-add ~/.ssh/github && git config --global --add safe.directory /home/user/game_userver"
 }
