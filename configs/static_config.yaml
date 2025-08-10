@@ -36,6 +36,10 @@ components_manager:
         testsuite-support: {}
 
         congestion-control:
+            fake-mode: false
+            min-cpu: 2
+            only-rtc: false
+            load-enabled: true
 
         http-client:
             load-enabled: $is_testing

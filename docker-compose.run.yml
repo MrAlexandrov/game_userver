@@ -52,13 +52,6 @@ services:
     # Запускаем ваше приложение с нужными конфигами
     command: >
       bash -c "
-        # Ждем, пока база данных будет готова принимать соединения
-        until pg_isready -h db -p 5432 -U testsuite; do
-          echo 'Waiting for database...'
-          sleep 2
-        done
-        echo 'Database is ready!'
-        # Запускаем сервер
         ./build-debug/game_userver --config_vars ./configs/config_vars.yaml --config ./configs/static_config.yaml
       "
     depends_on:
