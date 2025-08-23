@@ -12,9 +12,12 @@
         8080,
         8081
     ],
-    "mounts": [
-        "source=${localEnv:HOME}/.ssh/github,target=/home/user/.ssh/github,type=bind,consistency=cached"
-    ],
+	"mounts": [
+		"source=${localEnv:HOME}/.ssh/github,target=/home/user/.ssh/github,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh/github.pub,target=/home/user/.ssh/github.pub,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh/config,target=/home/user/.ssh/config,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh/known_hosts,target=/home/user/.ssh/known_hosts,type=bind,consistency=cached"
+	],
     "containerEnv": {
         "SHELL": "/bin/bash",
         "PREFIX": "${PREFIX:-~/.local}",
