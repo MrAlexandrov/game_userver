@@ -58,9 +58,8 @@ services:
           sleep 2
         done
         echo 'Database is ready!'
-        # Запускаем сервер, убрав --config_vars.
-        # Теперь он будет использовать DB_CONNECTION из environment для подключения к БД.
-        ./build-debug/game_userver --config ./configs/static_config.yaml
+        # Запускаем сервер
+        ./build-debug/game_userver --config_vars ./configs/config_vars.yaml --config ./configs/static_config.yaml
       "
     depends_on:
       - db
