@@ -225,4 +225,9 @@ service QuizService {
   // PlayerAnswer operations
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
   rpc GetPlayerAnswers(GetPlayerAnswersRequest) returns (GetPlayerAnswersResponse);
+
+  // Additional game flow operations
+  rpc GetCurrentQuestion(GetCurrentQuestionRequest) returns (GetCurrentQuestionResponse);
+  rpc AdvanceToNextQuestion(AdvanceToNextQuestionRequest) returns (AdvanceToNextQuestionResponse);
+  rpc GetQuestionsWithVariants(GetQuestionsWithVariantsRequest) returns (GetQuestionsWithVariantsResponse);
 }
