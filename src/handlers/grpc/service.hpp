@@ -115,6 +115,22 @@ public:
         handlers::api::GetPlayerAnswersRequest&&
     ) override;
 
+    // === Additional game flow operations ===
+    GetCurrentQuestionResult GetCurrentQuestion(
+        CallContext&,
+        handlers::api::GetCurrentQuestionRequest&&
+    ) override;
+
+    AdvanceToNextQuestionResult AdvanceToNextQuestion(
+        CallContext&,
+        handlers::api::AdvanceToNextQuestionRequest&&
+    ) override;
+
+    GetQuestionsWithVariantsResult GetQuestionsWithVariants(
+        CallContext&,
+        handlers::api::GetQuestionsWithVariantsRequest&&
+    ) override;
+
 private:
     userver::storages::postgres::ClusterPtr pg_cluster_;
 };

@@ -58,4 +58,23 @@ auto GetAllGameSessions(ClusterPtr pg_cluster_) -> std::vector<NModels::GameSess
     return result.AsContainer<std::vector<NModels::GameSession>>(userver::storages::postgres::kRowTag);
 }
 
+auto AdvanceToNextQuestion(ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id) -> std::optional<NModels::GameSession> {
+    auto result = pg_cluster_->Execute(
+        kMaster,
+        kAdvanceToNextQuestion,
+        game_session_id
+    );
+    return result.AsOptionalSingleRow<NModels::GameSession>(userver::storages::postgres::kRowTag);
+}
+
+auto SetCurrentQuestionIndex(ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id, int current_question_index) -> std::optional<NModels::GameSession> {
+    auto result = pg_cluster_->Execute(
+        kMaster,
+        kUpdateGameSessionCurrentQuestionIndex,
+        game_session_id,
+        current_question_index
+    );
+    return result.AsOptionalSingleRow<NModels::GameSession>(userver::storages::postgres::kRowTag);
+}
+
 } // namespace NStorage

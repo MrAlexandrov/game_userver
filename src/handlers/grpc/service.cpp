@@ -19,6 +19,10 @@
 #include <userver/storages/postgres/component.hpp>
 #include <utils/string_to_uuid.hpp>
 
+#include <userver/formats/serialize/common_containers.hpp>
+#include <userver/formats/json/value.hpp>
+#include <userver/formats/json/value_builder.hpp>
+
 namespace game_userver {
 
 Service::Service(
@@ -739,6 +743,195 @@ Service::GetPlayerAnswersResult Service::GetPlayerAnswers(
         newPlayerAnswer->set_answered_at(answered_at_ms);
     }
 
+    return response;
+}
+
+Service::GetCurrentQuestionResult Service::GetCurrentQuestion(
+      CallContext&
+    , handlers::api::GetCurrentQuestionRequest&& request
+) {
+    auto game_session_id = NUtils::StringToUuid(request.game_session_id());
+    if (game_session_id.is_nil()) {
+        return grpc::Status{
+            grpc::StatusCode::INVALID_ARGUMENT,
+            "Invalid UUID format: " + request.game_session_id()
+        };
+    }
+    
+    // Get the game session to get the pack_id and current_question_index
+    auto gameSessionOpt = NStorage::GetGameSessionById(pg_cluster_, game_session_id);
+    if (!gameSessionOpt.has_value()) {
+        return grpc::Status{
+            grpc::StatusCode::NOT_FOUND,
+            "Game session not found"
+        };
+    }
+    auto gameSession = gameSessionOpt.value();
+    
+    // Get all questions for this pack
+    auto questions = NStorage::GetQuestionsByPackId(pg_cluster_, gameSession.pack_id);
+    
+    // Check if there are questions and if the current index is valid
+    if (questions.empty()) {
+        return grpc::Status{
+            grpc::StatusCode::NOT_FOUND,
+            "No questions found in this pack"
+        };
+    }
+    
+    if (gameSession.current_question_index >= static_cast<int>(questions.size())) {
+        return grpc::Status{
+            grpc::StatusCode::OUT_OF_RANGE,
+            "No more questions in this game session"
+        };
+    }
+    
+    // Get the current question
+    auto currentQuestion = questions[gameSession.current_question_index];
+    
+    // Get variants for the current question
+    auto variants = NStorage::GetVariantsByQuestionId(pg_cluster_, currentQuestion.id);
+    
+    handlers::api::GetCurrentQuestionResponse response;
+    auto mutableQuestion = response.mutable_question();
+    mutableQuestion->set_id(boost::uuids::to_string(std::move(currentQuestion.id)));
+    mutableQuestion->set_pack_id(boost::uuids::to_string(std::move(currentQuestion.pack_id)));
+    mutableQuestion->set_text(std::move(currentQuestion.text));
+    if (!currentQuestion.image_url.empty()) {
+        mutableQuestion->set_image_url(currentQuestion.image_url);
+    }
+    
+    auto mutableVariants = response.mutable_variants();
+    for (auto&& variant : variants) {
+        auto newVariant = mutableVariants->Add();
+        newVariant->set_id(boost::uuids::to_string(variant.id));
+        newVariant->set_question_id(boost::uuids::to_string(variant.question_id));
+        newVariant->set_text(std::move(variant.text));
+        newVariant->set_is_correct(variant.is_correct);
+    }
+    
+    return response;
+}
+
+Service::AdvanceToNextQuestionResult Service::AdvanceToNextQuestion(
+      CallContext&
+    , handlers::api::AdvanceToNextQuestionRequest&& request
+) {
+    auto game_session_id = NUtils::StringToUuid(request.game_session_id());
+    if (game_session_id.is_nil()) {
+        return grpc::Status{
+            grpc::StatusCode::INVALID_ARGUMENT,
+            "Invalid UUID format: " + request.game_session_id()
+        };
+    }
+    
+    // Get the game session to get the pack_id and current_question_index
+    auto gameSessionOpt = NStorage::GetGameSessionById(pg_cluster_, game_session_id);
+    if (!gameSessionOpt.has_value()) {
+        return grpc::Status{
+            grpc::StatusCode::NOT_FOUND,
+            "Game session not found"
+        };
+    }
+    auto gameSession = gameSessionOpt.value();
+    
+    // Get all questions for this pack
+    auto questions = NStorage::GetQuestionsByPackId(pg_cluster_, gameSession.pack_id);
+    
+    // Check if there are more questions
+    bool hasMoreQuestions = (gameSession.current_question_index + 1) < static_cast<int>(questions.size());
+    
+    // If there are more questions, update the game session
+    if (hasMoreQuestions) {
+        // Advance the game session to the next question
+        auto updatedGameSessionOpt = NStorage::AdvanceToNextQuestion(pg_cluster_, game_session_id);
+        if (updatedGameSessionOpt.has_value()) {
+            gameSession = updatedGameSessionOpt.value();
+        }
+    }
+    
+    handlers::api::AdvanceToNextQuestionResponse response;
+    response.set_has_more_questions(hasMoreQuestions);
+    
+    auto mutableGameSession = response.mutable_game_session();
+    mutableGameSession->set_id(boost::uuids::to_string(std::move(gameSession.id)));
+    mutableGameSession->set_pack_id(boost::uuids::to_string(std::move(gameSession.pack_id)));
+    mutableGameSession->set_state(std::move(gameSession.state));
+    mutableGameSession->set_current_question_index(gameSession.current_question_index);
+    
+    // Convert time points to milliseconds since epoch
+    auto created_at_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        gameSession.created_at.time_since_epoch()).count();
+    mutableGameSession->set_created_at(created_at_ms);
+    
+    if (gameSession.started_at.has_value()) {
+        auto started_at_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            gameSession.started_at.value().time_since_epoch()).count();
+        mutableGameSession->set_started_at(started_at_ms);
+    }
+    
+    if (gameSession.finished_at.has_value()) {
+        auto finished_at_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            gameSession.finished_at.value().time_since_epoch()).count();
+        mutableGameSession->set_finished_at(finished_at_ms);
+    }
+    
+    return response;
+}
+
+Service::GetQuestionsWithVariantsResult Service::GetQuestionsWithVariants(
+      CallContext&
+    , handlers::api::GetQuestionsWithVariantsRequest&& request
+) {
+    auto pack_id = NUtils::StringToUuid(request.pack_id());
+    if (pack_id.is_nil()) {
+        return grpc::Status{
+            grpc::StatusCode::INVALID_ARGUMENT,
+            "Invalid UUID format: " + request.pack_id()
+        };
+    }
+    
+    // Execute the query to get questions with variants
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        samples_postgres_service::sql::kGetQuestionsAndVariantsByPackId,
+        pack_id
+    );
+    
+    handlers::api::GetQuestionsWithVariantsResponse response;
+    auto mutableQuestions = response.mutable_questions_with_variants();
+    
+    for (const auto& row : result) {
+        auto questionWithVariants = mutableQuestions->Add();
+        
+        // Extract question data
+        boost::uuids::uuid question_id;
+        boost::uuids::uuid pack_id;
+        std::string question_text;
+        std::string image_url;
+        userver::formats::json::Value variants_json;
+        
+        row.To(question_id, pack_id, question_text, image_url, variants_json);
+        
+        // Set question data
+        auto mutableQuestion = questionWithVariants->mutable_question();
+        mutableQuestion->set_id(boost::uuids::to_string(question_id));
+        mutableQuestion->set_pack_id(boost::uuids::to_string(pack_id));
+        mutableQuestion->set_text(question_text);
+        if (!image_url.empty()) {
+            mutableQuestion->set_image_url(image_url);
+        }
+        
+        // Set variants data
+        auto mutableVariants = questionWithVariants->mutable_variants();
+        for (const auto& variant_json : variants_json) {
+            auto newVariant = mutableVariants->Add();
+            newVariant->set_id(variant_json["id"].As<std::string>());
+            newVariant->set_text(variant_json["text"].As<std::string>());
+            newVariant->set_is_correct(variant_json["is_correct"].As<bool>());
+        }
+    }
+    
     return response;
 }
 

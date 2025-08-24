@@ -161,6 +161,37 @@ message GetPlayerAnswersResponse {
   repeated NModels.Proto.PlayerAnswer answers = 1;
 }
 
+// Additional game flow methods
+message GetCurrentQuestionRequest {
+  string game_session_id = 1;
+}
+
+message GetCurrentQuestionResponse {
+  NModels.Proto.Question question = 1;
+  repeated NModels.Proto.Variant variants = 2;
+}
+
+message AdvanceToNextQuestionRequest {
+  string game_session_id = 1;
+}
+
+message AdvanceToNextQuestionResponse {
+  bool has_more_questions = 1;
+  NModels.Proto.GameSession game_session = 2;
+}
+
+message GetQuestionsWithVariantsRequest {
+  string pack_id = 1;
+}
+
+message GetQuestionsWithVariantsResponse {
+  message QuestionWithVariants {
+    NModels.Proto.Question question = 1;
+    repeated NModels.Proto.Variant variants = 2;
+  }
+  repeated QuestionWithVariants questions_with_variants = 1;
+}
+
 // gRPC сервис
 service QuizService {
   // Pack operations

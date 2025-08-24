@@ -35,3 +35,9 @@ can also be `debug-custom`, `release-custom`.
 The original template is distributed under the [Apache-2.0 License](https://github.com/userver-framework/userver/blob/develop/LICENSE)
 and [CLA](https://github.com/userver-framework/userver/blob/develop/CONTRIBUTING.md). Services based on the template may change
 the license and CLA.
+
+## Development
+
+For development and testing instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).
+
+Example gRPC client usage can be found in [examples/grpc_client_example.py](examples/grpc_client_example.py).

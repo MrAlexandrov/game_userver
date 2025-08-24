@@ -1,0 +1,83 @@
+version: "3.8"
+
+networks:
+  game_dev_network:
+    driver: bridge
+
+services:
+  # Development database
+  db:
+    image: postgres:14
+    container_name: game_userver_db_dev
+    networks:
+      - game_dev_network
+    environment:
+      - POSTGRES_DB=game_userver_db_1
+      - POSTGRES_USER=testsuite
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "15433:5432"
+    volumes:
+      - ./postgresql/schemas:/docker-entrypoint-initdb.d
+      - postgres_data_dev:/var/lib/postgresql/data
+
+  # Development backend service
+  app:
+    image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg-dev
+    container_name: game_userver_app_dev
+    networks:
+      - game_dev_network
+    environment:
+      - DB_CONNECTION=postgresql://testsuite:password@db:5432/game_userver_db_1
+      - CPU_LIMIT=1
+    volumes:
+      - .:/home/user/game_userver:rw
+    working_dir: /home/user/game_userver
+    ports:
+      - "8080:8080"  # HTTP port
+      - "8081:8081"  # gRPC port
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+    command: >
+      bash -c "
+        # Wait for database to be ready
+        until pg_isready -h db -p 5432 -U testsuite; do
+          echo 'Waiting for database...'
+          sleep 2
+        done
+        echo 'Database is ready!'
+        # Build the project
+        make build-debug
+        # Run the server
+        ./build-debug/game_userver --config ./configs/static_config.yaml
+      "
+    depends_on:
+      - db
+
+  # Telegram bot service (template)
+  bot:
+    image: python:3.9
+    container_name: game_telegram_bot_dev
+    networks:
+      - game_dev_network
+    environment:
+      - BACKEND_HOST=app
+      - BACKEND_GRPC_PORT=8081
+    volumes:
+      - ../game_bot:/app:rw  # Assuming game_bot is in the parent directory
+      - ./game_bot:/app:rw   # Alternative: game_bot in the same directory
+    working_dir: /app
+    command: >
+      bash -c "
+        # Install dependencies
+        pip install -r requirements.txt
+        # Run the bot
+        python bot.py
+      "
+    depends_on:
+      - app
+
+volumes:
+  postgres_data_dev:

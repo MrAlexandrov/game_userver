@@ -20,4 +20,8 @@ auto EndGameSession(ClusterPtr pg_cluster_, const boost::uuids::uuid& game_sessi
 
 auto GetAllGameSessions(ClusterPtr pg_cluster_) -> std::vector<NModels::GameSession>;
 
+auto AdvanceToNextQuestion(ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id) -> std::optional<NModels::GameSession>;
+
+auto SetCurrentQuestionIndex(ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id, int current_question_index) -> std::optional<NModels::GameSession>;
+
 } // namespace NStorage

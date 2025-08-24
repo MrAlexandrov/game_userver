@@ -76,3 +76,16 @@ $(addprefix docker-cmake-, $(PRESETS)) $(addprefix docker-build-, $(PRESETS)) $(
 		env CCACHE_DIR=$$PWD/.ccache \
 		    HOME=$$HOME \
 		    $$PWD/run_as_user.sh $(shell /bin/id -u) $(shell /bin/id -g) make $*
+
+.PHONY: example-client
+example-client:
+	cd examples && python3 -m pip install -r requirements.txt && python3 grpc_client_example.py
+
+.PHONY: docker-example-client
+docker-example-client:
+	docker run $(DOCKER_ARGS) \
+		--network=host \
+		-v $$PWD:$$PWD \
+		-w $$PWD \
+		python:3.9 \
+		bash -c "cd examples && python3 -m pip install -r requirements.txt && python3 grpc_client_example.py"
