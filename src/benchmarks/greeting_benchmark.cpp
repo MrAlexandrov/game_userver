@@ -1,7 +1,7 @@
 #include "logic/greeting/greeting.hpp"
 
-#include <cstdint>   // for std::uint64_t
-#include <iterator>  // for std::size
+#include <cstdint>  // for std::uint64_t
+#include <iterator> // for std::size
 #include <string_view>
 
 #include <benchmark/benchmark.h>

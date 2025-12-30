@@ -25,34 +25,34 @@
 
 #include "handlers/grpc/service.hpp"
 
-#include "handlers/hello/hello.hpp"
 #include "components/hello_grpc/hello_grpc.hpp"
+#include "handlers/hello/hello.hpp"
 #include "handlers/hello_postgres/hello_postgres.hpp"
 
 int main(int argc, char* argv[]) {
-    auto component_list = userver::components::MinimalServerComponentList()
-                              .Append<userver::server::handlers::Ping>()
-                              .Append<userver::components::TestsuiteSupport>()
-                              .Append<userver::components::HttpClient>()
-                              .Append<userver::clients::dns::Component>()
-                              .Append<userver::server::handlers::TestsControl>()
-                              .Append<userver::congestion_control::Component>()
-                              .Append<game_userver::Hello>()
-                              .Append<userver::components::Postgres>("postgres-db-1")
-                              .Append<game_userver::HelloPostgres>()
-                              .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
-                              .Append<game_userver::HelloGrpc>()
-                              .Append<game_userver::CreatePack>()
-                              .Append<game_userver::GetAllPacks>()
-                              .Append<game_userver::GetPack>()
-                              .Append<game_userver::CreateQuestion>()
-                              .Append<game_userver::GetQuestionById>()
-                              .Append<game_userver::GetQuestionsByPackId>()
-                              .Append<game_userver::CreateVariant>()
-                              .Append<game_userver::GetVariantById>()
-                              .Append<game_userver::GetVariantsByQuestionId>()
-                              .Append<game_userver::Service>()
-        ;
+    auto component_list =
+        userver::components::MinimalServerComponentList()
+            .Append<userver::server::handlers::Ping>()
+            .Append<userver::components::TestsuiteSupport>()
+            .Append<userver::components::HttpClient>()
+            .Append<userver::clients::dns::Component>()
+            .Append<userver::server::handlers::TestsControl>()
+            .Append<userver::congestion_control::Component>()
+            .Append<game_userver::Hello>()
+            .Append<userver::components::Postgres>("postgres-db-1")
+            .Append<game_userver::HelloPostgres>()
+            .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
+            .Append<game_userver::HelloGrpc>()
+            .Append<game_userver::CreatePack>()
+            .Append<game_userver::GetAllPacks>()
+            .Append<game_userver::GetPack>()
+            .Append<game_userver::CreateQuestion>()
+            .Append<game_userver::GetQuestionById>()
+            .Append<game_userver::GetQuestionsByPackId>()
+            .Append<game_userver::CreateVariant>()
+            .Append<game_userver::GetVariantById>()
+            .Append<game_userver::GetVariantsByQuestionId>()
+            .Append<game_userver::Service>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

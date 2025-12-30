@@ -2,28 +2,27 @@
 
 #include "logic/greeting/greeting.hpp"
 
-#include <userver/storages/postgres/component.hpp>
 #include <samples_postgres_service/sql_queries.hpp>
+#include <userver/storages/postgres/component.hpp>
 
 #include <userver/logging/log.hpp>
 
 namespace game_userver {
 
 HelloPostgres::HelloPostgres(
-    const userver::components::ComponentConfig& config
-    , const userver::components::ComponentContext& component_context
+    const userver::components::ComponentConfig& config,
+    const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context)
-    , pg_cluster_(
-        component_context.FindComponent<userver::components::Postgres>("postgres-db-1")
-            .GetCluster())
-{
-}
+    : HttpHandlerBase(config, component_context),
+      pg_cluster_(
+          component_context
+              .FindComponent<userver::components::Postgres>("postgres-db-1")
+              .GetCluster()
+      ) {}
 
-std::string HelloPostgres::HandleRequestThrow(
-      const userver::server::http::HttpRequest& request
-    , userver::server::request::RequestContext&
-) const {
+std::string HelloPostgres::
+    HandleRequestThrow(const userver::server::http::HttpRequest& request, userver::server::request::RequestContext&)
+        const {
     const auto& name = request.GetArg("name");
     auto user_type = UserType::kFirstTime;
 

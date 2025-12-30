@@ -17,24 +17,17 @@ struct Variant final {
     auto Introspect() const;
 };
 
-userver::formats::json::Value Serialize(
-      const Variant& variant
-    , userver::formats::serialize::To<userver::formats::json::Value>
-);
+userver::formats::json::Value
+Serialize(const Variant& variant, userver::formats::serialize::To<userver::formats::json::Value>);
 
-Variant Parse(
-      const userver::formats::json::Value& json
-    , userver::formats::parse::To<Variant>
-);
+Variant
+Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Variant>);
 
-} // NModels
-
-
+} // namespace NModels
 
 namespace userver::storages::postgres::io {
 
-template <>
-struct CppToUserPg<NModels::Variant> {
+template <> struct CppToUserPg<NModels::Variant> {
     static constexpr DBTypeName postgres_name{"quiz.variant"};
 };
 

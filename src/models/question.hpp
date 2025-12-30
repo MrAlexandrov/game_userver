@@ -17,24 +17,17 @@ struct Question final {
     auto Introspect() const;
 };
 
-userver::formats::json::Value Serialize(
-      const Question& question
-    , userver::formats::serialize::To<userver::formats::json::Value>
-);
+userver::formats::json::Value
+Serialize(const Question& question, userver::formats::serialize::To<userver::formats::json::Value>);
 
-Question Parse(
-      const userver::formats::json::Value& json
-    , userver::formats::parse::To<Question>
-);
+Question
+Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Question>);
 
-} // NModels
-
-
+} // namespace NModels
 
 namespace userver::storages::postgres::io {
 
-template <>
-struct CppToUserPg<NModels::Question> {
+template <> struct CppToUserPg<NModels::Question> {
     static constexpr DBTypeName postgres_name{"quiz.question"};
 };
 

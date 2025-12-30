@@ -1,6 +1,7 @@
 PROJECT_NAME = game_userver
 NPROCS ?= $(shell nproc)
 CLANG_FORMAT ?= clang-format
+CLANG_TIDY ?= clang-tidy
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 CMAKE_OPTS ?=
 # If we're under TTY, pass "-it" to "docker run"
@@ -61,6 +62,11 @@ install: install-release
 format:
 	find src -name '*pp' -type f | xargs $(CLANG_FORMAT) -i
 	find tests -name '*.py' -type f | xargs autopep8 -i
+
+.PHONY: tidy
+tidy:
+	find src -name '*pp' -type f | xargs -P$(NPROCS) -n1 $(CLANG_TIDY) \
+		--extra-arg=-std=c++20
 
 # Start targets makefile in docker wrapper.
 # The docker mounts the whole service's source directory,

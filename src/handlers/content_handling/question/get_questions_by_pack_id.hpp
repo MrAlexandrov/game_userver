@@ -7,19 +7,17 @@
 
 namespace game_userver {
 
-class GetQuestionsByPackId final : public userver::server::handlers::HttpHandlerBase {
+class GetQuestionsByPackId final
+    : public userver::server::handlers::HttpHandlerBase {
 public:
-    static constexpr std::string_view kName = "handler-get-questions-by-pack-id";
+    static constexpr std::string_view kName =
+        "handler-get-questions-by-pack-id";
 
-    GetQuestionsByPackId(
-          const userver::components::ComponentConfig&
-        , const userver::components::ComponentContext&
-    );
+    GetQuestionsByPackId(const userver::components::ComponentConfig&, const userver::components::ComponentContext&);
 
-    std::string HandleRequestThrow(
-          const userver::server::http::HttpRequest&
-        , userver::server::request::RequestContext&
-    ) const override;
+    std::string
+    HandleRequestThrow(const userver::server::http::HttpRequest&, userver::server::request::RequestContext&)
+        const override;
 
 private:
     userver::storages::postgres::ClusterPtr pg_cluster_;
