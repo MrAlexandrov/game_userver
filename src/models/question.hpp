@@ -17,11 +17,15 @@ struct Question final {
     auto Introspect() const;
 };
 
-userver::formats::json::Value
-Serialize(const Question& question, userver::formats::serialize::To<userver::formats::json::Value>);
+userver::formats::json::Value Serialize(
+    const Question& question,
+    userver::formats::serialize::To<userver::formats::json::Value>
+);
 
-Question
-Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Question>);
+Question Parse(
+    const userver::formats::json::Value& json,
+    userver::formats::parse::To<Question>
+);
 
 } // namespace NModels
 

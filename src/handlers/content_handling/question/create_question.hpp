@@ -12,12 +12,16 @@ class CreateQuestion final : public userver::server::handlers::HttpHandlerBase {
 public:
     static constexpr std::string_view kName = "handler-create-question";
 
-    CreateQuestion(const userver::components::ComponentConfig&, const userver::components::ComponentContext&);
+    CreateQuestion(
+        const userver::components::ComponentConfig&,
+        const userver::components::ComponentContext&
+    );
     ~CreateQuestion() override;
 
-    std::string
-    HandleRequestThrow(const userver::server::http::HttpRequest&, userver::server::request::RequestContext&)
-        const override;
+    std::string HandleRequestThrow(
+        const userver::server::http::HttpRequest&,
+        userver::server::request::RequestContext&
+    ) const override;
 
 private:
     struct Impl;

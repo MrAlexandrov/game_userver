@@ -120,8 +120,9 @@ Service::CreateQuestionResult Service::CreateQuestion(
 
     handlers::api::CreateQuestionResponse response;
     auto mutableQuestion = response.mutable_question();
-    mutableQuestion->set_id(boost::uuids::to_string(std::move(createdQuestion.id
-    )));
+    mutableQuestion->set_id(
+        boost::uuids::to_string(std::move(createdQuestion.id))
+    );
     mutableQuestion->set_pack_id(
         boost::uuids::to_string(std::move(createdQuestion.pack_id))
     );
@@ -221,7 +222,8 @@ Service::CreateVariantResult Service::CreateVariant(
 
     handlers::api::CreateVariantResponse response;
     auto mutableVariant = response.mutable_variant();
-    mutableVariant->set_id(boost::uuids::to_string(std::move(createdVariant.id))
+    mutableVariant->set_id(
+        boost::uuids::to_string(std::move(createdVariant.id))
     );
     mutableVariant->set_question_id(
         boost::uuids::to_string(std::move(createdVariant.question_id))
@@ -279,7 +281,8 @@ Service::GetVariantsByQuestionIdResult Service::GetVariantsByQuestionId(
     for (auto&& variant : variants) {
         auto newVariant = mutableVariants->Add();
         newVariant->set_id(boost::uuids::to_string(variant.id));
-        newVariant->set_question_id(boost::uuids::to_string(variant.question_id)
+        newVariant->set_question_id(
+            boost::uuids::to_string(variant.question_id)
         );
         newVariant->set_text(std::move(variant.text));
         newVariant->set_is_correct(variant.is_correct);

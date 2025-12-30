@@ -18,7 +18,9 @@ struct CreatePack::Impl {
 
     explicit Impl(const userver::components::ComponentContext& context)
         : pg_cluster(
-              context.FindComponent<userver::components::Postgres>("postgres-db-1").GetCluster()
+              context
+                  .FindComponent<userver::components::Postgres>("postgres-db-1")
+                  .GetCluster()
           ) {}
 };
 
@@ -26,8 +28,7 @@ CreatePack::CreatePack(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context),
-      impl_(component_context) {}
+    : HttpHandlerBase(config, component_context), impl_(component_context) {}
 
 CreatePack::~CreatePack() = default;
 
@@ -53,7 +54,8 @@ std::string CreatePack::HandleRequestThrow(
                 << boost::uuids::to_string(id) << " " << pack_title;
 
     return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{createdPackOpt.value()}.ExtractValue()
+        userver::formats::json::ValueBuilder{createdPackOpt.value()}
+            .ExtractValue()
     );
 }
 

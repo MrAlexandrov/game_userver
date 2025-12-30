@@ -14,7 +14,9 @@ struct GetVariantById::Impl {
 
     explicit Impl(const userver::components::ComponentContext& context)
         : pg_cluster(
-              context.FindComponent<userver::components::Postgres>("postgres-db-1").GetCluster()
+              context
+                  .FindComponent<userver::components::Postgres>("postgres-db-1")
+                  .GetCluster()
           ) {}
 };
 
@@ -22,8 +24,7 @@ GetVariantById::GetVariantById(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context),
-      impl_(component_context) {}
+    : HttpHandlerBase(config, component_context), impl_(component_context) {}
 
 GetVariantById::~GetVariantById() = default;
 

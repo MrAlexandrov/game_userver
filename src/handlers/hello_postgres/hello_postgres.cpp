@@ -20,9 +20,10 @@ HelloPostgres::HelloPostgres(
               .GetCluster()
       ) {}
 
-std::string HelloPostgres::
-    HandleRequestThrow(const userver::server::http::HttpRequest& request, userver::server::request::RequestContext&)
-        const {
+std::string HelloPostgres::HandleRequestThrow(
+    const userver::server::http::HttpRequest& request,
+    userver::server::request::RequestContext&
+) const {
     const auto& name = request.GetArg("name");
     auto user_type = UserType::kFirstTime;
 

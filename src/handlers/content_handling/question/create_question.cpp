@@ -14,7 +14,9 @@ struct CreateQuestion::Impl {
 
     explicit Impl(const userver::components::ComponentContext& context)
         : pg_cluster(
-              context.FindComponent<userver::components::Postgres>("postgres-db-1").GetCluster()
+              context
+                  .FindComponent<userver::components::Postgres>("postgres-db-1")
+                  .GetCluster()
           ) {}
 };
 
@@ -22,8 +24,7 @@ CreateQuestion::CreateQuestion(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context),
-      impl_(component_context) {}
+    : HttpHandlerBase(config, component_context), impl_(component_context) {}
 
 CreateQuestion::~CreateQuestion() = default;
 
@@ -40,7 +41,8 @@ std::string CreateQuestion::HandleRequestThrow(
     );
 
     return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{createdQuestionOpt.value()}.ExtractValue()
+        userver::formats::json::ValueBuilder{createdQuestionOpt.value()}
+            .ExtractValue()
     );
 }
 

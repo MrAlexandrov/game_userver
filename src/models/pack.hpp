@@ -17,10 +17,14 @@ struct Pack final {
     auto Introspect() const;
 };
 
-userver::formats::json::Value
-Serialize(const Pack& pack, userver::formats::serialize::To<userver::formats::json::Value>);
+userver::formats::json::Value Serialize(
+    const Pack& pack,
+    userver::formats::serialize::To<userver::formats::json::Value>
+);
 
-Pack Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Pack>);
+Pack Parse(
+    const userver::formats::json::Value& json, userver::formats::parse::To<Pack>
+);
 
 } // namespace NModels
 

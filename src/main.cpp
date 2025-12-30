@@ -37,9 +37,15 @@ int main(int argc, char* argv[]) {
             .Append<game_userver::HelloPostgres>()
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
             .Append<game_userver::HelloGrpc>()
-            .AppendComponentList(game_userver::pack::GetPackHandlersComponentList())
-            .AppendComponentList(game_userver::question::GetQuestionHandlersComponentList())
-            .AppendComponentList(game_userver::variant::GetVariantHandlersComponentList())
+            .AppendComponentList(
+                game_userver::pack::GetPackHandlersComponentList()
+            )
+            .AppendComponentList(
+                game_userver::question::GetQuestionHandlersComponentList()
+            )
+            .AppendComponentList(
+                game_userver::variant::GetVariantHandlersComponentList()
+            )
             .Append<game_userver::Service>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);

@@ -14,7 +14,9 @@ struct CreateVariant::Impl {
 
     explicit Impl(const userver::components::ComponentContext& context)
         : pg_cluster(
-              context.FindComponent<userver::components::Postgres>("postgres-db-1").GetCluster()
+              context
+                  .FindComponent<userver::components::Postgres>("postgres-db-1")
+                  .GetCluster()
           ) {}
 };
 
@@ -22,8 +24,7 @@ CreateVariant::CreateVariant(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context),
-      impl_(component_context) {}
+    : HttpHandlerBase(config, component_context), impl_(component_context) {}
 
 CreateVariant::~CreateVariant() = default;
 
@@ -41,7 +42,8 @@ std::string CreateVariant::HandleRequestThrow(
     );
 
     return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{createdVariantOpt.value()}.ExtractValue()
+        userver::formats::json::ValueBuilder{createdVariantOpt.value()}
+            .ExtractValue()
     );
 }
 
