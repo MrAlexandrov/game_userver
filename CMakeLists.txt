@@ -40,12 +40,15 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers/hello/hello.cpp
     src/handlers/hello_postgres/hello_postgres.cpp
 
+    src/handlers/content_handling/pack/component_list.cpp
     src/handlers/content_handling/pack/create_pack.cpp
     src/handlers/content_handling/pack/get_all_packs.cpp
     src/handlers/content_handling/pack/get_pack_by_id.cpp
+    src/handlers/content_handling/question/component_list.cpp
     src/handlers/content_handling/question/create_question.cpp
     src/handlers/content_handling/question/get_question_by_id.cpp
     src/handlers/content_handling/question/get_questions_by_pack_id.cpp
+    src/handlers/content_handling/variant/component_list.cpp
     src/handlers/content_handling/variant/create_variant.cpp
     src/handlers/content_handling/variant/get_variant_by_id.cpp
     src/handlers/content_handling/variant/get_variants_by_question_id.cpp

@@ -1,51 +1,50 @@
 #include "get_variant_by_id.hpp"
 
-#include "models/variant.hpp"
 #include "storage/variants.hpp"
-
-#include <samples_postgres_service/sql_queries.hpp>
-#include <userver/storages/postgres/component.hpp>
-
-#include <userver/logging/log.hpp>
-
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 #include "utils/string_to_uuid.hpp"
 
+#include <samples_postgres_service/sql_queries.hpp>
+#include <userver/storages/postgres/cluster.hpp>
+#include <userver/storages/postgres/component.hpp>
+
 namespace game_userver {
+
+struct GetVariantById::Impl {
+    userver::storages::postgres::ClusterPtr pg_cluster;
+
+    explicit Impl(const userver::components::ComponentContext& context)
+        : pg_cluster(
+              context.FindComponent<userver::components::Postgres>("postgres-db-1").GetCluster()
+          ) {}
+};
 
 GetVariantById::GetVariantById(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context),
-      pg_cluster_(
-          component_context
-              .FindComponent<userver::components::Postgres>("postgres-db-1")
-              .GetCluster()
-      ) {}
+      impl_(component_context) {}
 
-std::string GetVariantById::
-    HandleRequestThrow(const userver::server::http::HttpRequest& request, userver::server::request::RequestContext&)
-        const {
-    using userver::logging::Level::kDebug;
+GetVariantById::~GetVariantById() = default;
 
+std::string GetVariantById::HandleRequestThrow(
+    const userver::server::http::HttpRequest& request,
+    userver::server::request::RequestContext&
+) const {
     const auto& stringId = request.GetArg("id");
 
     const auto id = NUtils::StringToUuid(stringId);
     if (id.is_nil()) {
-        return "id";
+        return "Incorrect id";
     }
 
-    const auto GetVariantByIdOpt = NStorage::GetVariantById(pg_cluster_, id);
-    if (!GetVariantByIdOpt) {
+    const auto variantOpt = NStorage::GetVariantById(impl_->pg_cluster, id);
+    if (!variantOpt) {
         return {};
     }
-    const auto GetVariantById = GetVariantByIdOpt.value();
 
     return userver::formats::json::ToPrettyString(
-        userver::formats::json::ValueBuilder{GetVariantById}.ExtractValue()
+        userver::formats::json::ValueBuilder{variantOpt.value()}.ExtractValue()
     );
 }
 

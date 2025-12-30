@@ -4,43 +4,45 @@
 #include "utils/string_to_uuid.hpp"
 
 #include <samples_postgres_service/sql_queries.hpp>
+#include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
-#include <userver/logging/log.hpp>
-
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 namespace game_userver {
+
+struct GetVariantsByQuestionId::Impl {
+    userver::storages::postgres::ClusterPtr pg_cluster;
+
+    explicit Impl(const userver::components::ComponentContext& context)
+        : pg_cluster(
+              context.FindComponent<userver::components::Postgres>("postgres-db-1").GetCluster()
+          ) {}
+};
 
 GetVariantsByQuestionId::GetVariantsByQuestionId(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context),
-      pg_cluster_(
-          component_context
-              .FindComponent<userver::components::Postgres>("postgres-db-1")
-              .GetCluster()
-      ) {}
+      impl_(component_context) {}
 
-std::string GetVariantsByQuestionId::
-    HandleRequestThrow(const userver::server::http::HttpRequest& request, userver::server::request::RequestContext&)
-        const {
-    using userver::logging::Level::kDebug;
+GetVariantsByQuestionId::~GetVariantsByQuestionId() = default;
 
+std::string GetVariantsByQuestionId::HandleRequestThrow(
+    const userver::server::http::HttpRequest& request,
+    userver::server::request::RequestContext&
+) const {
     const auto& stringQuestionId = request.GetArg("question_id");
 
-    const auto GetVariantsByQuestionId = NStorage::GetVariantsByQuestionId(
-        pg_cluster_, NUtils::StringToUuid(stringQuestionId)
+    const auto variants = NStorage::GetVariantsByQuestionId(
+        impl_->pg_cluster, NUtils::StringToUuid(stringQuestionId)
     );
 
     userver::formats::json::ValueBuilder result{
         userver::formats::common::Type::kArray
     };
 
-    for (const auto& i : GetVariantsByQuestionId) {
-        result.PushBack(i);
+    for (const auto& variant : variants) {
+        result.PushBack(variant);
     }
 
     return userver::formats::json::ToPrettyString(result.ExtractValue());

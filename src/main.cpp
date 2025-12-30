@@ -13,15 +13,9 @@
 
 #include <userver/utils/daemon_run.hpp>
 
-#include "handlers/content_handling/pack/create_pack.hpp"
-#include "handlers/content_handling/pack/get_all_packs.hpp"
-#include "handlers/content_handling/pack/get_pack_by_id.hpp"
-#include "handlers/content_handling/question/create_question.hpp"
-#include "handlers/content_handling/question/get_question_by_id.hpp"
-#include "handlers/content_handling/question/get_questions_by_pack_id.hpp"
-#include "handlers/content_handling/variant/create_variant.hpp"
-#include "handlers/content_handling/variant/get_variant_by_id.hpp"
-#include "handlers/content_handling/variant/get_variants_by_question_id.hpp"
+#include "handlers/content_handling/pack/component_list.hpp"
+#include "handlers/content_handling/question/component_list.hpp"
+#include "handlers/content_handling/variant/component_list.hpp"
 
 #include "handlers/grpc/service.hpp"
 
@@ -43,15 +37,9 @@ int main(int argc, char* argv[]) {
             .Append<game_userver::HelloPostgres>()
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
             .Append<game_userver::HelloGrpc>()
-            .Append<game_userver::CreatePack>()
-            .Append<game_userver::GetAllPacks>()
-            .Append<game_userver::GetPack>()
-            .Append<game_userver::CreateQuestion>()
-            .Append<game_userver::GetQuestionById>()
-            .Append<game_userver::GetQuestionsByPackId>()
-            .Append<game_userver::CreateVariant>()
-            .Append<game_userver::GetVariantById>()
-            .Append<game_userver::GetVariantsByQuestionId>()
+            .AppendComponentList(game_userver::pack::GetPackHandlersComponentList())
+            .AppendComponentList(game_userver::question::GetQuestionHandlersComponentList())
+            .AppendComponentList(game_userver::variant::GetVariantHandlersComponentList())
             .Append<game_userver::Service>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
