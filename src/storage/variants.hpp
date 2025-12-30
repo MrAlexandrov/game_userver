@@ -1,9 +1,9 @@
 #pragma once
 
-#include "models/variant.hpp"
-
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/result_set.hpp>
+
+#include "models/variant.hpp"
 
 namespace NStorage {
 

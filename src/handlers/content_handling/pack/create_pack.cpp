@@ -1,15 +1,14 @@
 #include "create_pack.hpp"
 
-#include "storage/packs.hpp"
-
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <samples_postgres_service/sql_queries.hpp>
+#include <userver/components/component_context.hpp>
+#include <userver/logging/log.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
-#include <userver/logging/log.hpp>
-
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "storage/packs.hpp"
 
 namespace game_userver {
 

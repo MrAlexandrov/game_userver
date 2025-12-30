@@ -1,11 +1,10 @@
 #include "hello_postgres.hpp"
 
-#include "logic/greeting/greeting.hpp"
-
 #include <samples_postgres_service/sql_queries.hpp>
+#include <userver/logging/log.hpp>
 #include <userver/storages/postgres/component.hpp>
 
-#include <userver/logging/log.hpp>
+#include "logic/greeting/greeting.hpp"
 
 namespace game_userver {
 

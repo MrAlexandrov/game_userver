@@ -1,10 +1,8 @@
 #include "questions.hpp"
 
+#include <samples_postgres_service/sql_queries.hpp>
 #include <userver/storages/postgres/cluster_types.hpp>
 #include <userver/storages/postgres/component.hpp>
-
-#include <samples_postgres_service/sql_queries.hpp>
-
 #include <userver/storages/postgres/io/io_fwd.hpp>
 
 namespace NStorage {

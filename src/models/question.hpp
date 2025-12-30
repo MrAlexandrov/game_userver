@@ -2,7 +2,6 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <string>
-
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 

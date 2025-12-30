@@ -1,9 +1,10 @@
 #include "pack.hpp"
-#include "utils/string_to_uuid.hpp"
 
 #include <boost/uuid/uuid_io.hpp>
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/formats/serialize/common_containers.hpp>
+
+#include "utils/string_to_uuid.hpp"
 
 namespace NModels {
 

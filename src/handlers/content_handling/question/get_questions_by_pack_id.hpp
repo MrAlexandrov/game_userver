@@ -1,10 +1,9 @@
 #pragma once
 
+#include <string>
 #include <userver/components/component_fwd.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
 #include <userver/utils/fast_pimpl.hpp>
-
-#include <string>
 
 namespace game_userver {
 

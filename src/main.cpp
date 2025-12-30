@@ -6,20 +6,16 @@
 #include <userver/congestion_control/component.hpp>
 #include <userver/server/handlers/ping.hpp>
 #include <userver/server/handlers/tests_control.hpp>
-#include <userver/testsuite/testsuite_support.hpp>
-
 #include <userver/storages/postgres/component.hpp>
+#include <userver/testsuite/testsuite_support.hpp>
 #include <userver/ugrpc/server/component_list.hpp>
-
 #include <userver/utils/daemon_run.hpp>
 
+#include "components/hello_grpc/hello_grpc.hpp"
 #include "handlers/content_handling/pack/component_list.hpp"
 #include "handlers/content_handling/question/component_list.hpp"
 #include "handlers/content_handling/variant/component_list.hpp"
-
 #include "handlers/grpc/service.hpp"
-
-#include "components/hello_grpc/hello_grpc.hpp"
 #include "handlers/hello/hello.hpp"
 #include "handlers/hello_postgres/hello_postgres.hpp"
 

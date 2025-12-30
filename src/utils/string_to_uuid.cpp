@@ -1,4 +1,5 @@
 #include "string_to_uuid.hpp"
+
 #include <boost/uuid/string_generator.hpp>
 #include <userver/utils/from_string.hpp>
 

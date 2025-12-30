@@ -2,7 +2,6 @@
 
 #include <userver/components/component.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
-
 #include <userver/storages/postgres/cluster.hpp>
 
 namespace game_userver {

@@ -1,8 +1,9 @@
 #include "variant.hpp"
-#include "utils/string_to_uuid.hpp"
 
 #include <boost/uuid/uuid_io.hpp>
 #include <userver/formats/json/value_builder.hpp>
+
+#include "utils/string_to_uuid.hpp"
 
 namespace NModels {
 

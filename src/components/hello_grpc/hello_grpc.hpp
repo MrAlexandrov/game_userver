@@ -1,8 +1,7 @@
 #pragma once
 
-#include <userver/components/component.hpp>
-
 #include <handlers/hello_service.usrv.pb.hpp>
+#include <userver/components/component.hpp>
 
 namespace game_userver {
 

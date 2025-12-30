@@ -1,16 +1,17 @@
 #include "service.hpp"
 
-#include "storage/packs.hpp" // for db request CreatePack
-#include "storage/questions.hpp"
-#include "storage/variants.hpp"
+#include <models/models.pb.h> // proto model Pack
 
 #include <boost/uuid/uuid_io.hpp> // for responce
-#include <models/models.pb.h>     // proto model Pack
 #include <models/pack.hpp>        // cpp model Pack
 #include <models/question.hpp>
 #include <models/variant.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/string_to_uuid.hpp>
+
+#include "storage/packs.hpp" // for db request CreatePack
+#include "storage/questions.hpp"
+#include "storage/variants.hpp"
 
 namespace game_userver {
 

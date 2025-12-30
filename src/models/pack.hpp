@@ -2,7 +2,6 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <string>
-
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value.hpp>
 #include <userver/formats/serialize/common_containers.hpp>
