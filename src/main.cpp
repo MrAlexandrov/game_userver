@@ -12,12 +12,7 @@
 #include <userver/utils/daemon_run.hpp>
 
 #include "components/hello_grpc/hello_grpc.hpp"
-#include "handlers/content_handling/pack/component_list.hpp"
-#include "handlers/content_handling/question/component_list.hpp"
-#include "handlers/content_handling/variant/component_list.hpp"
-#include "handlers/grpc/service.hpp"
-#include "handlers/hello/hello.hpp"
-#include "handlers/hello_postgres/hello_postgres.hpp"
+#include "handlers/component_list.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =
@@ -28,21 +23,11 @@ int main(int argc, char* argv[]) {
             .Append<userver::clients::dns::Component>()
             .Append<userver::server::handlers::TestsControl>()
             .Append<userver::congestion_control::Component>()
-            .Append<game_userver::Hello>()
             .Append<userver::components::Postgres>("postgres-db-1")
-            .Append<game_userver::HelloPostgres>()
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
-            .Append<game_userver::HelloGrpc>()
             .AppendComponentList(
-                game_userver::pack::GetPackHandlersComponentList()
-            )
-            .AppendComponentList(
-                game_userver::question::GetQuestionHandlersComponentList()
-            )
-            .AppendComponentList(
-                game_userver::variant::GetVariantHandlersComponentList()
-            )
-            .Append<game_userver::Service>();
+                game_userver::GetHandlersComponentList()
+            );
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

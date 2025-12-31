@@ -33,13 +33,14 @@ userver_add_sql_library(
 )
 
 add_library(${PROJECT_NAME}_objs OBJECT
+    # src/components
     src/components/hello_grpc/hello_grpc.cpp
 
-    src/handlers/grpc/service.cpp
+    # src/handlers
+    src/handlers/component_list.cpp
 
-    src/handlers/hello/hello.cpp
-    src/handlers/hello_postgres/hello_postgres.cpp
-
+    ## src/handlers/content_handling
+    src/handlers/content_handling/component_list.cpp
     src/handlers/content_handling/pack/component_list.cpp
     src/handlers/content_handling/pack/create_pack.cpp
     src/handlers/content_handling/pack/get_all_packs.cpp
@@ -52,6 +53,18 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers/content_handling/variant/create_variant.cpp
     src/handlers/content_handling/variant/get_variant_by_id.cpp
     src/handlers/content_handling/variant/get_variants_by_question_id.cpp
+
+    ## src/handlers/grpc
+    src/handlers/grpc/component_list.cpp
+    src/handlers/grpc/service.cpp
+
+    ## src/handlers/hello
+    src/handlers/hello/component_list.cpp
+    src/handlers/hello/hello.cpp
+
+    ## src/handlers/hello_postgres
+    src/handlers/hello_postgres/component_list.cpp
+    src/handlers/hello_postgres/hello_postgres.cpp
 
     src/logic/greeting/greeting.cpp
 
