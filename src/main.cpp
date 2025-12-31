@@ -20,14 +20,13 @@ int main(int argc, char* argv[]) {
             .Append<userver::server::handlers::Ping>()
             .Append<userver::components::TestsuiteSupport>()
             .Append<userver::components::HttpClient>()
+            .Append<game_userver::HelloGrpc>()
             .Append<userver::clients::dns::Component>()
             .Append<userver::server::handlers::TestsControl>()
             .Append<userver::congestion_control::Component>()
             .Append<userver::components::Postgres>("postgres-db-1")
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
-            .AppendComponentList(
-                game_userver::GetHandlersComponentList()
-            );
+            .AppendComponentList(game_userver::GetHandlersComponentList());
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
