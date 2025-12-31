@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: game_userver_postgres
+    environment:
+      POSTGRES_DB: game_userver_db_1
+      POSTGRES_USER: testsuite
+      POSTGRES_PASSWORD: testsuite
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "15433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgresql/schemas/db_1.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./postgresql/data/initial_data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testsuite -d game_userver_db_1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - game_network
+
+  game_userver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: game_userver_app
+    ports:
+      - "8080:8080"  # HTTP API
+      - "8081:8081"  # gRPC API
+    environment:
+      - DB_CONNECTION=postgresql://testsuite:testsuite@postgres:5432/game_userver_db_1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - game_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  game_network:
+    driver: bridge
