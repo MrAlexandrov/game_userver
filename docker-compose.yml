@@ -1,49 +1,53 @@
-version: '3.8'
+version: "2.3"
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: game_userver_postgres
-    environment:
-      POSTGRES_DB: game_userver_db_1
-      POSTGRES_USER: testsuite
-      POSTGRES_PASSWORD: testsuite
-      POSTGRES_HOST_AUTH_METHOD: trust
-    ports:
-      - "15433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./postgresql/schemas/db_1.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./postgresql/data/initial_data.sql:/docker-entrypoint-initdb.d/02-data.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U testsuite -d game_userver_db_1"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - game_network
+    postgres:
+        container_name: service-postgres
+        image: postgres:16-alpine
+        environment:
+          - POSTGRES_DB=game_userver_db_1
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=password
+        ports:
+          - 5432
+        volumes:
+          - ./postgresql/schemas:/docker-entrypoint-initdb.d
+          - ./.pgdata:/var/lib/postgresql/data
+        networks:
+          - postgres
 
-  game_userver:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: game_userver_app
-    ports:
-      - "8080:8080"  # HTTP API
-      - "8081:8081"  # gRPC API
-    environment:
-      - DB_CONNECTION=postgresql://testsuite:testsuite@postgres:5432/game_userver_db_1
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - game_network
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-    driver: local
+    game-userver:
+        image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg:latest
+        privileged: true
+        environment:
+          - POSTGRES_DB=game_userver_db_1
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=password
+          - PREFIX=${PREFIX:-~/.local}
+          - CC
+          - CCACHE_DIR=/game_userver/.ccache
+          - CCACHE_HASHDIR
+          - CCACHE_NOHASHDIR
+          - CCACHE_PREFIX
+          - CCACHE_SIZE
+          - CMAKE_OPTS
+          - CORES_DIR=/cores
+          - CXX
+          - MAKE_OPTS
+          - CMAKE_OPTIONS
+        volumes:
+          - .:/game_userver:rw
+          - ${TC_CORES_DIR:-./.cores}:/cores:rw
+        ports:
+          - 8080:8080
+        working_dir: /game_userver
+        entrypoint:
+          - ./tests/run_as_user.sh
+        depends_on:
+          - postgres
+        networks:
+          - postgres
 
 networks:
-  game_network:
-    driver: bridge
+    postgres:
+        driver: bridge

@@ -11,6 +11,27 @@ PRESETS ?= debug release debug-custom release-custom
 .PHONY: all
 all: test-debug test-release
 
+up:
+	docker-compose down
+	docker-compose up -d
+	docker-compose logs -f
+
+down:
+	docker-compose down
+
+restart:
+	docker-compose down
+	docker-compose build --no-cache
+	docker-compose up -d
+	docker-compose logs -f
+
+logs:
+	docker-compose logs -f
+
+docker-clean:
+	docker-compose down --rmi all --volumes --remove-orphans
+	docker system prune -f
+
 # Run cmake
 .PHONY: $(addprefix cmake-, $(PRESETS))
 $(addprefix cmake-, $(PRESETS)): cmake-%:
