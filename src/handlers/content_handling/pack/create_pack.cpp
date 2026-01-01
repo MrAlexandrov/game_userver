@@ -2,13 +2,15 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <samples_postgres_service/sql_queries.hpp>
+#include <sql_queries/sql_queries.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
 #include "storage/packs.hpp"
+
+#include "utils/constants.hpp"
 
 namespace game_userver {
 
@@ -18,7 +20,7 @@ struct CreatePack::Impl {
     explicit Impl(const userver::components::ComponentContext& context)
         : pg_cluster(
               context
-                  .FindComponent<userver::components::Postgres>("postgres-db-1")
+                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
                   .GetCluster()
           ) {}
 };

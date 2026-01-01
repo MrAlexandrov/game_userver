@@ -1,10 +1,11 @@
 #include "hello_postgres.hpp"
 
-#include <samples_postgres_service/sql_queries.hpp>
+#include <sql_queries/sql_queries.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/storages/postgres/component.hpp>
 
 #include "logic/greeting/greeting.hpp"
+#include "utils/constants.hpp"
 
 namespace game_userver {
 
@@ -15,7 +16,7 @@ HelloPostgres::HelloPostgres(
     : HttpHandlerBase(config, component_context),
       pg_cluster_(
           component_context
-              .FindComponent<userver::components::Postgres>("postgres-db-1")
+              .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
               .GetCluster()
       ) {}
 

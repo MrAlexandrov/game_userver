@@ -12,6 +12,7 @@
 #include "storage/packs.hpp" // for db request CreatePack
 #include "storage/questions.hpp"
 #include "storage/variants.hpp"
+#include "utils/constants.hpp"
 
 namespace game_userver {
 
@@ -22,7 +23,7 @@ Service::Service(
     : handlers::api::QuizServiceBase::Component(config, component_context),
       pg_cluster_(
           component_context
-              .FindComponent<userver::components::Postgres>("postgres-db-1")
+              .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
               .GetCluster()
       ) {}
 

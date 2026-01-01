@@ -25,7 +25,7 @@ include_directories(src)
 userver_add_sql_library(
     ${PROJECT_NAME}_sql
     NAMESPACE
-    samples_postgres_service
+    sql_queries
     OUTPUT_DIR
     ${CMAKE_CURRENT_BINARY_DIR}
     SQL_FILES
