@@ -19,7 +19,8 @@ USERVER_CONFIG_HOOKS = [
 ]
 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'helpers'))
+# Add tests directory to sys.path so helpers can be imported as a package
+sys.path.insert(0, os.path.dirname(__file__))
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 import pytest
-from endpoints import (
+from helpers.endpoints import (
     create_pack,
     get_all_packs,
     get_pack
