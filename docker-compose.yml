@@ -43,6 +43,7 @@ services:
         working_dir: /game_userver
         entrypoint:
           - ./tests/run_as_user.sh
+        command: tail -f /dev/null
         depends_on:
           - postgres
         networks:
