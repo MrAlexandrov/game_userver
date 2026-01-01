@@ -38,6 +38,9 @@ components_manager:
         congestion-control:
             load-enabled: false
 
+        http-client-middleware-pipeline:
+            load-enabled: $is-testing
+
         http-client:
             load-enabled: $is-testing
 
