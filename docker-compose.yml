@@ -15,6 +15,11 @@ services:
           - ./.pgdata:/var/lib/postgresql/data
         networks:
           - postgres
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U user -d game_userver_db_1"]
+          interval: 5s
+          timeout: 5s
+          retries: 5
 
     game-userver:
         image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg:latest
@@ -44,7 +49,8 @@ services:
         entrypoint:
           - ./tests/run_as_user.sh
         depends_on:
-          - postgres
+          postgres:
+            condition: service_healthy
         networks:
           - postgres
 

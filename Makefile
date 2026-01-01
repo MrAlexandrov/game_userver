@@ -5,7 +5,7 @@ CMAKE_RELEASE_FLAGS ?=
 CMAKE_OS_FLAGS ?= -DUSERVER_FEATURE_CRYPTOPP_BLAKE2=0 -DUSERVER_FEATURE_REDIS_HI_MALLOC=1
 NPROCS ?= $(shell nproc)
 CLANG_FORMAT ?= clang-format
-DOCKER_COMPOSE ?= docker-compose
+DOCKER_COMPOSE ?= docker compose
 
 ifeq ($(KERNEL),Darwin)
 CMAKE_COMMON_FLAGS += -DUSERVER_NO_WERROR=1 -DUSERVER_CHECK_PACKAGE_VERSIONS=0 \
@@ -28,24 +28,24 @@ CMAKE_RELEASE_FLAGS += -DCMAKE_BUILD_TYPE=Release $(CMAKE_COMMON_FLAGS)
 all: test-debug test-release
 
 up:
-	docker-compose down
-	docker-compose up -d
-	docker-compose logs -f
+	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) logs -f
 
 down:
-	docker-compose down
+	$(DOCKER_COMPOSE) down
 
 restart:
-	docker-compose down
-	docker-compose build --no-cache
-	docker-compose up -d
-	docker-compose logs -f
+	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) build --no-cache
+	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) logs -f
 
 logs:
-	docker-compose logs -f
+	$(DOCKER_COMPOSE) logs -f
 
 docker-clean:
-	docker-compose down --rmi all --volumes --remove-orphans
+	$(DOCKER_COMPOSE) down --rmi all --volumes --remove-orphans
 	docker system prune -f
 
 # Run cmake
@@ -113,6 +113,12 @@ export DB_CONNECTION := postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postg
 
 # Internal hidden targets that are used only in docker environment
 --in-docker-start-debug --in-docker-start-release: --in-docker-start-%: install-%
+	@echo "Waiting for PostgreSQL to be ready..."
+	@until psql ${DB_CONNECTION} -c '\q' 2>/dev/null; do \
+		echo "PostgreSQL is unavailable - sleeping"; \
+		sleep 1; \
+	done
+	@echo "PostgreSQL is up - executing initial data script"
 	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql
 	/home/user/.local/bin/$(PROJECT_NAME) \
 		--config /home/user/.local/etc/$(PROJECT_NAME)/static_config.yaml \
