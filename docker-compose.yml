@@ -29,6 +29,7 @@ services:
           - POSTGRES_USER=user
           - POSTGRES_PASSWORD=password
           - PREFIX=${PREFIX:-~/.local}
+          - CPU_LIMIT=4
           - CC
           - CCACHE_DIR=/game_userver/.ccache
           - CCACHE_HASHDIR
