@@ -89,6 +89,21 @@ tidy:
 	find src -name '*pp' -type f | xargs -P$(NPROCS) -n1 $(CLANG_TIDY) \
 		--extra-arg=-std=c++20
 
+# Set environment for --in-docker-start
+export DB_CONNECTION := postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@service-postgres:5432/${POSTGRES_DB}
+
+# Internal hidden targets that are used only in docker environment
+--in-docker-start-debug --in-docker-start-release: --in-docker-start-%: install-%
+	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql || true
+	/home/user/.local/bin/$(PROJECT_NAME) \
+		--config /home/user/.local/etc/$(PROJECT_NAME)/static_config.yaml \
+		--config_vars /home/user/.local/etc/$(PROJECT_NAME)/config_vars.yaml
+
+# Build and run service in docker environment
+.PHONY: docker-start-debug docker-start-release
+docker-start-debug docker-start-release: docker-start-%:
+	docker-compose run -p 8080:8080 -p 8081:8081 --rm game-userver make -- --in-docker-start-$*
+
 # Start targets makefile in docker wrapper.
 # The docker mounts the whole service's source directory,
 # so you can do some stuff as you wish, switch back to host (non-docker) system
