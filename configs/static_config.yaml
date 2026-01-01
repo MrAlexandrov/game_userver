@@ -38,7 +38,7 @@ components_manager:
         congestion-control:
 
         http-client:
-            load-enabled: $is_testing
+            load-enabled: $is-testing
             fs-task-processor: fs-task-processor
 
         dns-client:
