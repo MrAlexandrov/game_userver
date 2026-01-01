@@ -96,8 +96,15 @@ dist-clean:
 
 # Install
 .PHONY: install-debug install-release
-install-debug install-release: install-%: build-%
-	cmake --install build_$* -v --component $(PROJECT_NAME)
+install-debug: install-%: build-%
+	@echo "Reconfiguring CMake to pick up new config files..."
+	cmake -B build_debug $(CMAKE_DEBUG_FLAGS)
+	cmake --install build_debug -v --component $(PROJECT_NAME)
+
+install-release: install-%: build-%
+	@echo "Reconfiguring CMake to pick up new config files..."
+	cmake -B build_release $(CMAKE_RELEASE_FLAGS)
+	cmake --install build_release -v --component $(PROJECT_NAME)
 
 .PHONY: install
 install: install-release
