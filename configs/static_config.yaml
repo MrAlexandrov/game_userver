@@ -36,6 +36,7 @@ components_manager:
         testsuite-support: {}
 
         congestion-control:
+            load-enabled: false
 
         http-client:
             load-enabled: $is-testing
