@@ -14,6 +14,8 @@
 #include "components/hello_grpc/hello_grpc.hpp"
 #include "handlers/component_list.hpp"
 
+#include "utils//constants.hpp"
+
 int main(int argc, char* argv[]) {
     auto component_list =
         userver::components::MinimalServerComponentList()
@@ -24,7 +26,7 @@ int main(int argc, char* argv[]) {
             .Append<userver::clients::dns::Component>()
             .Append<userver::server::handlers::TestsControl>()
             .Append<userver::congestion_control::Component>()
-            .Append<userver::components::Postgres>("postgres-db-1")
+            .Append<userver::components::Postgres>(Constants::kDatabaseName)
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
             .AppendComponentList(game_userver::GetHandlersComponentList());
 

@@ -36,10 +36,10 @@ components_manager:
         testsuite-support: {}
 
         congestion-control:
+            load-enabled: false
 
         http-client:
-            load-enabled: $is_testing
-            fs-task-processor: fs-task-processor
+            load-enabled: $is-testing
 
         dns-client:
             fs-task-processor: fs-task-processor

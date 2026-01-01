@@ -1,12 +1,13 @@
 #include "get_variant_by_id.hpp"
 
-#include <samples_postgres_service/sql_queries.hpp>
+#include <sql_queries/sql_queries.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
 #include "storage/variants.hpp"
 #include "utils/string_to_uuid.hpp"
+#include "utils/constants.hpp"
 
 namespace game_userver {
 
@@ -16,7 +17,7 @@ struct GetVariantById::Impl {
     explicit Impl(const userver::components::ComponentContext& context)
         : pg_cluster(
               context
-                  .FindComponent<userver::components::Postgres>("postgres-db-1")
+                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
                   .GetCluster()
           ) {}
 };

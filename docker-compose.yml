@@ -1,0 +1,60 @@
+version: "2.3"
+
+services:
+    postgres:
+        container_name: postgres
+        image: postgres:16-alpine
+        environment:
+          - POSTGRES_DB=game_userver_db_1
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=password
+        ports:
+          - 5432:5432
+        volumes:
+          - ./postgresql/schemas:/docker-entrypoint-initdb.d
+          - ./.pgdata:/var/lib/postgresql/data
+        networks:
+          - postgres
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U user -d game_userver_db_1"]
+          interval: 5s
+          timeout: 5s
+          retries: 5
+
+    game-userver:
+        image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg:latest
+        privileged: true
+        environment:
+          - POSTGRES_DB=game_userver_db_1
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=password
+          - PREFIX=${PREFIX:-~/.local}
+          - CPU_LIMIT=4
+          - CC
+          - CCACHE_DIR=/game_userver/.ccache
+          - CCACHE_HASHDIR
+          - CCACHE_NOHASHDIR
+          - CCACHE_PREFIX
+          - CCACHE_SIZE
+          - CMAKE_OPTS
+          - CORES_DIR=/cores
+          - CXX
+          - MAKE_OPTS
+          - CMAKE_OPTIONS
+        volumes:
+          - .:/game_userver:rw
+          - ${TC_CORES_DIR:-./.cores}:/cores:rw
+        ports:
+          - 8080:8080
+        working_dir: /game_userver
+        entrypoint:
+          - ./tests/run_as_user.sh
+        depends_on:
+          postgres:
+            condition: service_healthy
+        networks:
+          - postgres
+
+networks:
+    postgres:
+        driver: bridge

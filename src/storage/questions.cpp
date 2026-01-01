@@ -1,6 +1,6 @@
 #include "questions.hpp"
 
-#include <samples_postgres_service/sql_queries.hpp>
+#include <sql_queries/sql_queries.hpp>
 #include <userver/storages/postgres/cluster_types.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
@@ -8,7 +8,7 @@
 namespace NStorage {
 
 using userver::storages::postgres::ClusterPtr;
-using namespace samples_postgres_service::sql;
+using namespace sql_queries::sql;
 using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
