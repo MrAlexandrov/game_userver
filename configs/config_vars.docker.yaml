@@ -1,0 +1,12 @@
+worker-threads: 4
+worker-fs-threads: 2
+logger-level: info
+
+is-testing: false
+
+server-port: 8080
+
+grpc-server-port: 8081
+
+# Docker postgres connection
+pg-connection: postgresql://user:password@postgres:5432/game_userver_db_1
