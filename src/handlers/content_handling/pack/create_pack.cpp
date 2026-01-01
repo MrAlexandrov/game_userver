@@ -18,11 +18,11 @@ struct CreatePack::Impl {
     userver::storages::postgres::ClusterPtr pg_cluster;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(
-              context
-                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
-                  .GetCluster()
-          ) {}
+        : pg_cluster(context
+                         .FindComponent<userver::components::Postgres>(
+                             Constants::kDatabaseName
+                         )
+                         .GetCluster()) {}
 };
 
 CreatePack::CreatePack(

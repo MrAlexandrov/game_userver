@@ -21,11 +21,11 @@ Service::Service(
     const userver::components::ComponentContext& component_context
 )
     : handlers::api::QuizServiceBase::Component(config, component_context),
-      pg_cluster_(
-          component_context
-              .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
-              .GetCluster()
-      ) {}
+      pg_cluster_(component_context
+                      .FindComponent<userver::components::Postgres>(
+                          Constants::kDatabaseName
+                      )
+                      .GetCluster()) {}
 
 Service::CreatePackResult
 Service::CreatePack(CallContext&, handlers::api::CreatePackRequest&& request) {
@@ -54,7 +54,7 @@ Service::CreatePack(CallContext&, handlers::api::CreatePackRequest&& request) {
 Service::GetPackByIdResult Service::GetPackById(
     CallContext&, handlers::api::GetPackByIdRequest&& request
 ) {
-    auto pack_id = NUtils::StringToUuid(request.id());
+    auto pack_id = Utils::StringToUuid(request.id());
     if (pack_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
@@ -84,7 +84,7 @@ Service::GetAllPacksResult Service::GetAllPacks(
     handlers::api::GetAllPacksResponse responce;
     auto mutualPacks = responce.mutable_packs();
     for (auto&& pack : getAllPacks) {
-        NModels::Proto::Pack packResponse;
+        Models::Proto::Pack packResponse;
         packResponse.set_id(boost::uuids::to_string(pack.id));
         packResponse.set_title(std::move(pack.title));
 
@@ -102,7 +102,7 @@ Service::CreateQuestionResult Service::CreateQuestion(
         };
     }
 
-    auto pack_id = NUtils::StringToUuid(request.pack_id());
+    auto pack_id = Utils::StringToUuid(request.pack_id());
     if (pack_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
@@ -139,7 +139,7 @@ Service::CreateQuestionResult Service::CreateQuestion(
 Service::GetQuestionByIdResult Service::GetQuestionById(
     CallContext&, handlers::api::GetQuestionByIdRequest&& request
 ) {
-    auto question_id = NUtils::StringToUuid(request.id());
+    auto question_id = Utils::StringToUuid(request.id());
     if (question_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
@@ -170,7 +170,7 @@ Service::GetQuestionByIdResult Service::GetQuestionById(
 Service::GetQuestionsByPackIdResult Service::GetQuestionsByPackId(
     CallContext&, handlers::api::GetQuestionsByPackIdRequest&& request
 ) {
-    auto pack_id = NUtils::StringToUuid(request.pack_id());
+    auto pack_id = Utils::StringToUuid(request.pack_id());
     if (pack_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
@@ -204,7 +204,7 @@ Service::CreateVariantResult Service::CreateVariant(
         };
     }
 
-    auto question_id = NUtils::StringToUuid(request.question_id());
+    auto question_id = Utils::StringToUuid(request.question_id());
     if (question_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
@@ -239,7 +239,7 @@ Service::CreateVariantResult Service::CreateVariant(
 Service::GetVariantByIdResult Service::GetVariantById(
     CallContext&, handlers::api::GetVariantByIdRequest&& request
 ) {
-    auto variant_id = NUtils::StringToUuid(request.id());
+    auto variant_id = Utils::StringToUuid(request.id());
     if (variant_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
@@ -268,7 +268,7 @@ Service::GetVariantByIdResult Service::GetVariantById(
 Service::GetVariantsByQuestionIdResult Service::GetVariantsByQuestionId(
     CallContext&, handlers::api::GetVariantsByQuestionIdRequest&& request
 ) {
-    auto question_id = NUtils::StringToUuid(request.question_id());
+    auto question_id = Utils::StringToUuid(request.question_id());
     if (question_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,

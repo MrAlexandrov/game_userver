@@ -15,25 +15,25 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto CreatePack(ClusterPtr pg_cluster_, const std::string& title)
-    -> std::optional<NModels::Pack> {
+    -> std::optional<Models::Pack> {
     // TODO: handle empty title
     auto result = pg_cluster_->Execute(kMaster, kCreatePack, title);
-    return result.AsOptionalSingleRow<NModels::Pack>(
+    return result.AsOptionalSingleRow<Models::Pack>(
         userver::storages::postgres::kRowTag
     );
 }
 
 auto GetPackById(ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id)
-    -> std::optional<NModels::Pack> {
+    -> std::optional<Models::Pack> {
     auto result = pg_cluster_->Execute(kMaster, kGetPackById, pack_id);
-    return result.AsOptionalSingleRow<NModels::Pack>(
+    return result.AsOptionalSingleRow<Models::Pack>(
         userver::storages::postgres::kRowTag
     );
 }
 
-auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<NModels::Pack> {
+auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<Models::Pack> {
     auto result = pg_cluster_->Execute(kSlave, kGetAllPacks);
-    return result.AsContainer<std::vector<NModels::Pack>>(
+    return result.AsContainer<std::vector<Models::Pack>>(
         userver::storages::postgres::kRowTag
     );
 }

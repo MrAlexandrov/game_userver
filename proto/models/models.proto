@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package NModels.Proto;
+package Models.Proto;
 
 message Pack {
     optional string id = 1;

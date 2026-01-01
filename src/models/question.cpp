@@ -5,7 +5,7 @@
 
 #include "utils/string_to_uuid.hpp"
 
-namespace NModels {
+namespace Models {
 
 auto Question::Introspect() const {
     return std::tie(id, pack_id, text, image_url);
@@ -28,11 +28,11 @@ Question Parse(
     userver::formats::parse::To<Question>
 ) {
     Question question;
-    question.id = NUtils::StringToUuid(json["id"].As<std::string>());
-    question.pack_id = NUtils::StringToUuid(json["pack_id"].As<std::string>());
+    question.id = Utils::StringToUuid(json["id"].As<std::string>());
+    question.pack_id = Utils::StringToUuid(json["pack_id"].As<std::string>());
     question.text = json["text"].As<std::string>();
     question.image_url = json["image_url"].As<std::string>();
     return question;
 }
 
-} // namespace NModels
+} // namespace Models

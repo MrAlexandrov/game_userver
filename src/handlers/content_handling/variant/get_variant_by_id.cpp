@@ -6,8 +6,8 @@
 #include <userver/storages/postgres/component.hpp>
 
 #include "storage/variants.hpp"
-#include "utils/string_to_uuid.hpp"
 #include "utils/constants.hpp"
+#include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
@@ -15,11 +15,11 @@ struct GetVariantById::Impl {
     userver::storages::postgres::ClusterPtr pg_cluster;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(
-              context
-                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
-                  .GetCluster()
-          ) {}
+        : pg_cluster(context
+                         .FindComponent<userver::components::Postgres>(
+                             Constants::kDatabaseName
+                         )
+                         .GetCluster()) {}
 };
 
 GetVariantById::GetVariantById(
@@ -36,7 +36,7 @@ std::string GetVariantById::HandleRequestThrow(
 ) const {
     const auto& stringId = request.GetArg("id");
 
-    const auto id = NUtils::StringToUuid(stringId);
+    const auto id = Utils::StringToUuid(stringId);
     if (id.is_nil()) {
         return "Incorrect id";
     }

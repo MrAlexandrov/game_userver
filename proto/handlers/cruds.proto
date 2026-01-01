@@ -10,7 +10,7 @@ message CreatePackRequest {
 }
 
 message CreatePackResponse {
-  NModels.Proto.Pack pack = 1;
+  Models.Proto.Pack pack = 1;
 }
 
 message GetPackByIdRequest {
@@ -18,14 +18,14 @@ message GetPackByIdRequest {
 }
 
 message GetPackByIdResponse {
-  NModels.Proto.Pack pack = 1;
+  Models.Proto.Pack pack = 1;
 }
 
 message GetAllPacksRequest {
 }
 
 message GetAllPacksResponse {
-  repeated NModels.Proto.Pack packs = 1;
+  repeated Models.Proto.Pack packs = 1;
 }
 
 // Запросы и ответы для Question
@@ -36,7 +36,7 @@ message CreateQuestionRequest {
 }
 
 message CreateQuestionResponse {
-  NModels.Proto.Question question = 1;
+  Models.Proto.Question question = 1;
 }
 
 message GetQuestionByIdRequest {
@@ -44,7 +44,7 @@ message GetQuestionByIdRequest {
 }
 
 message GetQuestionByIdResponse {
-  NModels.Proto.Question question = 1;
+  Models.Proto.Question question = 1;
 }
 
 message GetQuestionsByPackIdRequest {
@@ -52,7 +52,7 @@ message GetQuestionsByPackIdRequest {
 }
 
 message GetQuestionsByPackIdResponse {
-  repeated NModels.Proto.Question questions = 1;
+  repeated Models.Proto.Question questions = 1;
 }
 
 // Запросы и ответы для Variant
@@ -63,7 +63,7 @@ message CreateVariantRequest {
 }
 
 message CreateVariantResponse {
-  NModels.Proto.Variant variant = 1;
+  Models.Proto.Variant variant = 1;
 }
 
 message GetVariantByIdRequest {
@@ -71,7 +71,7 @@ message GetVariantByIdRequest {
 }
 
 message GetVariantByIdResponse {
-  NModels.Proto.Variant variant = 1;
+  Models.Proto.Variant variant = 1;
 }
 
 message GetVariantsByQuestionIdRequest {
@@ -79,7 +79,7 @@ message GetVariantsByQuestionIdRequest {
 }
 
 message GetVariantsByQuestionIdResponse {
-  repeated NModels.Proto.Variant variants = 1;
+  repeated Models.Proto.Variant variants = 1;
 }
 
 // gRPC сервис

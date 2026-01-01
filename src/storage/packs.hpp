@@ -11,11 +11,11 @@ using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
 auto CreatePack(ClusterPtr pg_cluster_, const std::string& title)
-    -> std::optional<NModels::Pack>;
+    -> std::optional<Models::Pack>;
 
 auto GetPackById(ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id)
-    -> std::optional<NModels::Pack>;
+    -> std::optional<Models::Pack>;
 
-auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<NModels::Pack>;
+auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<Models::Pack>;
 
 } // namespace NStorage

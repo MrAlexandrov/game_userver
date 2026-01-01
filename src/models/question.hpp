@@ -5,7 +5,7 @@
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
-namespace NModels {
+namespace Models {
 
 struct Question final {
     boost::uuids::uuid id;
@@ -26,11 +26,11 @@ Question Parse(
     userver::formats::parse::To<Question>
 );
 
-} // namespace NModels
+} // namespace Models
 
 namespace userver::storages::postgres::io {
 
-template <> struct CppToUserPg<NModels::Question> {
+template <> struct CppToUserPg<Models::Question> {
     static constexpr DBTypeName postgres_name{"quiz.question"};
 };
 

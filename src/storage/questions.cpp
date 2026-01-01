@@ -15,29 +15,29 @@ using userver::storages::postgres::ClusterHostType::kSlave;
 auto CreateQuestion(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id,
     const std::string& text, const std::string& image_url
-) -> std::optional<NModels::Question> {
+) -> std::optional<Models::Question> {
     auto result = pg_cluster_->Execute(
         kMaster, kCreateQuestion, pack_id, text, image_url
     );
-    return result.AsOptionalSingleRow<NModels::Question>(
+    return result.AsOptionalSingleRow<Models::Question>(
         userver::storages::postgres::kRowTag
     );
 }
 
 auto GetQuestionById(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
-) -> std::optional<NModels::Question> {
+) -> std::optional<Models::Question> {
     auto result = pg_cluster_->Execute(kSlave, kGetQuestionById, question_id);
-    return result.AsOptionalSingleRow<NModels::Question>(
+    return result.AsOptionalSingleRow<Models::Question>(
         userver::storages::postgres::kRowTag
     );
 }
 
 auto GetQuestionsByPackId(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
-) -> std::vector<NModels::Question> {
+) -> std::vector<Models::Question> {
     auto result = pg_cluster_->Execute(kSlave, kGetQuestionsByPackId, pack_id);
-    return result.AsContainer<std::vector<NModels::Question>>(
+    return result.AsContainer<std::vector<Models::Question>>(
         userver::storages::postgres::kRowTag
     );
 }

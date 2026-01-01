@@ -15,30 +15,30 @@ using userver::storages::postgres::ClusterHostType::kSlave;
 auto CreateVariant(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id,
     const std::string& text, bool is_correct
-) -> std::optional<NModels::Variant> {
+) -> std::optional<Models::Variant> {
     auto result = pg_cluster_->Execute(
         kMaster, kCreateVariant, question_id, text, is_correct
     );
-    return result.AsOptionalSingleRow<NModels::Variant>(
+    return result.AsOptionalSingleRow<Models::Variant>(
         userver::storages::postgres::kRowTag
     );
 }
 
 auto GetVariantById(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& variant_id
-) -> std::optional<NModels::Variant> {
+) -> std::optional<Models::Variant> {
     auto result = pg_cluster_->Execute(kSlave, kGetVariantById, variant_id);
-    return result.AsOptionalSingleRow<NModels::Variant>(
+    return result.AsOptionalSingleRow<Models::Variant>(
         userver::storages::postgres::kRowTag
     );
 }
 
 auto GetVariantsByQuestionId(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
-) -> std::vector<NModels::Variant> {
+) -> std::vector<Models::Variant> {
     auto result =
         pg_cluster_->Execute(kSlave, kGetVariantsByQuestionId, question_id);
-    return result.AsContainer<std::vector<NModels::Variant>>(
+    return result.AsContainer<std::vector<Models::Variant>>(
         userver::storages::postgres::kRowTag
     );
 }

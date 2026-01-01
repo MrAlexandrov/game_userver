@@ -7,7 +7,7 @@
 #include <userver/formats/serialize/common_containers.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
-namespace NModels {
+namespace Models {
 
 struct Pack final {
     boost::uuids::uuid id;
@@ -25,11 +25,11 @@ Pack Parse(
     const userver::formats::json::Value& json, userver::formats::parse::To<Pack>
 );
 
-} // namespace NModels
+} // namespace Models
 
 namespace userver::storages::postgres::io {
 
-template <> struct CppToUserPg<NModels::Pack> {
+template <> struct CppToUserPg<Models::Pack> {
     static constexpr DBTypeName postgres_name{"quiz.pack"};
 };
 

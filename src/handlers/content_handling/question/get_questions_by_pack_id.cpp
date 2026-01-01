@@ -6,8 +6,8 @@
 #include <userver/storages/postgres/component.hpp>
 
 #include "storage/questions.hpp"
-#include "utils/string_to_uuid.hpp"
 #include "utils/constants.hpp"
+#include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
@@ -15,11 +15,11 @@ struct GetQuestionsByPackId::Impl {
     userver::storages::postgres::ClusterPtr pg_cluster;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(
-              context
-                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
-                  .GetCluster()
-          ) {}
+        : pg_cluster(context
+                         .FindComponent<userver::components::Postgres>(
+                             Constants::kDatabaseName
+                         )
+                         .GetCluster()) {}
 };
 
 GetQuestionsByPackId::GetQuestionsByPackId(
@@ -37,7 +37,7 @@ std::string GetQuestionsByPackId::HandleRequestThrow(
     const auto& stringPackId = request.GetArg("pack_id");
 
     const auto questions = NStorage::GetQuestionsByPackId(
-        impl_->pg_cluster, NUtils::StringToUuid(stringPackId)
+        impl_->pg_cluster, Utils::StringToUuid(stringPackId)
     );
 
     userver::formats::json::ValueBuilder result{

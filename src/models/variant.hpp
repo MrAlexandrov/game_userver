@@ -5,7 +5,7 @@
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
-namespace NModels {
+namespace Models {
 
 struct Variant final {
     boost::uuids::uuid id;
@@ -26,11 +26,11 @@ Variant Parse(
     userver::formats::parse::To<Variant>
 );
 
-} // namespace NModels
+} // namespace Models
 
 namespace userver::storages::postgres::io {
 
-template <> struct CppToUserPg<NModels::Variant> {
+template <> struct CppToUserPg<Models::Variant> {
     static constexpr DBTypeName postgres_name{"quiz.variant"};
 };
 

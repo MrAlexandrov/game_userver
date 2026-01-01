@@ -5,7 +5,7 @@
 
 #include "utils/string_to_uuid.hpp"
 
-namespace NModels {
+namespace Models {
 
 auto Variant::Introspect() const {
     return std::tie(id, question_id, text, is_correct);
@@ -28,13 +28,13 @@ Variant Parse(
     userver::formats::parse::To<Variant>
 ) {
     Variant variant;
-    variant.id = NUtils::StringToUuid(json["id"].As<std::string>());
+    variant.id = Utils::StringToUuid(json["id"].As<std::string>());
     variant.question_id =
-        NUtils::StringToUuid(json["question_id"].As<std::string>());
+        Utils::StringToUuid(json["question_id"].As<std::string>());
     variant.text = json["text"].As<std::string>();
     variant.is_correct =
-        NUtils::StringToBool(json["is_correct"].As<std::string>());
+        Utils::StringToBool(json["is_correct"].As<std::string>());
     return variant;
 }
 
-} // namespace NModels
+} // namespace Models

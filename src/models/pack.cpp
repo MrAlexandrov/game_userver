@@ -6,7 +6,7 @@
 
 #include "utils/string_to_uuid.hpp"
 
-namespace NModels {
+namespace Models {
 
 auto Pack::Introspect() const {
     return std::tie(id, title);
@@ -26,9 +26,9 @@ Pack Parse(
     const userver::formats::json::Value& json, userver::formats::parse::To<Pack>
 ) {
     Pack pack;
-    pack.id = NUtils::StringToUuid(json["id"].As<std::string>());
+    pack.id = Utils::StringToUuid(json["id"].As<std::string>());
     pack.title = json["title"].As<std::string>();
     return pack;
 }
 
-} // namespace NModels
+} // namespace Models

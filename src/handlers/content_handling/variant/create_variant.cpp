@@ -6,8 +6,8 @@
 #include <userver/storages/postgres/component.hpp>
 
 #include "storage/variants.hpp"
-#include "utils/string_to_uuid.hpp"
 #include "utils/constants.hpp"
+#include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
@@ -15,11 +15,11 @@ struct CreateVariant::Impl {
     userver::storages::postgres::ClusterPtr pg_cluster;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(
-              context
-                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
-                  .GetCluster()
-          ) {}
+        : pg_cluster(context
+                         .FindComponent<userver::components::Postgres>(
+                             Constants::kDatabaseName
+                         )
+                         .GetCluster()) {}
 };
 
 CreateVariant::CreateVariant(
@@ -39,8 +39,8 @@ std::string CreateVariant::HandleRequestThrow(
     const auto& is_correct = request.GetArg("is_correct");
 
     const auto createdVariantOpt = NStorage::CreateVariant(
-        impl_->pg_cluster, NUtils::StringToUuid(question_id), text,
-        NUtils::StringToBool(is_correct)
+        impl_->pg_cluster, Utils::StringToUuid(question_id), text,
+        Utils::StringToBool(is_correct)
     );
 
     return userver::formats::json::ToPrettyString(

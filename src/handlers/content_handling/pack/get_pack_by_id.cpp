@@ -6,8 +6,8 @@
 #include <userver/storages/postgres/component.hpp>
 
 #include "storage/packs.hpp"
-#include "utils/string_to_uuid.hpp"
 #include "utils/constants.hpp"
+#include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
@@ -15,11 +15,11 @@ struct GetPack::Impl {
     userver::storages::postgres::ClusterPtr pg_cluster;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(
-              context
-                  .FindComponent<userver::components::Postgres>(Constants::kDatabaseName)
-                  .GetCluster()
-          ) {}
+        : pg_cluster(context
+                         .FindComponent<userver::components::Postgres>(
+                             Constants::kDatabaseName
+                         )
+                         .GetCluster()) {}
 };
 
 GetPack::GetPack(
@@ -36,7 +36,7 @@ std::string GetPack::HandleRequestThrow(
 ) const {
     const auto& stringUuid = request.GetArg("uuid");
 
-    const auto uuid = NUtils::StringToUuid(stringUuid);
+    const auto uuid = Utils::StringToUuid(stringUuid);
     if (uuid.is_nil()) {
         return "Incorrect uuid";
     }

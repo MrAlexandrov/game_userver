@@ -3,7 +3,7 @@
 #include <boost/uuid/string_generator.hpp>
 #include <userver/utils/from_string.hpp>
 
-namespace NUtils {
+namespace Utils {
 
 boost::uuids::uuid StringToUuid(const std::string& str) {
     const boost::uuids::string_generator generator;
@@ -38,4 +38,4 @@ bool StringToBool(const std::string& str) {
     }
 }
 
-} // namespace NUtils
+} // namespace Utils
