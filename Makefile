@@ -96,15 +96,8 @@ dist-clean:
 
 # Install
 .PHONY: install-debug install-release
-install-debug: install-%: build-%
-	@echo "Reconfiguring CMake to pick up new config files..."
-	cmake -B build_debug $(CMAKE_DEBUG_FLAGS)
-	cmake --install build_debug -v --component $(PROJECT_NAME)
-
-install-release: install-%: build-%
-	@echo "Reconfiguring CMake to pick up new config files..."
-	cmake -B build_release $(CMAKE_RELEASE_FLAGS)
-	cmake --install build_release -v --component $(PROJECT_NAME)
+install-debug install-release: install-%: build-%
+	cmake --install build_$* -v --component $(PROJECT_NAME)
 
 .PHONY: install
 install: install-release
@@ -120,12 +113,6 @@ export DB_CONNECTION := postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postg
 
 # Internal hidden targets that are used only in docker environment
 --in-docker-start-debug --in-docker-start-release: --in-docker-start-%: install-%
-	@echo "Waiting for PostgreSQL to be ready..."
-	@until psql ${DB_CONNECTION} -c '\q' 2>/dev/null; do \
-		echo "PostgreSQL is unavailable - sleeping"; \
-		sleep 1; \
-	done
-	@echo "PostgreSQL is up - executing initial data script"
 	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql
 	/home/user/.local/bin/$(PROJECT_NAME) \
 		--config /home/user/.local/etc/$(PROJECT_NAME)/static_config.yaml \

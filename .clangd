@@ -1,0 +1,18 @@
+CompileFlags:
+  Add: 
+    - -std=c++20
+    - -I${project_root}
+    - -I${project_root}/build_debug
+    - -I${project_root}/build_debug/proto
+  Remove: []
+    
+Diagnostics:
+  ClangTidy:
+    Add: 
+      - modernize-*
+      - bugprone-*
+      - performance-*
+      - readability-*
+  
+Index:
+  Background: Build
