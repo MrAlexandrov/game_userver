@@ -25,7 +25,7 @@ auto CreatePack(ClusterPtr pg_cluster_, const std::string& title)
 
 auto GetPackById(ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id)
     -> std::optional<Models::Pack> {
-    auto result = pg_cluster_->Execute(kMaster, kGetPackById, pack_id);
+    auto result = pg_cluster_->Execute(kSlave, kGetPackById, pack_id);
     return result.AsOptionalSingleRow<Models::Pack>(
         userver::storages::postgres::kRowTag
     );
