@@ -12,7 +12,7 @@ using game_userver::UserType;
 namespace {
 
 void HelloBenchmark(benchmark::State& state) {
-    userver::engine::RunStandalone([&] () -> void {
+    userver::engine::RunStandalone([&]() -> void {
         constexpr std::string_view kNames[] = {"userver", "is", "awesome", "!"};
         std::uint64_t i = 0;
 

@@ -14,8 +14,9 @@ public:
         const userver::components::ComponentContext&
     );
 
-    auto
-    SayHello(CallContext& /*context*/, handlers::api::HelloRequest&& /*request*/) -> SayHelloResult override;
+    auto SayHello(
+        CallContext& /*context*/, handlers::api::HelloRequest&& /*request*/
+    ) -> SayHelloResult override;
 };
 
 } // namespace game_userver
