@@ -23,15 +23,6 @@ esac
 
 echo "Building project in $BUILD_TYPE mode..."
 
-# Check if userver exists, if not try to download it
-if [ ! -d "third_party/userver" ]; then
-    echo "userver framework not found, attempting to download..."
-    mkdir -p third_party
-    cd third_party
-    git clone --depth 1 https://github.com/userver-framework/userver.git
-    cd ..
-fi
-
 # Create build directory if it doesn't exist
 mkdir -p $BUILD_DIR
 

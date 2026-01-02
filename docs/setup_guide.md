@@ -14,6 +14,24 @@ sudo apt install -y build-essential cmake git clang libclang-dev llvm pkg-config
     protobuf-compiler-grpc libgrpc++-dev libudns-dev
 ```
 
+## Install userver Framework
+
+The project depends on the userver framework. You can either:
+
+### Option 1: Install userver system-wide (Recommended)
+
+Follow the instructions at [userver installation guide](https://userver.tech/d7/d7b/md_en_2userver_2install.html)
+
+### Option 2: Use userver from third_party
+
+If you prefer to use userver from the third_party directory:
+```bash
+mkdir -p third_party
+cd third_party
+git clone --depth 1 https://github.com/userver-framework/userver.git
+cd ..
+```
+
 ## Project Structure
 
 The project follows a standard userver framework structure:
@@ -34,21 +52,10 @@ git clone <repository-url>
 cd game_userver
 ```
 
-### 2. Initialize Submodules and Download userver
-
-The project depends on the userver framework, which can be downloaded automatically:
+### 2. Initialize Submodules
 
 ```bash
-# Initialize submodules and download userver
-./scripts/setup_dev_env.sh
-```
-
-Alternatively, you can manually download userver:
-```bash
-mkdir -p third_party
-cd third_party
-git clone --depth 1 https://github.com/userver-framework/userver.git
-cd ..
+git submodule update --init --recursive
 ```
 
 ### 3. Build the Project
@@ -225,8 +232,13 @@ python3 -m pytest basic/test_basic.py -v
 
 1. **Missing dependencies**: Make sure all prerequisites are installed
 2. **Database connection errors**: Ensure PostgreSQL is running and the database is initialized
-3. **userver download issues**: If automatic download fails, manually clone the userver repository to `third_party/userver`
+3. **userver not found**: Install userver system-wide or place it in `third_party/userver`
 4. **Autocompletion not working**: Verify that `compile_commands.json` exists in the build directory and that clangd is properly installed in your editor
+5. **CMake errors about unknown commands**: Clean your build directories and run the setup script again:
+   ```bash
+   rm -rf build_debug build_release
+   ./scripts/setup_dev_env.sh
+   ```
 
 ### Clean Build
 
@@ -240,4 +252,4 @@ This will remove all build artifacts and allow you to start fresh.
 If you need to re-download userver:
 ```bash
 rm -rf third_party/userver
-./scripts/setup_dev_env.sh
+# Then either install userver system-wide or download it to third_party/userver

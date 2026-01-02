@@ -21,20 +21,17 @@ if command -v apt &> /dev/null; then
         protobuf-compiler-grpc libgrpc++-dev libudns-dev
 fi
 
+# Try to install userver if not already installed
+if ! pkg-config --exists userver-core 2>/dev/null; then
+    echo "userver not found, you may need to install it separately"
+    echo "Follow the instructions at https://userver.tech/d7/d7b/md_en_2userver_2install.html"
+else
+    echo "userver found in system"
+fi
+
 # Initialize submodules
 echo "Initializing submodules..."
 git submodule update --init --recursive
-
-# If third_party/userver doesn't exist, try to download it
-if [ ! -d "third_party/userver" ]; then
-    echo "Downloading userver framework..."
-    mkdir -p third_party
-    cd third_party
-    git clone --depth 1 https://github.com/userver-framework/userver.git
-    cd ..
-else
-    echo "userver framework already exists in third_party/userver"
-fi
 
 # Clean any existing build directories to avoid conflicts
 echo "Cleaning existing build directories..."
