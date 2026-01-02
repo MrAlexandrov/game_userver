@@ -122,3 +122,7 @@ components_manager:
 
         handler-service-grpc:
             task-processor: main-task-processor
+
+        pack-service:
+        question-service:
+        variant-service:
