@@ -5,9 +5,14 @@
 #include <handlers/cruds_service.usrv.pb.hpp>
 #include <models/pack.hpp> // for responce
 #include <userver/components/component.hpp>
-#include <userver/storages/postgres/postgres_fwd.hpp>
 
 namespace game_userver {
+
+namespace services {
+class PackService;
+class QuestionService;
+class VariantService;
+} // namespace services
 
 class Service final : public handlers::api::QuizServiceBase::Component {
 public:
@@ -52,7 +57,9 @@ public:
     ) override;
 
 private:
-    userver::storages::postgres::ClusterPtr pg_cluster_;
+    services::PackService& pack_service_;
+    services::QuestionService& question_service_;
+    services::VariantService& variant_service_;
 };
 
 } // namespace game_userver

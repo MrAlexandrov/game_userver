@@ -1,25 +1,17 @@
 #include "get_all_packs.hpp"
 
-#include <sql_queries/sql_queries.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/logging/log.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
-#include "storage/packs.hpp"
-#include "utils/constants.hpp"
+#include "services/pack_service.hpp"
 
 namespace game_userver {
 
 struct GetAllPacks::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
+    services::PackService& pack_service;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
+        : pack_service(context.FindComponent<services::PackService>()) {}
 };
 
 GetAllPacks::GetAllPacks(
@@ -34,7 +26,7 @@ std::string GetAllPacks::HandleRequestThrow(
     const userver::server::http::HttpRequest&,
     userver::server::request::RequestContext&
 ) const {
-    const auto packs = NStorage::GetAllPacks(impl_->pg_cluster);
+    const auto packs = impl_->pack_service.GetAllPacks();
 
     userver::formats::json::ValueBuilder result{
         userver::formats::common::Type::kArray

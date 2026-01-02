@@ -68,6 +68,12 @@ add_library(${PROJECT_NAME}_objs OBJECT
 
     src/logic/greeting/greeting.cpp
 
+    # src/services
+    src/services/component_list.cpp
+    src/services/pack_service.cpp
+    src/services/question_service.cpp
+    src/services/variant_service.cpp
+
     src/models/pack.cpp
     src/models/question.cpp
     src/models/variant.cpp

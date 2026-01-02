@@ -1,25 +1,17 @@
 #include "get_pack_by_id.hpp"
 
-#include <sql_queries/sql_queries.hpp>
 #include <userver/components/component_context.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
-#include "storage/packs.hpp"
-#include "utils/constants.hpp"
+#include "services/pack_service.hpp"
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
 struct GetPack::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
+    services::PackService& pack_service;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
+        : pack_service(context.FindComponent<services::PackService>()) {}
 };
 
 GetPack::GetPack(
@@ -41,7 +33,7 @@ std::string GetPack::HandleRequestThrow(
         return "Incorrect uuid";
     }
 
-    const auto packOpt = NStorage::GetPackById(impl_->pg_cluster, uuid);
+    const auto packOpt = impl_->pack_service.GetPackById(uuid);
     if (!packOpt) {
         return {};
     }

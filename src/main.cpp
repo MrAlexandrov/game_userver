@@ -13,6 +13,7 @@
 
 #include "components/hello_grpc/hello_grpc.hpp"
 #include "handlers/component_list.hpp"
+#include "services/component_list.hpp"
 
 #include "utils//constants.hpp"
 
@@ -28,6 +29,9 @@ int main(int argc, char* argv[]) {
             .Append<userver::congestion_control::Component>()
             .Append<userver::components::Postgres>(Constants::kDatabaseName)
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
+            .AppendComponentList(
+                game_userver::services::GetServicesComponentList()
+            )
             .AppendComponentList(game_userver::GetHandlersComponentList());
 
     return userver::utils::DaemonMain(argc, argv, component_list);

@@ -6,13 +6,11 @@
 #include <models/pack.hpp>        // cpp model Pack
 #include <models/question.hpp>
 #include <models/variant.hpp>
-#include <userver/storages/postgres/component.hpp>
 #include <utils/string_to_uuid.hpp>
 
-#include "storage/packs.hpp" // for db request CreatePack
-#include "storage/questions.hpp"
-#include "storage/variants.hpp"
-#include "utils/constants.hpp"
+#include "services/pack_service.hpp"
+#include "services/question_service.hpp"
+#include "services/variant_service.hpp"
 
 namespace game_userver {
 
@@ -21,11 +19,13 @@ Service::Service(
     const userver::components::ComponentContext& component_context
 )
     : handlers::api::QuizServiceBase::Component(config, component_context),
-      pg_cluster_(component_context
-                      .FindComponent<userver::components::Postgres>(
-                          Constants::kDatabaseName
-                      )
-                      .GetCluster()) {}
+      pack_service_(component_context.FindComponent<services::PackService>()),
+      question_service_(
+          component_context.FindComponent<services::QuestionService>()
+      ),
+      variant_service_(
+          component_context.FindComponent<services::VariantService>()
+      ) {}
 
 Service::CreatePackResult
 Service::CreatePack(CallContext&, handlers::api::CreatePackRequest&& request) {
@@ -35,7 +35,7 @@ Service::CreatePack(CallContext&, handlers::api::CreatePackRequest&& request) {
         };
     }
 
-    auto createdPackOpt = NStorage::CreatePack(pg_cluster_, request.title());
+    auto createdPackOpt = pack_service_.CreatePack(request.title());
 
     if (!createdPackOpt.has_value()) {
         return grpc::Status{
@@ -61,7 +61,7 @@ Service::GetPackByIdResult Service::GetPackById(
             "Invalid UUID format: " + request.id()
         };
     }
-    auto getPackByIdOpt = NStorage::GetPackById(pg_cluster_, pack_id);
+    auto getPackByIdOpt = pack_service_.GetPackById(pack_id);
 
     if (!getPackByIdOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Pack not found"};
@@ -79,7 +79,7 @@ Service::GetPackByIdResult Service::GetPackById(
 Service::GetAllPacksResult Service::GetAllPacks(
     CallContext&, handlers::api::GetAllPacksRequest&& request
 ) {
-    auto getAllPacks = NStorage::GetAllPacks(pg_cluster_);
+    auto getAllPacks = pack_service_.GetAllPacks();
 
     handlers::api::GetAllPacksResponse responce;
     auto mutualPacks = responce.mutable_packs();
@@ -109,8 +109,8 @@ Service::CreateQuestionResult Service::CreateQuestion(
             "Invalid UUID format: " + request.pack_id()
         };
     }
-    auto createdQuestionOpt = NStorage::CreateQuestion(
-        pg_cluster_, pack_id, request.text(), request.image_url()
+    auto createdQuestionOpt = question_service_.CreateQuestion(
+        pack_id, request.text(), request.image_url()
     );
 
     if (!createdQuestionOpt.has_value()) {
@@ -146,7 +146,7 @@ Service::GetQuestionByIdResult Service::GetQuestionById(
             "Invalid UUID format: " + request.id()
         };
     }
-    auto questionOpt = NStorage::GetQuestionById(pg_cluster_, question_id);
+    auto questionOpt = question_service_.GetQuestionById(question_id);
 
     if (!questionOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Question not found"};
@@ -177,7 +177,7 @@ Service::GetQuestionsByPackIdResult Service::GetQuestionsByPackId(
             "Invalid UUID format: " + request.pack_id()
         };
     }
-    auto questions = NStorage::GetQuestionsByPackId(pg_cluster_, pack_id);
+    auto questions = question_service_.GetQuestionsByPackId(pack_id);
 
     handlers::api::GetQuestionsByPackIdResponse response;
     auto mutableQuestions = response.mutable_questions();
@@ -211,8 +211,8 @@ Service::CreateVariantResult Service::CreateVariant(
             "Invalid UUID format: " + request.question_id()
         };
     }
-    auto createdVariantOpt = NStorage::CreateVariant(
-        pg_cluster_, question_id, request.text(), request.is_correct()
+    auto createdVariantOpt = variant_service_.CreateVariant(
+        question_id, request.text(), request.is_correct()
     );
 
     if (!createdVariantOpt.has_value()) {
@@ -246,7 +246,7 @@ Service::GetVariantByIdResult Service::GetVariantById(
             "Invalid UUID format: " + request.id()
         };
     }
-    auto variantOpt = NStorage::GetVariantById(pg_cluster_, variant_id);
+    auto variantOpt = variant_service_.GetVariantById(variant_id);
 
     if (!variantOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Variant not found"};
@@ -275,7 +275,7 @@ Service::GetVariantsByQuestionIdResult Service::GetVariantsByQuestionId(
             "Invalid UUID format: " + request.question_id()
         };
     }
-    auto variants = NStorage::GetVariantsByQuestionId(pg_cluster_, question_id);
+    auto variants = variant_service_.GetVariantsByQuestionId(question_id);
 
     handlers::api::GetVariantsByQuestionIdResponse response;
     auto mutableVariants = response.mutable_variants();
