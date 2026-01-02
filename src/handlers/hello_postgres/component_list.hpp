@@ -4,6 +4,6 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetHelloPostgresComponentList();
+auto GetHelloPostgresComponentList() -> userver::components::ComponentList;
 
 } // namespace game_userver

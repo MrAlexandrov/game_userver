@@ -4,6 +4,6 @@
 
 namespace game_userver::variant {
 
-userver::components::ComponentList GetVariantHandlersComponentList();
+auto GetVariantHandlersComponentList() -> userver::components::ComponentList;
 
 } // namespace game_userver::variant

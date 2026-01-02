@@ -11,7 +11,7 @@ CompileFlags:
     - -I${project_root}/third_party/userver/third_party/curlcpp/include
   Remove: []
   CompilationDatabase: build_debug/
-    
+
 Diagnostics:
   ClangTidy:
     Add: 
@@ -19,6 +19,6 @@ Diagnostics:
       - bugprone-*
       - performance-*
       - readability-*
-  
+
 Index:
   Background: Build

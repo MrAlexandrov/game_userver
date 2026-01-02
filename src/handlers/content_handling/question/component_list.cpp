@@ -6,7 +6,7 @@
 
 namespace game_userver::question {
 
-userver::components::ComponentList GetQuestionHandlersComponentList() {
+auto GetQuestionHandlersComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .Append<CreateQuestion>()
         .Append<GetQuestionById>()

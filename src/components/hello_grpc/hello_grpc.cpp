@@ -10,8 +10,8 @@ HelloGrpc::HelloGrpc(
 )
     : handlers::api::HelloServiceBase::Component(config, component_context) {}
 
-HelloGrpc::SayHelloResult
-HelloGrpc::SayHello(CallContext&, handlers::api::HelloRequest&& request) {
+auto
+HelloGrpc::SayHello(CallContext& /*context*/, handlers::api::HelloRequest&& request) -> HelloGrpc::SayHelloResult {
     handlers::api::HelloResponse response;
     response.set_text(SayHelloTo(request.name(), UserType::kFirstTime));
     return response;

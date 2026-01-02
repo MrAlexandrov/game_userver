@@ -31,8 +31,9 @@ GetAllPacks::GetAllPacks(
 GetAllPacks::~GetAllPacks() = default;
 
 std::string GetAllPacks::HandleRequestThrow(
-    const userver::server::http::HttpRequest&,
+    const userver::server::http::HttpRequest& /*request*/,
     userver::server::request::RequestContext&
+    /*context*/
 ) const {
     const auto packs = NStorage::GetAllPacks(impl_->pg_cluster);
 

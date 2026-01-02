@@ -4,7 +4,7 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetHelloComponentList() {
+auto GetHelloComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList().Append<game_userver::Hello>();
 }
 

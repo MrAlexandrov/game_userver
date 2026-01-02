@@ -30,10 +30,11 @@ GetVariantsByQuestionId::GetVariantsByQuestionId(
 
 GetVariantsByQuestionId::~GetVariantsByQuestionId() = default;
 
-std::string GetVariantsByQuestionId::HandleRequestThrow(
+auto GetVariantsByQuestionId::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     const auto& stringQuestionId = request.GetArg("question_id");
 
     const auto variants = NStorage::GetVariantsByQuestionId(

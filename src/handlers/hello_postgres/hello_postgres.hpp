@@ -15,10 +15,11 @@ public:
         const userver::components::ComponentContext&
     );
 
-    std::string HandleRequestThrow(
-        const userver::server::http::HttpRequest&,
+    auto HandleRequestThrow(
+        const userver::server::http::HttpRequest& /*request*/,
         userver::server::request::RequestContext&
-    ) const override;
+        /*context*/
+    ) const -> std::string override;
 
 private:
     userver::storages::postgres::ClusterPtr pg_cluster_;

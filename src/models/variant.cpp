@@ -14,6 +14,7 @@ auto Variant::Introspect() const {
 userver::formats::json::Value Serialize(
     const Variant& variant,
     userver::formats::serialize::To<userver::formats::json::Value>
+    /*unused*/
 ) {
     userver::formats::json::ValueBuilder item;
     item["id"] = boost::uuids::to_string(variant.id);
@@ -26,6 +27,7 @@ userver::formats::json::Value Serialize(
 Variant Parse(
     const userver::formats::json::Value& json,
     userver::formats::parse::To<Variant>
+    /*unused*/
 ) {
     Variant variant;
     variant.id = Utils::StringToUuid(json["id"].As<std::string>());

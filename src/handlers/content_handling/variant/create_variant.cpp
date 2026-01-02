@@ -30,10 +30,11 @@ CreateVariant::CreateVariant(
 
 CreateVariant::~CreateVariant() = default;
 
-std::string CreateVariant::HandleRequestThrow(
+auto CreateVariant::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     const auto& question_id = request.GetArg("question_id");
     const auto& text = request.GetArg("text");
     const auto& is_correct = request.GetArg("is_correct");

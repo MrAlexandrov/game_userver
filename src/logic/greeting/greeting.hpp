@@ -10,6 +10,6 @@ enum class UserType {
     kKnown
 };
 
-std::string SayHelloTo(std::string_view name, UserType type);
+auto SayHelloTo(std::string_view name, UserType type) -> std::string;
 
 } // namespace game_userver

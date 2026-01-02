@@ -11,10 +11,11 @@ auto Question::Introspect() const {
     return std::tie(id, pack_id, text, image_url);
 }
 
-userver::formats::json::Value Serialize(
+auto Serialize(
     const Question& question,
     userver::formats::serialize::To<userver::formats::json::Value>
-) {
+    /*unused*/
+) -> userver::formats::json::Value {
     userver::formats::json::ValueBuilder item;
     item["id"] = boost::uuids::to_string(question.id);
     item["pack_id"] = boost::uuids::to_string(question.pack_id);
@@ -23,10 +24,11 @@ userver::formats::json::Value Serialize(
     return item.ExtractValue();
 }
 
-Question Parse(
+auto Parse(
     const userver::formats::json::Value& json,
     userver::formats::parse::To<Question>
-) {
+    /*unused*/
+) -> Question {
     Question question;
     question.id = Utils::StringToUuid(json["id"].As<std::string>());
     question.pack_id = Utils::StringToUuid(json["pack_id"].As<std::string>());

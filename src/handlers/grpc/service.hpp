@@ -18,38 +18,51 @@ public:
         const userver::components::ComponentContext&
     );
 
-    CreatePackResult
-    CreatePack(CallContext&, handlers::api::CreatePackRequest&&) override;
+    auto CreatePack(
+        CallContext& /*context*/, handlers::api::CreatePackRequest&& /*request*/
+    ) -> CreatePackResult override;
 
-    GetPackByIdResult
-    GetPackById(CallContext&, handlers::api::GetPackByIdRequest&&) override;
+    auto GetPackById(
+        CallContext& /*context*/,
+        handlers::api::GetPackByIdRequest&& /*request*/
+    ) -> GetPackByIdResult override;
 
-    GetAllPacksResult
-    GetAllPacks(CallContext&, handlers::api::GetAllPacksRequest&&) override;
+    auto GetAllPacks(
+        CallContext& /*context*/,
+        handlers::api::GetAllPacksRequest&& /*request*/
+    ) -> GetAllPacksResult override;
 
-    CreateQuestionResult CreateQuestion(
-        CallContext&, handlers::api::CreateQuestionRequest&&
-    ) override;
+    auto CreateQuestion(
+        CallContext& /*context*/, handlers::api::CreateQuestionRequest&&
+        /*request*/
+    ) -> CreateQuestionResult override;
 
-    GetQuestionByIdResult GetQuestionById(
-        CallContext&, handlers::api::GetQuestionByIdRequest&&
-    ) override;
+    auto GetQuestionById(
+        CallContext& /*context*/, handlers::api::GetQuestionByIdRequest&&
+        /*request*/
+    ) -> GetQuestionByIdResult override;
 
-    GetQuestionsByPackIdResult GetQuestionsByPackId(
-        CallContext&, handlers::api::GetQuestionsByPackIdRequest&&
-    ) override;
+    auto GetQuestionsByPackId(
+        CallContext& /*context*/, handlers::api::GetQuestionsByPackIdRequest&&
+        /*request*/
+    ) -> GetQuestionsByPackIdResult override;
 
     // === Variant operations ===
-    CreateVariantResult
-    CreateVariant(CallContext&, handlers::api::CreateVariantRequest&&) override;
+    auto CreateVariant(
+        CallContext& /*context*/,
+        handlers::api::CreateVariantRequest&& /*request*/
+    ) -> CreateVariantResult override;
 
-    GetVariantByIdResult GetVariantById(
-        CallContext&, handlers::api::GetVariantByIdRequest&&
-    ) override;
+    auto GetVariantById(
+        CallContext& /*context*/, handlers::api::GetVariantByIdRequest&&
+        /*request*/
+    ) -> GetVariantByIdResult override;
 
-    GetVariantsByQuestionIdResult GetVariantsByQuestionId(
-        CallContext&, handlers::api::GetVariantsByQuestionIdRequest&&
-    ) override;
+    auto GetVariantsByQuestionId(
+        CallContext& /*context*/,
+        handlers::api::GetVariantsByQuestionIdRequest&&
+        /*request*/
+    ) -> GetVariantsByQuestionIdResult override;
 
 private:
     userver::storages::postgres::ClusterPtr pg_cluster_;

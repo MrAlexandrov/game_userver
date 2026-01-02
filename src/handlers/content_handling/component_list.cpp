@@ -6,7 +6,7 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetContentHandlingComponentList() {
+auto GetContentHandlingComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .AppendComponentList(pack::GetPackHandlersComponentList())
         .AppendComponentList(question::GetQuestionHandlersComponentList())

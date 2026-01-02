@@ -27,8 +27,9 @@ Service::Service(
                       )
                       .GetCluster()) {}
 
-Service::CreatePackResult
-Service::CreatePack(CallContext&, handlers::api::CreatePackRequest&& request) {
+auto Service::CreatePack(
+    CallContext&, handlers::api::CreatePackRequest&& request
+) -> Service::CreatePackResult {
     if (request.title().empty()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT, "Title cannot be empty"
@@ -45,15 +46,15 @@ Service::CreatePack(CallContext&, handlers::api::CreatePackRequest&& request) {
     auto createdPack = createdPackOpt.value();
 
     handlers::api::CreatePackResponse responce;
-    auto mutualPack = responce.mutable_pack();
-    mutualPack->set_id(boost::uuids::to_string(std::move(createdPack.id)));
+    auto* mutualPack = responce.mutable_pack();
+    mutualPack->set_id(boost::uuids::to_string(createdPack.id));
     mutualPack->set_title(std::move(createdPack.title));
     return responce;
 }
 
-Service::GetPackByIdResult Service::GetPackById(
+auto Service::GetPackById(
     CallContext&, handlers::api::GetPackByIdRequest&& request
-) {
+) -> Service::GetPackByIdResult {
     auto pack_id = Utils::StringToUuid(request.id());
     if (pack_id.is_nil()) {
         return grpc::Status{
@@ -70,19 +71,19 @@ Service::GetPackByIdResult Service::GetPackById(
     auto getPackById = getPackByIdOpt.value();
 
     handlers::api::GetPackByIdResponse responce;
-    auto mutualPack = responce.mutable_pack();
-    mutualPack->set_id(boost::uuids::to_string(std::move(getPackById.id)));
+    auto* mutualPack = responce.mutable_pack();
+    mutualPack->set_id(boost::uuids::to_string(getPackById.id));
     mutualPack->set_title(std::move(getPackById.title));
     return responce;
 }
 
-Service::GetAllPacksResult Service::GetAllPacks(
-    CallContext&, handlers::api::GetAllPacksRequest&& request
-) {
+auto Service::GetAllPacks(
+    CallContext& /*context*/, handlers::api::GetAllPacksRequest&& request
+) -> Service::GetAllPacksResult {
     auto getAllPacks = NStorage::GetAllPacks(pg_cluster_);
 
     handlers::api::GetAllPacksResponse responce;
-    auto mutualPacks = responce.mutable_packs();
+    auto* mutualPacks = responce.mutable_packs();
     for (auto&& pack : getAllPacks) {
         Models::Proto::Pack packResponse;
         packResponse.set_id(boost::uuids::to_string(pack.id));
@@ -94,7 +95,7 @@ Service::GetAllPacksResult Service::GetAllPacks(
 }
 
 Service::CreateQuestionResult Service::CreateQuestion(
-    CallContext&, handlers::api::CreateQuestionRequest&& request
+    CallContext& /*context*/, handlers::api::CreateQuestionRequest&& request
 ) {
     if (request.text().empty()) {
         return grpc::Status{
@@ -121,12 +122,10 @@ Service::CreateQuestionResult Service::CreateQuestion(
     auto createdQuestion = createdQuestionOpt.value();
 
     handlers::api::CreateQuestionResponse response;
-    auto mutableQuestion = response.mutable_question();
-    mutableQuestion->set_id(
-        boost::uuids::to_string(std::move(createdQuestion.id))
-    );
+    auto* mutableQuestion = response.mutable_question();
+    mutableQuestion->set_id(boost::uuids::to_string(createdQuestion.id));
     mutableQuestion->set_pack_id(
-        boost::uuids::to_string(std::move(createdQuestion.pack_id))
+        boost::uuids::to_string(createdQuestion.pack_id)
     );
     mutableQuestion->set_text(std::move(createdQuestion.text));
     if (!createdQuestion.image_url.empty()) {
@@ -136,9 +135,9 @@ Service::CreateQuestionResult Service::CreateQuestion(
     return response;
 }
 
-Service::GetQuestionByIdResult Service::GetQuestionById(
+auto Service::GetQuestionById(
     CallContext&, handlers::api::GetQuestionByIdRequest&& request
-) {
+) -> Service::GetQuestionByIdResult {
     auto question_id = Utils::StringToUuid(request.id());
     if (question_id.is_nil()) {
         return grpc::Status{
@@ -154,11 +153,9 @@ Service::GetQuestionByIdResult Service::GetQuestionById(
     auto question = questionOpt.value();
 
     handlers::api::GetQuestionByIdResponse response;
-    auto mutableQuestion = response.mutable_question();
-    mutableQuestion->set_id(boost::uuids::to_string(std::move(question.id)));
-    mutableQuestion->set_pack_id(
-        boost::uuids::to_string(std::move(question.pack_id))
-    );
+    auto* mutableQuestion = response.mutable_question();
+    mutableQuestion->set_id(boost::uuids::to_string(question.id));
+    mutableQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
     mutableQuestion->set_text(std::move(question.text));
     if (!question.image_url.empty()) {
         mutableQuestion->set_image_url(std::move(question.image_url));
@@ -167,9 +164,9 @@ Service::GetQuestionByIdResult Service::GetQuestionById(
     return response;
 }
 
-Service::GetQuestionsByPackIdResult Service::GetQuestionsByPackId(
+auto Service::GetQuestionsByPackId(
     CallContext&, handlers::api::GetQuestionsByPackIdRequest&& request
-) {
+) -> Service::GetQuestionsByPackIdResult {
     auto pack_id = Utils::StringToUuid(request.pack_id());
     if (pack_id.is_nil()) {
         return grpc::Status{
@@ -180,10 +177,10 @@ Service::GetQuestionsByPackIdResult Service::GetQuestionsByPackId(
     auto questions = NStorage::GetQuestionsByPackId(pg_cluster_, pack_id);
 
     handlers::api::GetQuestionsByPackIdResponse response;
-    auto mutableQuestions = response.mutable_questions();
+    auto* mutableQuestions = response.mutable_questions();
 
     for (auto&& question : questions) {
-        auto newQuestion = mutableQuestions->Add();
+        auto* newQuestion = mutableQuestions->Add();
         newQuestion->set_id(boost::uuids::to_string(question.id));
         newQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
         newQuestion->set_text(std::move(question.text));
@@ -195,9 +192,9 @@ Service::GetQuestionsByPackIdResult Service::GetQuestionsByPackId(
     return response;
 }
 
-Service::CreateVariantResult Service::CreateVariant(
+auto Service::CreateVariant(
     CallContext&, handlers::api::CreateVariantRequest&& request
-) {
+) -> Service::CreateVariantResult {
     if (request.text().empty()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT, "Variant text cannot be empty"
@@ -223,12 +220,10 @@ Service::CreateVariantResult Service::CreateVariant(
     auto createdVariant = createdVariantOpt.value();
 
     handlers::api::CreateVariantResponse response;
-    auto mutableVariant = response.mutable_variant();
-    mutableVariant->set_id(
-        boost::uuids::to_string(std::move(createdVariant.id))
-    );
+    auto* mutableVariant = response.mutable_variant();
+    mutableVariant->set_id(boost::uuids::to_string(createdVariant.id));
     mutableVariant->set_question_id(
-        boost::uuids::to_string(std::move(createdVariant.question_id))
+        boost::uuids::to_string(createdVariant.question_id)
     );
     mutableVariant->set_text(std::move(createdVariant.text));
     mutableVariant->set_is_correct(createdVariant.is_correct);
@@ -236,9 +231,9 @@ Service::CreateVariantResult Service::CreateVariant(
     return response;
 }
 
-Service::GetVariantByIdResult Service::GetVariantById(
-    CallContext&, handlers::api::GetVariantByIdRequest&& request
-) {
+auto Service::GetVariantById(
+    CallContext& /*context*/, handlers::api::GetVariantByIdRequest&& request
+) -> Service::GetVariantByIdResult {
     auto variant_id = Utils::StringToUuid(request.id());
     if (variant_id.is_nil()) {
         return grpc::Status{
@@ -254,10 +249,10 @@ Service::GetVariantByIdResult Service::GetVariantById(
     auto variant = variantOpt.value();
 
     handlers::api::GetVariantByIdResponse response;
-    auto mutableVariant = response.mutable_variant();
-    mutableVariant->set_id(boost::uuids::to_string(std::move(variant.id)));
+    auto* mutableVariant = response.mutable_variant();
+    mutableVariant->set_id(boost::uuids::to_string(variant.id));
     mutableVariant->set_question_id(
-        boost::uuids::to_string(std::move(variant.question_id))
+        boost::uuids::to_string(variant.question_id)
     );
     mutableVariant->set_text(std::move(variant.text));
     mutableVariant->set_is_correct(variant.is_correct);
@@ -265,9 +260,10 @@ Service::GetVariantByIdResult Service::GetVariantById(
     return response;
 }
 
-Service::GetVariantsByQuestionIdResult Service::GetVariantsByQuestionId(
-    CallContext&, handlers::api::GetVariantsByQuestionIdRequest&& request
-) {
+auto Service::GetVariantsByQuestionId(
+    CallContext& /*context*/,
+    handlers::api::GetVariantsByQuestionIdRequest&& request
+) -> Service::GetVariantsByQuestionIdResult {
     auto question_id = Utils::StringToUuid(request.question_id());
     if (question_id.is_nil()) {
         return grpc::Status{
@@ -278,10 +274,10 @@ Service::GetVariantsByQuestionIdResult Service::GetVariantsByQuestionId(
     auto variants = NStorage::GetVariantsByQuestionId(pg_cluster_, question_id);
 
     handlers::api::GetVariantsByQuestionIdResponse response;
-    auto mutableVariants = response.mutable_variants();
+    auto* mutableVariants = response.mutable_variants();
 
     for (auto&& variant : variants) {
-        auto newVariant = mutableVariants->Add();
+        auto* newVariant = mutableVariants->Add();
         newVariant->set_id(boost::uuids::to_string(variant.id));
         newVariant->set_question_id(
             boost::uuids::to_string(variant.question_id)

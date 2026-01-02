@@ -3,8 +3,8 @@
 
 namespace Utils {
 
-boost::uuids::uuid StringToUuid(const std::string& str);
+auto StringToUuid(const std::string& str) -> boost::uuids::uuid;
 
-bool StringToBool(const std::string& str);
+auto StringToBool(const std::string& str) -> bool;
 
 } // namespace Utils

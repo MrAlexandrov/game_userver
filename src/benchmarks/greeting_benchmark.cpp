@@ -9,8 +9,10 @@
 
 using game_userver::UserType;
 
+namespace {
+
 void HelloBenchmark(benchmark::State& state) {
-    userver::engine::RunStandalone([&] {
+    userver::engine::RunStandalone([&] () -> void {
         constexpr std::string_view kNames[] = {"userver", "is", "awesome", "!"};
         std::uint64_t i = 0;
 
@@ -21,5 +23,7 @@ void HelloBenchmark(benchmark::State& state) {
         }
     });
 }
+
+} // anonymous namespace
 
 BENCHMARK(HelloBenchmark);

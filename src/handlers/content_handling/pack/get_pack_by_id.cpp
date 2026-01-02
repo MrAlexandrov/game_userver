@@ -30,10 +30,11 @@ GetPack::GetPack(
 
 GetPack::~GetPack() = default;
 
-std::string GetPack::HandleRequestThrow(
+auto GetPack::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     const auto& stringUuid = request.GetArg("uuid");
 
     const auto uuid = Utils::StringToUuid(stringUuid);

@@ -30,10 +30,11 @@ CreateQuestion::CreateQuestion(
 
 CreateQuestion::~CreateQuestion() = default;
 
-std::string CreateQuestion::HandleRequestThrow(
+auto CreateQuestion::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     const auto& pack_id = request.GetArg("pack_id");
     const auto& text = request.GetArg("text");
     const auto& image_url = request.GetArg("image_url");

@@ -33,10 +33,11 @@ CreatePack::CreatePack(
 
 CreatePack::~CreatePack() = default;
 
-std::string CreatePack::HandleRequestThrow(
+auto CreatePack::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     using userver::logging::Level::kDebug;
 
     const auto& title = request.GetArg("title");

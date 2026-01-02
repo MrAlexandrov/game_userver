@@ -12,19 +12,21 @@ auto Pack::Introspect() const {
     return std::tie(id, title);
 }
 
-userver::formats::json::Value Serialize(
+auto Serialize(
     const Pack& pack,
     userver::formats::serialize::To<userver::formats::json::Value>
-) {
+    /*unused*/
+) -> userver::formats::json::Value {
     userver::formats::json::ValueBuilder item;
     item["id"] = boost::uuids::to_string(pack.id);
     item["title"] = pack.title;
     return item.ExtractValue();
 }
 
-Pack Parse(
+auto Parse(
     const userver::formats::json::Value& json, userver::formats::parse::To<Pack>
-) {
+    /*unused*/
+) -> Pack {
     Pack pack;
     pack.id = Utils::StringToUuid(json["id"].As<std::string>());
     pack.title = json["title"].As<std::string>();

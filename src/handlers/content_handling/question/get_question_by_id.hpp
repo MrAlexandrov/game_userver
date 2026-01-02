@@ -18,14 +18,17 @@ public:
     );
     ~GetQuestionById() override;
 
-    std::string HandleRequestThrow(
-        const userver::server::http::HttpRequest&,
+    auto HandleRequestThrow(
+        const userver::server::http::HttpRequest& /*request*/,
         userver::server::request::RequestContext&
-    ) const override;
+        /*context*/
+    ) const -> std::string override;
 
 private:
     struct Impl;
-    userver::utils::FastPimpl<Impl, 16, 8> impl_;
+    static constexpr size_t kSize = 16;
+    static constexpr size_t kAlignment = 8;
+    userver::utils::FastPimpl<Impl, kSize, kAlignment> impl_;
 };
 
 } // namespace game_userver

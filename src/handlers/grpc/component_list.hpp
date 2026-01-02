@@ -4,6 +4,6 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetGrpcComponentList();
+auto GetGrpcComponentList() -> userver::components::ComponentList;
 
 } // namespace game_userver

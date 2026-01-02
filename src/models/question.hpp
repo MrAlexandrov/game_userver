@@ -13,18 +13,18 @@ struct Question final {
     std::string text;
     std::string image_url;
 
-    auto Introspect() const;
+    [[nodiscard]] auto Introspect() const;
 };
 
-userver::formats::json::Value Serialize(
+auto Serialize(
     const Question& question,
     userver::formats::serialize::To<userver::formats::json::Value>
-);
+) -> userver::formats::json::Value;
 
-Question Parse(
+auto Parse(
     const userver::formats::json::Value& json,
     userver::formats::parse::To<Question>
-);
+) -> Question;
 
 } // namespace Models
 

@@ -30,10 +30,11 @@ GetQuestionsByPackId::GetQuestionsByPackId(
 
 GetQuestionsByPackId::~GetQuestionsByPackId() = default;
 
-std::string GetQuestionsByPackId::HandleRequestThrow(
+auto GetQuestionsByPackId::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     const auto& stringPackId = request.GetArg("pack_id");
 
     const auto questions = NStorage::GetQuestionsByPackId(

@@ -7,7 +7,7 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetHandlersComponentList() {
+auto GetHandlersComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .AppendComponentList(game_userver::GetContentHandlingComponentList())
         .AppendComponentList(game_userver::GetGrpcComponentList())

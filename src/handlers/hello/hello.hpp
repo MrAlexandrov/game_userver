@@ -10,10 +10,11 @@ public:
 
     using HttpHandlerBase::HttpHandlerBase;
 
-    std::string HandleRequestThrow(
-        const userver::server::http::HttpRequest&,
+    auto HandleRequestThrow(
+        const userver::server::http::HttpRequest& /*request*/,
         userver::server::request::RequestContext&
-    ) const override;
+        /*context*/
+    ) const -> std::string override;
 };
 
 } // namespace game_userver

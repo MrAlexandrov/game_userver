@@ -6,7 +6,7 @@
 
 namespace game_userver::variant {
 
-userver::components::ComponentList GetVariantHandlersComponentList() {
+auto GetVariantHandlersComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .Append<CreateVariant>()
         .Append<GetVariantById>()

@@ -4,10 +4,11 @@
 
 namespace game_userver {
 
-std::string Hello::HandleRequestThrow(
+auto Hello::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     return SayHelloTo(request.GetArg("name"), UserType::kFirstTime);
 }
 

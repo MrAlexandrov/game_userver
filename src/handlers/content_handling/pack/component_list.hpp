@@ -4,6 +4,6 @@
 
 namespace game_userver::pack {
 
-userver::components::ComponentList GetPackHandlersComponentList();
+auto GetPackHandlersComponentList() -> userver::components::ComponentList;
 
 } // namespace game_userver::pack

@@ -30,10 +30,11 @@ GetVariantById::GetVariantById(
 
 GetVariantById::~GetVariantById() = default;
 
-std::string GetVariantById::HandleRequestThrow(
+auto GetVariantById::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&
-) const {
+    /*context*/
+) const -> std::string {
     const auto& stringId = request.GetArg("id");
 
     const auto id = Utils::StringToUuid(stringId);

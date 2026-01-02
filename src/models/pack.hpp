@@ -13,17 +13,17 @@ struct Pack final {
     boost::uuids::uuid id;
     std::string title;
 
-    auto Introspect() const;
+    [[nodiscard]] auto Introspect() const;
 };
 
-userver::formats::json::Value Serialize(
+auto Serialize(
     const Pack& pack,
     userver::formats::serialize::To<userver::formats::json::Value>
-);
+) -> userver::formats::json::Value;
 
-Pack Parse(
+auto Parse(
     const userver::formats::json::Value& json, userver::formats::parse::To<Pack>
-);
+) -> Pack;
 
 } // namespace Models
 

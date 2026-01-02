@@ -4,6 +4,6 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetContentHandlingComponentList();
+auto GetContentHandlingComponentList() -> userver::components::ComponentList;
 
 } // namespace game_userver

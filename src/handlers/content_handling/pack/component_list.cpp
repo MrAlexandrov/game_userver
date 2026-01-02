@@ -6,7 +6,7 @@
 
 namespace game_userver::pack {
 
-userver::components::ComponentList GetPackHandlersComponentList() {
+auto GetPackHandlersComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .Append<CreatePack>()
         .Append<GetAllPacks>()

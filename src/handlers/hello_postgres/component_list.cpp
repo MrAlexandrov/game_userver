@@ -4,7 +4,7 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetHelloPostgresComponentList() {
+auto GetHelloPostgresComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .Append<game_userver::HelloPostgres>();
 }

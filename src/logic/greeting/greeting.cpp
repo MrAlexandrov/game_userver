@@ -6,7 +6,7 @@
 
 namespace game_userver {
 
-std::string SayHelloTo(std::string_view name, UserType type) {
+auto SayHelloTo(std::string_view name, UserType type) -> std::string {
     if (name.empty()) {
         name = "unknown user";
     }

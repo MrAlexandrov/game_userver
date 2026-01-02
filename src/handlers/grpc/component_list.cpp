@@ -4,7 +4,7 @@
 
 namespace game_userver {
 
-userver::components::ComponentList GetGrpcComponentList() {
+auto GetGrpcComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList().Append<game_userver::Service>();
 }
 
