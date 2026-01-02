@@ -43,6 +43,13 @@ auto CreateQuestion::HandleRequestThrow(
         impl_->pg_cluster, Utils::StringToUuid(pack_id), text, image_url
     );
 
+    if (!createdQuestionOpt) {
+        request.GetHttpResponse().SetStatus(
+            userver::server::http::HttpStatus::kInternalServerError
+        );
+        return {};
+    }
+
     return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{createdQuestionOpt.value()}
             .ExtractValue()

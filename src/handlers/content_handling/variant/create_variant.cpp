@@ -44,6 +44,13 @@ auto CreateVariant::HandleRequestThrow(
         Utils::StringToBool(is_correct)
     );
 
+    if (!createdVariantOpt) {
+        request.GetHttpResponse().SetStatus(
+            userver::server::http::HttpStatus::kInternalServerError
+        );
+        return {};
+    }
+
     return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{createdVariantOpt.value()}
             .ExtractValue()
