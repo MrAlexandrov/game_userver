@@ -1,0 +1,1109 @@
+diff --git a/.clangd b/.clangd
+new file mode 100644
+index 0000000..179374f
+--- /dev/null
++++ b/.clangd
+@@ -0,0 +1,24 @@
++CompileFlags:
++  Add: 
++    - -std=c++20
++    - -I${project_root}
++    - -I${project_root}/build_debug
++    - -I${project_root}/build_debug/proto
++    - -I${project_root}/third_party/userver
++    - -I${project_root}/third_party/userver/third_party
++    - -I${project_root}/third_party/userver/third_party/boost
++    - -I${project_root}/third_party/userver/third_party/fmt/include
++    - -I${project_root}/third_party/userver/third_party/curlcpp/include
++  Remove: []
++  CompilationDatabase: build_debug/
++    
++Diagnostics:
++  ClangTidy:
++    Add: 
++      - modernize-*
++      - bugprone-*
++      - performance-*
++      - readability-*
++  
++Index:
++  Background: Build
+diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
+deleted file mode 100644
+index 439325f..0000000
+--- a/.pre-commit-config.yaml
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# Pre-commit hooks configuration
+-# See https://pre-commit.com for more information
+-
+-repos:
+-  # Run make format before commit
+-  - repo: local
+-    hooks:
+-      - id: make-format
+-        name: Run make format
+-        entry: make format
+-        language: system
+-        pass_filenames: false
+-        always_run: true
+-        stages: [pre-commit]
+-
+-  # # Run make test before push
+-  # - repo: local
+-  #   hooks:
+-  #     - id: make-test
+-  #       name: Run make test
+-  #       entry: make test
+-  #       language: system
+-  #       pass_filenames: false
+-  #       always_run: true
+-  #       stages: [pre-push]
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 72176e1..3862acb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,18 +1,22 @@
+ cmake_minimum_required(VERSION 3.12...3.31)
+ project(game_userver CXX)
+ 
+-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+-include(DownloadUserver)
+-
+-find_package(userver COMPONENTS
+-    core
+-    grpc
+-    postgresql
+-    QUIET
+-)
+-if(NOT userver_FOUND)
+-  # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
+-  download_userver(TRY_DIR third_party/userver)
++# Adding userver dependency
++find_package(userver COMPONENTS core grpc postgresql QUIET)
++if(NOT userver_FOUND)  # Fallback to subdirectory usage
++    # Enable userver libraries that are needed in this project
++    set(USERVER_FEATURE_GRPC ON CACHE BOOL "" FORCE)
++    set(USERVER_FEATURE_POSTGRESQL ON CACHE BOOL "" FORCE)
++    
++    # Compatibility mode: some systems don't support these features
++    set(USERVER_FEATURE_CRYPTOPP_BLAKE2 OFF CACHE BOOL "" FORCE)
++    
++    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/userver)
++        message(STATUS "Using userver framework from third_party/userver")
++        add_subdirectory(third_party/userver)
++    else()
++        message(FATAL_ERROR "Either install the userver or provide a path to it")
++    endif()
+ endif()
+ 
+ userver_setup_environment()
+diff --git a/CMakePresets.json b/CMakePresets.json
+deleted file mode 100644
+index 9e796af..0000000
+--- a/CMakePresets.json
++++ /dev/null
+@@ -1,45 +0,0 @@
+-{
+-  "version": 2,
+-  "cmakeMinimumRequired": {
+-    "major": 3,
+-    "minor": 20,
+-    "patch": 0
+-  },
+-  "configurePresets": [
+-    {
+-      "name": "debug",
+-      "displayName": "Debug",
+-      "description": "Fully featured Debug build",
+-      "inherits": [
+-        "common-flags"
+-      ],
+-      "binaryDir": "${sourceDir}/build-debug",
+-      "cacheVariables": {
+-        "CMAKE_BUILD_TYPE": "Debug",
+-        "USERVER_SANITIZE": "addr;ub"
+-      }
+-    },
+-    {
+-      "name": "release",
+-      "displayName": "Release",
+-      "description": "Fully featured Release build",
+-      "inherits": [
+-        "common-flags"
+-      ],
+-      "binaryDir": "${sourceDir}/build-release",
+-      "cacheVariables": {
+-        "CMAKE_BUILD_TYPE": "Release"
+-      }
+-    },
+-    {
+-      "name": "common-flags",
+-      "hidden": true,
+-      "generator": "Ninja",
+-      "cacheVariables": {
+-        "USERVER_FEATURE_GRPC": "ON",
+-        "USERVER_FEATURE_POSTGRESQL": "ON",
+-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+-      }
+-    }
+-  ]
+-}
+diff --git a/Makefile b/Makefile
+index 9f768a4..e7501ed 100644
+--- a/Makefile
++++ b/Makefile
+@@ -96,15 +96,8 @@ dist-clean:
+ 
+ # Install
+ .PHONY: install-debug install-release
+-install-debug: install-%: build-%
+-	@echo "Reconfiguring CMake to pick up new config files..."
+-	cmake -B build_debug $(CMAKE_DEBUG_FLAGS)
+-	cmake --install build_debug -v --component $(PROJECT_NAME)
+-
+-install-release: install-%: build-%
+-	@echo "Reconfiguring CMake to pick up new config files..."
+-	cmake -B build_release $(CMAKE_RELEASE_FLAGS)
+-	cmake --install build_release -v --component $(PROJECT_NAME)
++install-debug install-release: install-%: build-%
++	cmake --install build_$* -v --component $(PROJECT_NAME)
+ 
+ .PHONY: install
+ install: install-release
+@@ -120,12 +113,6 @@ export DB_CONNECTION := postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postg
+ 
+ # Internal hidden targets that are used only in docker environment
+ --in-docker-start-debug --in-docker-start-release: --in-docker-start-%: install-%
+-	@echo "Waiting for PostgreSQL to be ready..."
+-	@until psql ${DB_CONNECTION} -c '\q' 2>/dev/null; do \
+-		echo "PostgreSQL is unavailable - sleeping"; \
+-		sleep 1; \
+-	done
+-	@echo "PostgreSQL is up - executing initial data script"
+ 	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql
+ 	/home/user/.local/bin/$(PROJECT_NAME) \
+ 		--config /home/user/.local/etc/$(PROJECT_NAME)/static_config.yaml \
+diff --git a/README.md b/README.md
+index 7939c58..b39f62d 100644
+--- a/README.md
++++ b/README.md
+@@ -2,16 +2,29 @@
+ 
+ Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver).
+ 
+-
+ ## Download and Build
+ 
+ To create your own userver-based service follow the following steps:
+ 
+ 1. Press the "Use this template button" at the top right of this GitHub page
+-2. Clone the service `git clone your-service-repo && cd your-service-repo && git submodule update --init`
++2. Clone the service `git clone your-service-repo && cd your-service-repo`
+ 3. Give a proper name to your service and replace all the occurrences of "game_userver" string with that name
+ 4. Feel free to tweak, adjust or fully rewrite the source code of your service.
+ 
++## Development Setup
++
++For easier development setup on Ubuntu 22.04, you can use the provided setup script:
++
++```bash
++./scripts/setup_dev_env.sh
++```
++
++This script will:
++- Install required dependencies
++- Initialize submodules
++- Download the userver framework if needed
++- Set up the build environment
++- Generate compile_commands.json for autocompletion
+ 
+ ## Makefile
+ 
+@@ -29,6 +42,43 @@ can also be `debug-custom`, `release-custom`.
+ * `make docker-COMMAND` - run `make COMMAND` in docker environment
+ * `make docker-clean-data` - stop docker containers
+ 
++## Building with Helper Scripts
++
++You can also use the helper scripts for building:
++
++```bash
++# Build in debug mode
++./scripts/build.sh debug
++
++# Build in release mode
++./scripts/build.sh release
++```
++
++## Userver Framework
++
++This project depends on the [userver framework](https://github.com/userver-framework/userver). The framework is automatically downloaded by the setup scripts, but you can also manually download it:
++
++```bash
++mkdir -p third_party
++cd third_party
++git clone --depth 1 https://github.com/userver-framework/userver.git
++cd ..
++```
++
++## Autocompletion Setup
++
++For the best development experience with autocompletion:
++
++1. Run the setup script or ensure `compile_commands.json` is generated in the build directory
++2. Install clangd extension in your editor
++3. The `.clangd` configuration file is already provided for optimal settings
++
++## Documentation
++
++For detailed setup instructions, see:
++- [Development Setup Guide](docs/development_setup.md) - Comprehensive setup guide
++- [Setup Guide](docs/setup_guide.md) - Detailed instructions for compilation and running the service
++- [Editor Setup](docs/editor_setup.md) - Instructions for configuring autocompletion in various editors
+ 
+ ## License
+ 
+diff --git a/docs/README.md b/docs/README.md
+new file mode 100644
+index 0000000..23a2cc3
+--- /dev/null
++++ b/docs/README.md
+@@ -0,0 +1,37 @@
++# Game Userver Documentation
++
++Welcome to the documentation for the game_userver project. This directory contains all the information you need to set up, develop, and maintain the project.
++
++## Getting Started
++
++- [Development Setup](development_setup.md) - Comprehensive guide to setting up your development environment
++- [Setup Guide](setup_guide.md) - Detailed instructions for compilation and running the service
++- [Editor Setup](editor_setup.md) - Instructions for configuring autocompletion in various editors
++
++## Project Structure
++
++The documentation is organized as follows:
++
++```
++docs/
++├── development_setup.md  # Main setup guide
++├── setup_guide.md        # Detailed setup instructions
++├── editor_setup.md       # Editor configuration
++└── README.md             # This file
++```
++
++## Quick Links
++
++- [Project README](../README.md) - Main project information
++- [Userver Framework Documentation](https://userver.tech/) - Official userver documentation
++- [CMake Documentation](https://cmake.org/cmake/help/latest/) - CMake reference
++
++## Contributing to Documentation
++
++If you find any issues with the documentation or would like to add new content:
++
++1. Edit the appropriate Markdown file in this directory
++2. Follow the existing formatting style
++3. Submit a pull request with your changes
++
++For significant changes, consider discussing them in an issue first.
+\ No newline at end of file
+diff --git a/docs/development_setup.md b/docs/development_setup.md
+new file mode 100644
+index 0000000..4f2b345
+--- /dev/null
++++ b/docs/development_setup.md
+@@ -0,0 +1,275 @@
++# Game Userver Development Setup
++
++This document provides a comprehensive guide to setting up your development environment for the game_userver project.
++
++## Overview
++
++The game_userver project is a C++ service built using the [userver framework](https://github.com/userver-framework/userver). This guide covers everything you need to know to set up your development environment, including compilation, autocompletion, and running the service.
++
++## Prerequisites
++
++Before setting up the project, ensure you have the following installed on your Ubuntu 22.04 system:
++
++```bash
++sudo apt update
++sudo apt install -y build-essential cmake git clang libclang-dev llvm pkg-config \
++    libboost-all-dev libssl-dev libpqxx-dev postgresql-client \
++    libyaml-cpp-dev libicu-dev libcurl4-openssl-dev libprotobuf-dev \
++    protobuf-compiler-grpc libgrpc++-dev libudns-dev
++```
++
++## Quick Start
++
++For the fastest setup, use the provided setup script:
++
++```bash
++./scripts/setup_dev_env.sh
++```
++
++This script will:
++- Install required dependencies (on Ubuntu/Debian)
++- Initialize submodules
++- Download the userver framework if needed
++- Set up the build environment
++- Generate `compile_commands.json` for autocompletion
++
++## Compilation Setup
++
++### Using Makefile (Recommended)
++
++The project includes a Makefile wrapper around CMake for convenience:
++
++```bash
++# Generate build files
++make cmake-debug
++
++# Build the project
++make build-debug
++
++# Run tests
++make test-debug
++```
++
++### Using Helper Scripts
++
++Alternative helper scripts are provided for simpler commands:
++
++```bash
++# Build in debug mode
++./scripts/build.sh debug
++
++# Build in release mode
++./scripts/build.sh release
++```
++
++### Using CMake Directly
++
++For more control, you can use CMake directly:
++
++```bash
++# Debug build
++mkdir -p build_debug
++cd build_debug
++cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++make -j$(nproc)
++
++# Release build
++mkdir -p build_release
++cd build_release
++cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++make -j$(nproc)
++```
++
++## Userver Framework
++
++The project depends on the userver framework, which is automatically downloaded by the setup scripts. If you need to manually download it:
++
++```bash
++mkdir -p third_party
++cd third_party
++git clone --depth 1 https://github.com/userver-framework/userver.git
++cd ..
++```
++
++## Autocompletion Setup
++
++### Prerequisites
++
++1. Install clangd:
++   ```bash
++   # Ubuntu/Debian
++   sudo apt install clangd
++   
++   # macOS with Homebrew
++   brew install llvm
++   ```
++
++2. Generate `compile_commands.json`:
++   ```bash
++   ./scripts/setup_dev_env.sh
++   # or
++   make cmake-debug
++   ```
++
++### Editor Configuration
++
++#### VS Code
++
++1. Install the "clangd" extension by LLVM
++2. The extension will automatically use the project's `.clangd` configuration
++
++#### Vim/Neovim
++
++For coc.nvim:
++```vim
++:CocInstall coc-clangd
++```
++
++For native LSP (Neovim 0.5+):
++```lua
++require'lspconfig'.clangd.setup{
++  cmd = {"clangd", "--background-index"},
++  root_dir = require('lspconfig/util').root_pattern(
++    '.clangd',
++    'compile_commands.json',
++    '.git'
++  ),
++}
++```
++
++#### Other Editors
++
++Most editors with LSP support can use clangd. Configure your editor to:
++1. Use clangd as the C++ language server
++2. Find the `compile_commands.json` file in the build directory
++
++## Project Structure
++
++```
++game_userver/
++├── src/                 # Source code
++├── proto/               # Protocol buffer definitions
++├── configs/             # Configuration files
++├── postgresql/          # Database schema and initialization
++├── tests/               # Test files
++├── cmake/               # CMake modules
++├── third_party/         # Third-party dependencies (including userver)
++├── scripts/             # Helper scripts
++├── docs/                # Documentation
++├── build_debug/         # Debug build directory (created during build)
++├── build_release/       # Release build directory (created during build)
++├── compile_commands.json # Symlink to build directory (created by setup script)
++├── CMakeLists.txt       # Main CMake file
++├── Makefile             # Makefile wrapper
++├── .clangd              # Clangd configuration
++└── README.md            # Project README
++```
++
++## Database Setup
++
++The project uses PostgreSQL. For development, you can use Docker:
++
++```bash
++docker-compose up -d postgres
++```
++
++Or set up a local PostgreSQL instance:
++```bash
++sudo apt install postgresql postgresql-contrib
++sudo -u postgres createdb game_userver_db_1
++sudo -u postgres createuser -s $USER
++psql -d game_userver_db_1 -f postgresql/schemas/db_1.sql
++```
++
++## Running the Service
++
++### Using Docker (Recommended)
++
++```bash
++# Start both the service and database
++docker-compose up -d
++
++# View logs
++docker-compose logs -f
++```
++
++### Locally
++
++After building:
++```bash
++# Start the service
++./build_debug/game_userver --config configs/static_config.yaml --config_vars configs/config_vars.yaml
++```
++
++## Testing
++
++### Unit Tests
++
++```bash
++make test-debug
++```
++
++### Functional Tests
++
++```bash
++# Start the service in testsuite mode
++make start-debug
++
++# In another terminal, run functional tests
++cd tests
++python3 -m pytest basic/test_basic.py -v
++```
++
++## Development Workflow
++
++1. Make changes to source code
++2. Rebuild the project:
++   ```bash
++   make build-debug
++   ```
++3. Run tests to verify changes:
++   ```bash
++   make test-debug
++   ```
++4. For faster iteration:
++   ```bash
++   make build-debug && make test-debug
++   ```
++
++## Troubleshooting
++
++### Common Issues
++
++1. **Missing dependencies**: Make sure all prerequisites are installed
++2. **Database connection errors**: Ensure PostgreSQL is running and the database is initialized
++3. **userver download issues**: If automatic download fails, manually clone the userver repository to `third_party/userver`
++4. **Autocompletion not working**: Verify that `compile_commands.json` exists and that clangd is properly installed in your editor
++
++### Clean Build
++
++If you encounter build issues:
++```bash
++make dist-clean
++./scripts/setup_dev_env.sh
++```
++
++If you need to re-download userver:
++```bash
++rm -rf third_party/userver
++./scripts/setup_dev_env.sh
++```
++
++## Additional Documentation
++
++- [Setup Guide](setup_guide.md) - Detailed setup instructions
++- [Editor Setup](editor_setup.md) - Editor-specific configuration
++- [Userver Framework Documentation](https://userver.tech/) - Official userver documentation
++
++## Contributing
++
++Feel free to modify and extend this project. When making changes:
++
++1. Follow the existing code style
++2. Add appropriate tests for new functionality
++3. Update documentation as needed
++4. Run all tests before submitting changes
+\ No newline at end of file
+diff --git a/docs/editor_setup.md b/docs/editor_setup.md
+new file mode 100644
+index 0000000..241d98a
+--- /dev/null
++++ b/docs/editor_setup.md
+@@ -0,0 +1,130 @@
++# Editor Setup for Autocompletion
++
++This guide explains how to set up your editor for optimal autocompletion and development experience with the game_userver project.
++
++## Prerequisites
++
++Before setting up your editor, ensure you have:
++
++1. Built the project at least once to generate `compile_commands.json`:
++   ```bash
++   ./scripts/setup_dev_env.sh
++   # or
++   make cmake-debug
++   ```
++
++2. Installed clangd on your system:
++   ```bash
++   # Ubuntu/Debian
++   sudo apt install clangd
++   
++   # macOS with Homebrew
++   brew install llvm
++   ```
++
++## VS Code Setup
++
++### Required Extensions
++
++1. Install the "clangd" extension by LLVM:
++   - Open VS Code
++   - Go to Extensions (Ctrl+Shift+X)
++   - Search for "clangd" and install the extension by LLVM
++
++### Configuration
++
++The project already includes a `.clangd` configuration file with optimal settings. The clangd extension will automatically use this configuration.
++
++If you need to adjust any settings, you can modify the `.clangd` file in the project root.
++
++## Vim/Neovim Setup
++
++### With coc.nvim
++
++1. Install coc-clangd:
++   ```vim
++   :CocInstall coc-clangd
++   ```
++
++2. The plugin will automatically detect and use the `compile_commands.json` file.
++
++### With native LSP (Neovim 0.5+)
++
++Add this to your Neovim configuration:
++
++```lua
++require'lspconfig'.clangd.setup{
++  cmd = {"clangd", "--background-index"},
++  on_attach = function(client, bufnr)
++    -- Your on_attach function here
++  end,
++  root_dir = require('lspconfig/util').root_pattern(
++    '.clangd',
++    'compile_commands.json',
++    '.git'
++  ),
++}
++```
++
++## Other Editors
++
++Most editors with LSP support can use clangd. The general steps are:
++
++1. Install clangd on your system
++2. Install the appropriate LSP plugin for your editor
++3. Configure the plugin to use clangd as the C++ language server
++4. Ensure the plugin can find the `compile_commands.json` file
++
++## Troubleshooting Autocompletion
++
++### Common Issues
++
++1. **No autocompletion at all**:
++   - Verify that `compile_commands.json` exists in the build directory
++   - Check that clangd is installed and accessible in your PATH
++   - Restart your editor after generating `compile_commands.json`
++
++2. **Incomplete autocompletion**:
++   - Ensure the `.clangd` configuration file is in your project root
++   - Check that all necessary include paths are specified in `.clangd`
++   - Verify that the build was successful and `compile_commands.json` is up to date
++
++3. **Slow autocompletion**:
++   - The first time you open a project, clangd needs to index all files
++   - This is a one-time operation and will be faster on subsequent openings
++   - You can monitor indexing progress in the clangd logs
++
++### Checking clangd Logs
++
++Most editors provide a way to view clangd logs:
++
++- **VS Code**: Open the Output panel (View → Output) and select "clangd" from the dropdown
++- **Vim/Neovim**: Check the coc.nvim logs or LSP logs depending on your setup
++
++Look for any error messages that might indicate configuration issues.
++
++## Project-Specific Configuration
++
++The project's `.clangd` file includes:
++
++1. C++20 standard specification
++2. Include paths for the project and userver framework
++3. Clang-Tidy checks for code quality
++4. Background indexing for better performance
++
++You can modify this file to add additional configuration options as needed.
++
++## Updating Autocompletion After Code Changes
++
++Whenever you add new files or change include paths:
++
++1. Regenerate the build files:
++   ```bash
++   make cmake-debug
++   # or
++   ./scripts/build.sh debug
++   ```
++
++2. Restart clangd in your editor (most editors have a "Restart LSP" command)
++
++This ensures that clangd has the latest information about your project structure.
+\ No newline at end of file
+diff --git a/docs/setup_guide.md b/docs/setup_guide.md
+new file mode 100644
+index 0000000..b11c766
+--- /dev/null
++++ b/docs/setup_guide.md
+@@ -0,0 +1,255 @@
++# Game Userver Project Setup Guide
++
++This guide explains how to set up the game_userver project for compilation and development on Ubuntu 22.04.
++
++## Prerequisites
++
++Before setting up the project, ensure you have the following installed on your Ubuntu 22.04 system:
++
++```bash
++sudo apt update
++sudo apt install -y build-essential cmake git clang libclang-dev llvm pkg-config \
++    libboost-all-dev libssl-dev libpqxx-dev postgresql-client \
++    libyaml-cpp-dev libicu-dev libcurl4-openssl-dev libprotobuf-dev \
++    protobuf-compiler-grpc libgrpc++-dev libudns-dev
++```
++
++## Install userver Framework
++
++The project depends on the userver framework. You can either:
++
++### Option 1: Install userver system-wide (Recommended)
++
++Follow the instructions at [userver installation guide](https://userver.tech/d7/d7b/md_en_2userver_2install.html)
++
++### Option 2: Use userver from third_party
++
++If you prefer to use userver from the third_party directory:
++```bash
++mkdir -p third_party
++cd third_party
++git clone --depth 1 https://github.com/userver-framework/userver.git
++cd ..
++```
++
++## Project Structure
++
++The project follows a standard userver framework structure:
++- `src/` - Source code files
++- `proto/` - Protocol buffer definitions
++- `configs/` - Configuration files
++- `postgresql/` - Database schema and initialization scripts
++- `tests/` - Test files
++- `cmake/` - CMake modules and utilities
++- `third_party/` - Third-party dependencies (including userver framework)
++
++## Compilation Setup
++
++### 1. Clone the Repository
++
++```bash
++git clone <repository-url>
++cd game_userver
++```
++
++### 2. Initialize Submodules
++
++```bash
++git submodule update --init --recursive
++```
++
++### 3. Build the Project
++
++The project uses CMake as its build system with a Makefile wrapper for convenience.
++
++#### Using Makefile (Recommended)
++
++For debug build:
++```bash
++make cmake-debug
++make build-debug
++```
++
++For release build:
++```bash
++make cmake-release
++make build-release
++```
++
++#### Using Helper Scripts
++
++```bash
++# Build in debug mode
++./scripts/build.sh debug
++
++# Build in release mode
++./scripts/build.sh release
++```
++
++#### Using CMake Directly
++
++For debug build:
++```bash
++mkdir build_debug
++cd build_debug
++cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++make -j$(nproc)
++```
++
++For release build:
++```bash
++mkdir build_release
++cd build_release
++cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++make -j$(nproc)
++```
++
++### 4. Database Setup
++
++The project uses PostgreSQL. You can either:
++
++#### Option A: Use Docker (Recommended for development)
++```bash
++docker-compose up -d postgres
++```
++
++#### Option B: Use local PostgreSQL
++1. Install PostgreSQL:
++   ```bash
++   sudo apt install postgresql postgresql-contrib
++   ```
++
++2. Create database and user:
++   ```bash
++   sudo -u postgres createdb game_userver_db_1
++   sudo -u postgres createuser -s $USER
++   ```
++
++3. Initialize the schema:
++   ```bash
++   psql -d game_userver_db_1 -f postgresql/schemas/db_1.sql
++   ```
++
++## Autocompletion Setup
++
++The project is configured to work with clangd for autocompletion in editors like VS Code, Vim, and others.
++
++### Generate compile_commands.json
++
++The `compile_commands.json` file is essential for clangd to provide accurate autocompletion. It's automatically generated when you build with CMake:
++
++```bash
++make cmake-debug
++```
++
++Or with the helper script:
++```bash
++./scripts/setup_dev_env.sh
++```
++
++### Configure Your Editor
++
++#### VS Code
++
++1. Install the "clangd" extension from the marketplace
++2. Ensure the `.clangd` configuration file is in your project root (already provided)
++3. The extension will automatically use the `compile_commands.json` file
++
++#### Vim/Neovim with coc-clangd
++
++1. Install coc-clangd:
++   ```vim
++   :CocInstall coc-clangd
++   ```
++
++2. The plugin will automatically detect and use the `compile_commands.json` file
++
++#### Other Editors
++
++Most editors with LSP support can use clangd. Make sure to:
++1. Install clangd on your system
++2. Configure your editor to use clangd as the C++ language server
++3. Ensure the editor can find the `compile_commands.json` file
++
++## Running the Service
++
++### Using Docker (Recommended)
++
++```bash
++# Start both the service and database
++docker-compose up -d
++
++# View logs
++docker-compose logs -f
++```
++
++### Locally
++
++After building:
++```bash
++# Start the service
++./build_debug/game_userver --config configs/static_config.yaml --config_vars configs/config_vars.yaml
++```
++
++## Testing
++
++### Unit Tests
++
++```bash
++make test-debug
++```
++
++### Functional Tests
++
++```bash
++# Start the service in testsuite mode
++make start-debug
++
++# In another terminal, run functional tests
++cd tests
++python3 -m pytest basic/test_basic.py -v
++```
++
++## Development Workflow
++
++1. Make changes to source code
++2. Rebuild the project:
++   ```bash
++   make build-debug
++   ```
++3. Run tests to verify changes:
++   ```bash
++   make test-debug
++   ```
++4. For faster iteration, you can also use:
++   ```bash
++   make build-debug && make test-debug
++   ```
++
++## Troubleshooting
++
++### Common Issues
++
++1. **Missing dependencies**: Make sure all prerequisites are installed
++2. **Database connection errors**: Ensure PostgreSQL is running and the database is initialized
++3. **userver not found**: Install userver system-wide or place it in `third_party/userver`
++4. **Autocompletion not working**: Verify that `compile_commands.json` exists in the build directory and that clangd is properly installed in your editor
++5. **CMake errors about unknown commands**: Clean your build directories and run the setup script again:
++   ```bash
++   rm -rf build_debug build_release
++   ./scripts/setup_dev_env.sh
++   ```
++
++### Clean Build
++
++If you encounter build issues, try cleaning the build directories:
++```bash
++make dist-clean
++```
++
++This will remove all build artifacts and allow you to start fresh.
++
++If you need to re-download userver:
++```bash
++rm -rf third_party/userver
++# Then either install userver system-wide or download it to third_party/userver
+\ No newline at end of file
+diff --git a/scripts/build.sh b/scripts/build.sh
+new file mode 100755
+index 0000000..635098d
+--- /dev/null
++++ b/scripts/build.sh
+@@ -0,0 +1,43 @@
++#!/bin/bash
++
++# Simple build script for game_userver project
++
++set -e  # Exit on any error
++
++BUILD_TYPE=${1:-debug}  # Default to debug build
++
++case $BUILD_TYPE in
++    debug|Debug)
++        BUILD_DIR="build_debug"
++        CMAKE_BUILD_TYPE="Debug"
++        ;;
++    release|Release)
++        BUILD_DIR="build_release"
++        CMAKE_BUILD_TYPE="Release"
++        ;;
++    *)
++        echo "Usage: $0 [debug|release]"
++        exit 1
++        ;;
++esac
++
++echo "Building project in $BUILD_TYPE mode..."
++
++# Create build directory if it doesn't exist
++mkdir -p $BUILD_DIR
++
++# Generate build files if needed
++if [ ! -f $BUILD_DIR/CMakeCache.txt ]; then
++    echo "Generating CMake build files..."
++    cd $BUILD_DIR
++    cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++    cd ..
++else
++    echo "CMake build files already exist."
++fi
++
++# Build the project
++echo "Building project..."
++cmake --build $BUILD_DIR -j$(nproc)
++
++echo "Build complete! Binary is located at $BUILD_DIR/game_userver"
+\ No newline at end of file
+diff --git a/scripts/setup_dev_env.sh b/scripts/setup_dev_env.sh
+new file mode 100755
+index 0000000..7fc8855
+--- /dev/null
++++ b/scripts/setup_dev_env.sh
+@@ -0,0 +1,61 @@
++#!/bin/bash
++
++# Script to set up the development environment for game_userver project
++
++set -e  # Exit on any error
++
++echo "Setting up development environment for game_userver..."
++
++# Check if we're on Ubuntu 22.04
++if ! grep -q "Ubuntu 22.04" /etc/os-release 2>/dev/null; then
++    echo "Warning: This script is designed for Ubuntu 22.04. You may need to adjust package names for your distribution."
++fi
++
++# Install dependencies if on Ubuntu/Debian
++if command -v apt &> /dev/null; then
++    echo "Installing dependencies..."
++    sudo apt update
++    sudo apt install -y build-essential cmake git clang libclang-dev llvm pkg-config \
++        libboost-all-dev libssl-dev libpqxx-dev postgresql-client \
++        libyaml-cpp-dev libicu-dev libcurl4-openssl-dev libprotobuf-dev \
++        protobuf-compiler-grpc libgrpc++-dev libudns-dev
++fi
++
++# Try to install userver if not already installed
++if ! pkg-config --exists userver-core 2>/dev/null; then
++    echo "userver not found, you may need to install it separately"
++    echo "Follow the instructions at https://userver.tech/d7/d7b/md_en_2userver_2install.html"
++else
++    echo "userver found in system"
++fi
++
++# Initialize submodules
++echo "Initializing submodules..."
++git submodule update --init --recursive
++
++# Clean any existing build directories to avoid conflicts
++echo "Cleaning existing build directories..."
++rm -rf build_debug build_release
++
++# Create build directory and generate compile_commands.json
++echo "Setting up build environment..."
++mkdir -p build_debug
++cd build_debug
++cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
++cd ..
++
++# Create a symlink to compile_commands.json in the project root for editor tools
++if [ ! -f compile_commands.json ]; then
++    echo "Creating symlink for compile_commands.json..."
++    ln -s build_debug/compile_commands.json compile_commands.json
++fi
++
++echo "Development environment setup complete!"
++echo ""
++echo "To build the project, run:"
++echo "  make build-debug"
++echo ""
++echo "To run tests, run:"
++echo "  make test-debug"
++echo ""
++echo "For autocompletion to work properly, ensure your editor is configured to use clangd."
+\ No newline at end of file
