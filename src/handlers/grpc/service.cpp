@@ -53,7 +53,7 @@ auto Service::CreatePack(
 }
 
 auto Service::GetPackById(
-    CallContext&, handlers::api::GetPackByIdRequest&& request
+    CallContext& /*context*/, handlers::api::GetPackByIdRequest&& request
 ) -> Service::GetPackByIdResult {
     auto pack_id = Utils::StringToUuid(request.id());
     if (pack_id.is_nil()) {
@@ -94,9 +94,9 @@ auto Service::GetAllPacks(
     return responce;
 }
 
-Service::CreateQuestionResult Service::CreateQuestion(
+auto Service::CreateQuestion(
     CallContext& /*context*/, handlers::api::CreateQuestionRequest&& request
-) {
+) -> Service::CreateQuestionResult {
     if (request.text().empty()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT, "Question text cannot be empty"
@@ -136,7 +136,7 @@ Service::CreateQuestionResult Service::CreateQuestion(
 }
 
 auto Service::GetQuestionById(
-    CallContext&, handlers::api::GetQuestionByIdRequest&& request
+    CallContext& /*context*/, handlers::api::GetQuestionByIdRequest&& request
 ) -> Service::GetQuestionByIdResult {
     auto question_id = Utils::StringToUuid(request.id());
     if (question_id.is_nil()) {
@@ -165,7 +165,8 @@ auto Service::GetQuestionById(
 }
 
 auto Service::GetQuestionsByPackId(
-    CallContext&, handlers::api::GetQuestionsByPackIdRequest&& request
+    CallContext& /*context*/,
+    handlers::api::GetQuestionsByPackIdRequest&& request
 ) -> Service::GetQuestionsByPackIdResult {
     auto pack_id = Utils::StringToUuid(request.pack_id());
     if (pack_id.is_nil()) {
@@ -193,7 +194,7 @@ auto Service::GetQuestionsByPackId(
 }
 
 auto Service::CreateVariant(
-    CallContext&, handlers::api::CreateVariantRequest&& request
+    CallContext& /*context*/, handlers::api::CreateVariantRequest&& request
 ) -> Service::CreateVariantResult {
     if (request.text().empty()) {
         return grpc::Status{
