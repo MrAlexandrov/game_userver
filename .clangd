@@ -4,7 +4,13 @@ CompileFlags:
     - -I${project_root}
     - -I${project_root}/build_debug
     - -I${project_root}/build_debug/proto
+    - -I${project_root}/third_party/userver
+    - -I${project_root}/third_party/userver/third_party
+    - -I${project_root}/third_party/userver/third_party/boost
+    - -I${project_root}/third_party/userver/third_party/fmt/include
+    - -I${project_root}/third_party/userver/third_party/curlcpp/include
   Remove: []
+  CompilationDatabase: build_debug/
     
 Diagnostics:
   ClangTidy:
