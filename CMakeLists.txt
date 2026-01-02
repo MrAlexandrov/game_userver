@@ -4,15 +4,20 @@ project(game_userver CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
-find_package(userver COMPONENTS
-    core
-    grpc
-    postgresql
-    QUIET
-)
-if(NOT userver_FOUND)
-  # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
-  download_userver(TRY_DIR third_party/userver)
+# Force using userver from third_party
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/userver")
+  add_subdirectory(third_party/userver)
+else()
+  find_package(userver COMPONENTS
+      core
+      grpc
+      postgresql
+      QUIET
+  )
+  if(NOT userver_FOUND)
+    # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
+    download_userver(TRY_DIR third_party/userver)
+  endif()
 endif()
 
 userver_setup_environment()

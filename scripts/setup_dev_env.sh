@@ -32,7 +32,13 @@ if [ ! -d "third_party/userver" ]; then
     cd third_party
     git clone --depth 1 https://github.com/userver-framework/userver.git
     cd ..
+else
+    echo "userver framework already exists in third_party/userver"
 fi
+
+# Clean any existing build directories to avoid conflicts
+echo "Cleaning existing build directories..."
+rm -rf build_debug build_release
 
 # Create build directory and generate compile_commands.json
 echo "Setting up build environment..."
