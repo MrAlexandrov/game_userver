@@ -107,6 +107,37 @@ components_manager:
             path: /get-variants-by-question-id
             method: GET
 
+# Game API handlers
+        handler-create-game-session:
+            path: /game/create-session
+            method: POST
+            task_processor: main-task-processor
+
+        handler-add-player:
+            path: /game/add-player
+            method: POST
+            task_processor: main-task-processor
+
+        handler-start-game:
+            path: /game/start
+            method: POST
+            task_processor: main-task-processor
+
+        handler-get-current-question:
+            path: /game/current-question
+            method: GET
+            task_processor: main-task-processor
+
+        handler-submit-answer:
+            path: /game/submit-answer
+            method: POST
+            task_processor: main-task-processor
+
+        handler-get-game-results:
+            path: /game/results
+            method: GET
+            task_processor: main-task-processor
+
         postgres-db-1:
             dbconnection: $pg-connection
             dbconnection#env: DB_CONNECTION
