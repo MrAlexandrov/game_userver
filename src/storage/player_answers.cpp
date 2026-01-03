@@ -43,9 +43,13 @@ auto CheckVariantCorrectnessById(
 ) -> std::optional<bool> {
     auto result =
         pg_cluster_->Execute(kSlave, kCheckVariantCorrectnessById, variant_id);
-    return result.AsOptionalSingleRow<bool>(
-        userver::storages::postgres::kRowTag
-    );
+
+    if (result.IsEmpty()) {
+        return std::nullopt;
+    }
+
+    const auto row = result[0];
+    return row["is_correct"].As<bool>();
 }
 
 } // namespace NStorage

@@ -7,6 +7,13 @@
 
 namespace NStorage {
 
+// Wrapper struct for boolean values to work with userver
+struct BooleanResult {
+    bool value;
+
+    [[nodiscard]] auto Introspect() const;
+};
+
 using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
