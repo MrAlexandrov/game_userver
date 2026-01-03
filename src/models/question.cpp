@@ -8,7 +8,7 @@
 namespace Models {
 
 auto Question::Introspect() const {
-    return std::tie(id, pack_id, text, image_url);
+    return std::tie(id, data.pack_id, data.text, data.image_url);
 }
 
 auto Serialize(
@@ -18,9 +18,9 @@ auto Serialize(
 ) -> userver::formats::json::Value {
     userver::formats::json::ValueBuilder item;
     item["id"] = boost::uuids::to_string(question.id);
-    item["pack_id"] = boost::uuids::to_string(question.pack_id);
-    item["text"] = question.text;
-    item["image_url"] = question.image_url;
+    item["pack_id"] = boost::uuids::to_string(question.data.pack_id);
+    item["text"] = question.data.text;
+    item["image_url"] = question.data.image_url;
     return item.ExtractValue();
 }
 
@@ -29,12 +29,14 @@ auto Parse(
     userver::formats::parse::To<Question>
     /*unused*/
 ) -> Question {
-    Question question;
-    question.id = Utils::StringToUuid(json["id"].As<std::string>());
-    question.pack_id = Utils::StringToUuid(json["pack_id"].As<std::string>());
-    question.text = json["text"].As<std::string>();
-    question.image_url = json["image_url"].As<std::string>();
-    return question;
+    return Question{
+        .id = Utils::StringToUuid(json["id"].As<std::string>()),
+        .data = {
+                 .pack_id = Utils::StringToUuid(json["pack_id"].As<std::string>()),
+                 .text = json["text"].As<std::string>(),
+                 .image_url = json["image_url"].As<std::string>(),
+                 },
+    };
 }
 
 } // namespace Models

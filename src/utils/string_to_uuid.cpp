@@ -23,7 +23,7 @@ auto StringToBool(const std::string& str) -> bool {
     std::string lower_str = str;
     std::ranges::transform(
         lower_str, lower_str.begin(),
-        [](unsigned char symbol) {
+        [](unsigned char symbol) -> int {
             return std::tolower(symbol);
         }
     );

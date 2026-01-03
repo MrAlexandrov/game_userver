@@ -1,6 +1,6 @@
 CompileFlags:
   Add: 
-    - -std=c++20
+    - -std=c++23
     - -I${project_root}
     - -I${project_root}/build_debug
     - -I${project_root}/build_debug/proto

@@ -1,4 +1,5 @@
 #include "questions.hpp"
+#include "models/question.hpp"
 
 #include <sql_queries/sql_queries.hpp>
 #include <userver/storages/postgres/cluster_types.hpp>
@@ -12,12 +13,10 @@ using namespace sql_queries::sql;
 using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
-auto CreateQuestion(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id,
-    const std::string& text, const std::string& image_url
-) -> std::optional<Models::Question> {
+auto CreateQuestion(ClusterPtr pg_cluster_, QuestionData&& data)
+    -> std::optional<Models::Question> {
     auto result = pg_cluster_->Execute(
-        kMaster, kCreateQuestion, pack_id, text, image_url
+        kMaster, kCreateQuestion, data.pack_id, data.text, data.image_url
     );
     return result.AsOptionalSingleRow<Models::Question>(
         userver::storages::postgres::kRowTag

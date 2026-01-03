@@ -22,6 +22,7 @@ endif()
 userver_setup_environment()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 23)
 
 # Common sources
 include_directories(src)
@@ -88,6 +89,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/storage/questions.cpp
     src/storage/variants.cpp
 
+    # src/utils
+    src/utils/question.cpp
     src/utils/string_to_uuid.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC

@@ -9,11 +9,10 @@ namespace NStorage {
 
 using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
+using QuestionData = Models::Question::QuestionData;
 
-auto CreateQuestion(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id,
-    const std::string& text, const std::string& image_url
-) -> std::optional<Models::Question>;
+auto CreateQuestion(ClusterPtr pg_cluster_, QuestionData&& data)
+    -> std::optional<Models::Question>;
 
 auto GetQuestionById(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id

@@ -5,8 +5,10 @@
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
+#include "models/question.hpp"
 #include "storage/questions.hpp"
 #include "utils/constants.hpp"
+#include "utils/question.hpp"
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
@@ -35,12 +37,8 @@ auto CreateQuestion::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto& pack_id = request.GetArg("pack_id");
-    const auto& text = request.GetArg("text");
-    const auto& image_url = request.GetArg("image_url");
-
     const auto createdQuestionOpt = NStorage::CreateQuestion(
-        impl_->pg_cluster, Utils::StringToUuid(pack_id), text, image_url
+        impl_->pg_cluster, Utils::GetQuestionDataFromRequest(request)
     );
 
     if (!createdQuestionOpt) {

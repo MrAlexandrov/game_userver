@@ -30,24 +30,32 @@ auto GetQuestionsAndVariantsByPackId(
     for (const auto& row : result) {
         // Try to get question data
         {
-            Models::Question question;
-            question.id = row["question_id"].As<boost::uuids::uuid>();
-            question.pack_id = row["question_pack_id"].As<boost::uuids::uuid>();
-            question.text = row["question_text"].As<std::string>();
-            question.image_url = row["question_image_url"].As<std::string>();
-            questions_map[question.id] = std::move(question);
+            const auto question_id =
+                row["question_id"].As<boost::uuids::uuid>();
+            Models::Question question = {
+                .id = question_id,
+                .data = {
+                         .pack_id = row["question_pack_id"].As<boost::uuids::uuid>(),
+                         .text = row["question_text"].As<std::string>(),
+                         .image_url = row["question_image_url"].As<std::string>(),
+                         },
+            };
+            questions_map[question_id] = std::move(question);
         }
 
         // Try to get variant data
         {
-            Models::Variant variant;
-            variant.id = row["variant_id"].As<boost::uuids::uuid>();
-            variant.question_id =
+            const auto question_id =
                 row["variant_question_id"].As<boost::uuids::uuid>();
-            variant.text = row["variant_text"].As<std::string>();
-            variant.is_correct = row["variant_is_correct"].As<bool>();
-
-            variants_map[variant.question_id].push_back(std::move(variant));
+            Models::Variant variant = {
+                .id = row["variant_id"].As<boost::uuids::uuid>(),
+                .data = {
+                         .question_id = question_id,
+                         .text = row["variant_text"].As<std::string>(),
+                         .is_correct = row["variant_is_correct"].As<bool>(),
+                         },
+            };
+            variants_map[question_id].push_back(std::move(variant));
         }
     }
 

@@ -3,7 +3,8 @@
 #include <models/models.pb.h> // proto model Pack
 
 #include <boost/uuid/uuid_io.hpp> // for responce
-#include <models/pack.hpp>        // cpp model Pack
+#include <expected>
+#include <models/pack.hpp> // cpp model Pack
 #include <models/question.hpp>
 #include <models/variant.hpp>
 #include <userver/storages/postgres/component.hpp>
@@ -13,6 +14,7 @@
 #include "storage/questions.hpp"
 #include "storage/variants.hpp"
 #include "utils/constants.hpp"
+#include "utils/question.hpp"
 
 namespace game_userver {
 
@@ -97,22 +99,13 @@ auto Service::GetAllPacks(
 auto Service::CreateQuestion(
     CallContext& /*context*/, handlers::api::CreateQuestionRequest&& request
 ) -> Service::CreateQuestionResult {
-    if (request.text().empty()) {
-        return grpc::Status{
-            grpc::StatusCode::INVALID_ARGUMENT, "Question text cannot be empty"
-        };
+    auto question_data = Utils::GetQuestionDataFromRequest(std::move(request));
+    if (!question_data.has_value()) {
+        return question_data.error();
     }
 
-    auto pack_id = Utils::StringToUuid(request.pack_id());
-    if (pack_id.is_nil()) {
-        return grpc::Status{
-            grpc::StatusCode::INVALID_ARGUMENT,
-            "Invalid UUID format: " + request.pack_id()
-        };
-    }
-    auto createdQuestionOpt = NStorage::CreateQuestion(
-        pg_cluster_, pack_id, request.text(), request.image_url()
-    );
+    const auto createdQuestionOpt =
+        NStorage::CreateQuestion(pg_cluster_, std::move(question_data.value()));
 
     if (!createdQuestionOpt.has_value()) {
         return grpc::Status{
@@ -125,11 +118,11 @@ auto Service::CreateQuestion(
     auto* mutableQuestion = response.mutable_question();
     mutableQuestion->set_id(boost::uuids::to_string(createdQuestion.id));
     mutableQuestion->set_pack_id(
-        boost::uuids::to_string(createdQuestion.pack_id)
+        boost::uuids::to_string(createdQuestion.data.pack_id)
     );
-    mutableQuestion->set_text(std::move(createdQuestion.text));
-    if (!createdQuestion.image_url.empty()) {
-        mutableQuestion->set_image_url(createdQuestion.image_url);
+    mutableQuestion->set_text(std::move(createdQuestion.data.text));
+    if (!createdQuestion.data.image_url.empty()) {
+        mutableQuestion->set_image_url(createdQuestion.data.image_url);
     }
 
     return response;
@@ -155,10 +148,12 @@ auto Service::GetQuestionById(
     handlers::api::GetQuestionByIdResponse response;
     auto* mutableQuestion = response.mutable_question();
     mutableQuestion->set_id(boost::uuids::to_string(question.id));
-    mutableQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
-    mutableQuestion->set_text(std::move(question.text));
-    if (!question.image_url.empty()) {
-        mutableQuestion->set_image_url(std::move(question.image_url));
+    mutableQuestion->set_pack_id(
+        boost::uuids::to_string(question.data.pack_id)
+    );
+    mutableQuestion->set_text(std::move(question.data.text));
+    if (!question.data.image_url.empty()) {
+        mutableQuestion->set_image_url(std::move(question.data.image_url));
     }
 
     return response;
@@ -183,10 +178,12 @@ auto Service::GetQuestionsByPackId(
     for (auto&& question : questions) {
         auto* newQuestion = mutableQuestions->Add();
         newQuestion->set_id(boost::uuids::to_string(question.id));
-        newQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
-        newQuestion->set_text(std::move(question.text));
-        if (!question.image_url.empty()) {
-            newQuestion->set_image_url(std::move(question.image_url));
+        newQuestion->set_pack_id(
+            boost::uuids::to_string(question.data.pack_id)
+        );
+        newQuestion->set_text(std::move(question.data.text));
+        if (!question.data.image_url.empty()) {
+            newQuestion->set_image_url(std::move(question.data.image_url));
         }
     }
 
@@ -224,10 +221,10 @@ auto Service::CreateVariant(
     auto* mutableVariant = response.mutable_variant();
     mutableVariant->set_id(boost::uuids::to_string(createdVariant.id));
     mutableVariant->set_question_id(
-        boost::uuids::to_string(createdVariant.question_id)
+        boost::uuids::to_string(createdVariant.data.question_id)
     );
-    mutableVariant->set_text(std::move(createdVariant.text));
-    mutableVariant->set_is_correct(createdVariant.is_correct);
+    mutableVariant->set_text(std::move(createdVariant.data.text));
+    mutableVariant->set_is_correct(createdVariant.data.is_correct);
 
     return response;
 }
@@ -253,10 +250,10 @@ auto Service::GetVariantById(
     auto* mutableVariant = response.mutable_variant();
     mutableVariant->set_id(boost::uuids::to_string(variant.id));
     mutableVariant->set_question_id(
-        boost::uuids::to_string(variant.question_id)
+        boost::uuids::to_string(variant.data.question_id)
     );
-    mutableVariant->set_text(std::move(variant.text));
-    mutableVariant->set_is_correct(variant.is_correct);
+    mutableVariant->set_text(std::move(variant.data.text));
+    mutableVariant->set_is_correct(variant.data.is_correct);
 
     return response;
 }
@@ -281,10 +278,10 @@ auto Service::GetVariantsByQuestionId(
         auto* newVariant = mutableVariants->Add();
         newVariant->set_id(boost::uuids::to_string(variant.id));
         newVariant->set_question_id(
-            boost::uuids::to_string(variant.question_id)
+            boost::uuids::to_string(variant.data.question_id)
         );
-        newVariant->set_text(std::move(variant.text));
-        newVariant->set_is_correct(variant.is_correct);
+        newVariant->set_text(std::move(variant.data.text));
+        newVariant->set_is_correct(variant.data.is_correct);
     }
 
     return response;

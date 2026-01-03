@@ -8,10 +8,14 @@
 namespace Models {
 
 struct Question final {
-    boost::uuids::uuid id;
-    boost::uuids::uuid pack_id;
-    std::string text;
-    std::string image_url;
+    struct QuestionData {
+        boost::uuids::uuid pack_id;
+        std::string text;
+        std::string image_url;
+    };
+
+    boost::uuids::uuid id{};
+    QuestionData data;
 
     [[nodiscard]] auto Introspect() const;
 };
