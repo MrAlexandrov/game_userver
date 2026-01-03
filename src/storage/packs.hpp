@@ -10,7 +10,7 @@ namespace NStorage {
 using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
-auto CreatePack(ClusterPtr pg_cluster_, const std::string& title)
+auto CreatePack(ClusterPtr pg_cluster_, const Models::Pack::PackData& data)
     -> std::optional<Models::Pack>;
 
 auto GetPackById(ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id)

@@ -90,8 +90,10 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/storage/variants.cpp
 
     # src/utils
+    src/utils/pack.cpp
     src/utils/question.cpp
     src/utils/string_to_uuid.cpp
+    src/utils/variant.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC
   userver::core

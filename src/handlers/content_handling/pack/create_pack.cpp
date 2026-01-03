@@ -8,9 +8,11 @@
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
+#include "models/pack.hpp"
 #include "storage/packs.hpp"
 
 #include "utils/constants.hpp"
+#include "utils/pack.hpp"
 
 namespace game_userver {
 
@@ -40,20 +42,20 @@ auto CreatePack::HandleRequestThrow(
 ) const -> std::string {
     using userver::logging::Level::kDebug;
 
-    const auto& title = request.GetArg("title");
-    LOG(kDebug) << "title: " << title;
+    const auto packData = Utils::GetPackDataFromRequest(request);
 
-    const auto createdPackOpt = NStorage::CreatePack(impl_->pg_cluster, title);
+    const auto createdPackOpt =
+        NStorage::CreatePack(impl_->pg_cluster, packData);
     if (!createdPackOpt) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
         throw std::runtime_error("Failed to create pack");
     }
-    const auto& [id, pack_title] = createdPackOpt.value();
+    const auto& [id, data] = createdPackOpt.value();
 
     LOG(kDebug) << "inserted pack:\n"
-                << boost::uuids::to_string(id) << " " << pack_title;
+                << boost::uuids::to_string(id) << " " << data.title;
 
     return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{createdPackOpt.value()}

@@ -6,9 +6,10 @@
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
+#include "models/variant.hpp"
 #include "storage/variants.hpp"
 #include "utils/constants.hpp"
-#include "utils/string_to_uuid.hpp"
+#include "utils/variant.hpp"
 
 namespace game_userver {
 
@@ -36,14 +37,10 @@ auto CreateVariant::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto& question_id = request.GetArg("question_id");
-    const auto& text = request.GetArg("text");
-    const auto& is_correct = request.GetArg("is_correct");
+    const auto variantData = Utils::GetVariantDataFromRequest(request);
 
-    const auto createdVariantOpt = NStorage::CreateVariant(
-        impl_->pg_cluster, Utils::StringToUuid(question_id), text,
-        Utils::StringToBool(is_correct)
-    );
+    const auto createdVariantOpt =
+        NStorage::CreateVariant(impl_->pg_cluster, variantData);
 
     if (!createdVariantOpt) {
         request.GetHttpResponse().SetStatus(

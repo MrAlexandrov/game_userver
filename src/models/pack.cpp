@@ -9,7 +9,7 @@
 namespace Models {
 
 auto Pack::Introspect() const {
-    return std::tie(id, title);
+    return std::tie(id, data.title);
 }
 
 auto Serialize(
@@ -19,7 +19,7 @@ auto Serialize(
 ) -> userver::formats::json::Value {
     userver::formats::json::ValueBuilder item;
     item["id"] = boost::uuids::to_string(pack.id);
-    item["title"] = pack.title;
+    item["title"] = pack.data.title;
     return item.ExtractValue();
 }
 
@@ -27,10 +27,12 @@ auto Parse(
     const userver::formats::json::Value& json, userver::formats::parse::To<Pack>
     /*unused*/
 ) -> Pack {
-    Pack pack;
-    pack.id = Utils::StringToUuid(json["id"].As<std::string>());
-    pack.title = json["title"].As<std::string>();
-    return pack;
+    return Pack{
+        .id = Utils::StringToUuid(json["id"].As<std::string>()),
+        .data = {
+                 .title = json["title"].As<std::string>(),
+                 },
+    };
 }
 
 } // namespace Models

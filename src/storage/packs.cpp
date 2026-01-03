@@ -14,10 +14,10 @@ using namespace sql_queries::sql;
 using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
-auto CreatePack(ClusterPtr pg_cluster_, const std::string& title)
+auto CreatePack(ClusterPtr pg_cluster_, const Models::Pack::PackData& data)
     -> std::optional<Models::Pack> {
     // TODO: handle empty title
-    auto result = pg_cluster_->Execute(kMaster, kCreatePack, title);
+    auto result = pg_cluster_->Execute(kMaster, kCreatePack, data.title);
     return result.AsOptionalSingleRow<Models::Pack>(
         userver::storages::postgres::kRowTag
     );

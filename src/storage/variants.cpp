@@ -5,6 +5,8 @@
 #include <userver/storages/postgres/component.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
 
+#include "utils/string_to_uuid.hpp"
+
 namespace NStorage {
 
 using userver::storages::postgres::ClusterPtr;
@@ -13,11 +15,10 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto CreateVariant(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id,
-    const std::string& text, bool is_correct
+    ClusterPtr pg_cluster_, const Models::Variant::VariantData& data
 ) -> std::optional<Models::Variant> {
     auto result = pg_cluster_->Execute(
-        kMaster, kCreateVariant, question_id, text, is_correct
+        kMaster, kCreateVariant, data.question_id, data.text, data.is_correct
     );
     return result.AsOptionalSingleRow<Models::Variant>(
         userver::storages::postgres::kRowTag
