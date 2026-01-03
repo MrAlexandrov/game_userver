@@ -20,7 +20,7 @@ using userver::storages::postgres::ClusterHostType::kSlave;
 auto GetQuestionsAndVariantsByPackId(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
 ) -> std::vector<std::pair<Models::Question, std::vector<Models::Variant>>> {
-    auto result =
+    const auto result =
         pg_cluster_->Execute(kSlave, kGetQuestionsAndVariantsByPackId, pack_id);
 
     // Group variants by question_id
@@ -29,17 +29,17 @@ auto GetQuestionsAndVariantsByPackId(
 
     for (const auto& row : result) {
         // Try to get question data
-        if (row.Has("question_id")) {
+        {
             Models::Question question;
             question.id = row["question_id"].As<boost::uuids::uuid>();
             question.pack_id = row["question_pack_id"].As<boost::uuids::uuid>();
             question.text = row["question_text"].As<std::string>();
             question.image_url = row["question_image_url"].As<std::string>();
-            questions_map[question.id] = question;
+            questions_map[question.id] = std::move(question);
         }
 
         // Try to get variant data
-        if (row.Has("variant_id")) {
+        {
             Models::Variant variant;
             variant.id = row["variant_id"].As<boost::uuids::uuid>();
             variant.question_id =
@@ -47,7 +47,7 @@ auto GetQuestionsAndVariantsByPackId(
             variant.text = row["variant_text"].As<std::string>();
             variant.is_correct = row["variant_is_correct"].As<bool>();
 
-            variants_map[variant.question_id].push_back(variant);
+            variants_map[variant.question_id].push_back(std::move(variant));
         }
     }
 
@@ -55,8 +55,9 @@ auto GetQuestionsAndVariantsByPackId(
     std::vector<std::pair<Models::Question, std::vector<Models::Variant>>>
         result_pairs;
     for (const auto& [question_id, question] : questions_map) {
-        auto variants_it = variants_map.find(question_id);
-        if (variants_it != variants_map.end()) {
+
+        if (const auto variants_it = variants_map.find(question_id);
+            variants_it != variants_map.end()) {
             result_pairs.emplace_back(question, variants_it->second);
         } else {
             result_pairs.emplace_back(question, std::vector<Models::Variant>{});
