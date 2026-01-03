@@ -12,7 +12,7 @@ API_URL = "http://localhost:8080"
 def create_pack(title):
     """Создать пак вопросов"""
     response = requests.post(
-        f"{API_URL}/create-pack",
+        f"{API_URL}/packs",
         json={"title": title}
     )
     response.raise_for_status()
@@ -22,9 +22,8 @@ def create_pack(title):
 def create_question(pack_id, text, image_url=None):
     """Создать вопрос"""
     response = requests.post(
-        f"{API_URL}/create-question",
+        f"{API_URL}/packs/{pack_id}/questions",
         json={
-            "pack_id": pack_id,
             "text": text,
             "image_url": image_url
         }
@@ -36,9 +35,8 @@ def create_question(pack_id, text, image_url=None):
 def create_variant(question_id, text, is_correct):
     """Создать вариант ответа"""
     response = requests.post(
-        f"{API_URL}/create-variant",
+        f"{API_URL}/questions/{question_id}/variants",
         json={
-            "question_id": question_id,
             "text": text,
             "is_correct": is_correct
         }

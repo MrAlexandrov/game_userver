@@ -14,7 +14,7 @@ auto GetVariantDataFromRequest(
         userver::formats::json::FromString(request.RequestBody());
     return VariantData{
         .question_id =
-            Utils::StringToUuid(body["question_id"].As<std::string>()),
+            Utils::StringToUuid(""), // Will be set in handler from path
         .text = body["text"].As<std::string>(),
         .is_correct = Utils::StringToBool(body["is_correct"].As<std::string>()),
     };

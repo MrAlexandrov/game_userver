@@ -35,7 +35,7 @@ auto GetQuestionById::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto& stringId = request.GetArg("id");
+    const auto& stringId = request.GetPathArg("question_id");
 
     const auto id = Utils::StringToUuid(stringId);
     if (id.is_nil()) {

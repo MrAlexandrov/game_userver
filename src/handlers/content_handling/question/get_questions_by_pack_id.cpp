@@ -35,7 +35,7 @@ auto GetQuestionsByPackId::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto& stringPackId = request.GetArg("pack_id");
+    const auto& stringPackId = request.GetPathArg("pack_id");
 
     const auto questions = NStorage::GetQuestionsByPackId(
         impl_->pg_cluster, Utils::StringToUuid(stringPackId)

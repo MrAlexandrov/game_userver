@@ -7,16 +7,15 @@
 
 namespace game_userver {
 
-class GetCurrentQuestion final
-    : public userver::server::handlers::HttpHandlerBase {
+class GetGameState final : public userver::server::handlers::HttpHandlerBase {
 public:
-    static constexpr std::string_view kName = "handler-get-current-question";
+    static constexpr std::string_view kName = "handler-get-game-state";
 
-    GetCurrentQuestion(
+    GetGameState(
         const userver::components::ComponentConfig&,
         const userver::components::ComponentContext&
     );
-    ~GetCurrentQuestion() override;
+    ~GetGameState() override;
 
     auto HandleRequestThrow(
         const userver::server::http::HttpRequest& /*request*/,

@@ -37,7 +37,7 @@ auto GetGameResults::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const -> std::string {
-    auto game_session_id_str = request.GetArg("game_session_id");
+    auto game_session_id_str = request.GetPathArg("game_id");
     auto game_session_id = Utils::StringToUuid(game_session_id_str);
 
     logic::game::GameService game_service(impl_->pg_cluster);

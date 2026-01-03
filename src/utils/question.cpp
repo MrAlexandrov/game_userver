@@ -13,7 +13,7 @@ auto GetQuestionDataFromRequest(
     const auto& body =
         userver::formats::json::FromString(request.RequestBody());
     return QuestionData{
-        .pack_id = Utils::StringToUuid(body["pack_id"].As<std::string>()),
+        .pack_id = Utils::StringToUuid(""), // Will be set in handler from path
         .text = body["text"].As<std::string>(),
         .image_url = body["image_url"].As<std::string>(),
     };

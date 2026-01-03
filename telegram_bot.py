@@ -41,7 +41,7 @@ class GameAPI:
     def get_all_packs():
         """Получить все доступные паки вопросов"""
         try:
-            response = requests.get(f'{API_BASE_URL}/get-all-packs', timeout=5)
+            response = requests.get(f'{API_BASE_URL}/packs', timeout=5)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -53,7 +53,7 @@ class GameAPI:
         """Создать новую игровую сессию"""
         try:
             response = requests.post(
-                f'{API_BASE_URL}/game/create-session',
+                f'{API_BASE_URL}/games',
                 json={'pack_id': pack_id},
                 timeout=5
             )
@@ -68,9 +68,8 @@ class GameAPI:
         """Добавить игрока в сессию"""
         try:
             response = requests.post(
-                f'{API_BASE_URL}/game/add-player',
+                f'{API_BASE_URL}/games/{game_session_id}/players',
                 json={
-                    'game_session_id': game_session_id,
                     'player_name': player_name
                 },
                 timeout=5
@@ -86,8 +85,7 @@ class GameAPI:
         """Начать игру"""
         try:
             response = requests.post(
-                f'{API_BASE_URL}/game/start',
-                json={'game_session_id': game_session_id},
+                f'{API_BASE_URL}/games/{game_session_id}/start',
                 timeout=5
             )
             response.raise_for_status()
@@ -101,8 +99,7 @@ class GameAPI:
         """Получить текущий вопрос"""
         try:
             response = requests.get(
-                f'{API_BASE_URL}/game/current-question',
-                params={'game_session_id': game_session_id},
+                f'{API_BASE_URL}/games/{game_session_id}/state',
                 timeout=5
             )
             response.raise_for_status()
@@ -134,8 +131,7 @@ class GameAPI:
         """Получить результаты игры"""
         try:
             response = requests.get(
-                f'{API_BASE_URL}/game/results',
-                params={'game_session_id': game_session_id},
+                f'{API_BASE_URL}/games/{game_session_id}/results',
                 timeout=5
             )
             response.raise_for_status()

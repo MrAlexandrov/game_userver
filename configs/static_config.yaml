@@ -70,71 +70,80 @@ components_manager:
             method: GET,POST              # It will only reply to GET (HEAD) and POST requests.
             task_processor: main-task-processor  # Run it on CPU bound task processor
 
-# My CRUD's
+# Content Management API
         handler-create-pack:
-            path: /create-pack
+            path: /packs
             method: POST
-
-        handler-get-pack:
-            path: /get-pack
-            method: GET
+            task_processor: main-task-processor
 
         handler-get-all-packs:
-            path: /get-all-packs
+            path: /packs
             method: GET
+            task_processor: main-task-processor
+
+        handler-get-pack-by-id:
+            path: /packs/{pack_id}
+            method: GET
+            task_processor: main-task-processor
 
         handler-create-question:
-            path: /create-question
+            path: /packs/{pack_id}/questions
             method: POST
+            task_processor: main-task-processor
 
         handler-get-question-by-id:
-            path: /get-question-by-id
+            path: /questions/{question_id}
             method: GET
+            task_processor: main-task-processor
 
         handler-get-questions-by-pack-id:
-            path: /get-questions-by-pack-id
+            path: /packs/{pack_id}/questions
             method: GET
+            task_processor: main-task-processor
 
         handler-create-variant:
-            path: /create-variant
+            path: /questions/{question_id}/variants
             method: POST
+            task_processor: main-task-processor
 
         handler-get-variant-by-id:
-            path: /get-variant-by-id
+            path: /variants/{variant_id}
             method: GET
+            task_processor: main-task-processor
 
         handler-get-variants-by-question-id:
-            path: /get-variants-by-question-id
+            path: /questions/{question_id}/variants
             method: GET
+            task_processor: main-task-processor
 
-# Game API handlers
+# Game API
         handler-create-game-session:
-            path: /game/create-session
+            path: /games
             method: POST
             task_processor: main-task-processor
 
         handler-add-player:
-            path: /game/add-player
+            path: /games/{game_id}/players
             method: POST
             task_processor: main-task-processor
 
         handler-start-game:
-            path: /game/start
+            path: /games/{game_id}/start
             method: POST
             task_processor: main-task-processor
 
-        handler-get-current-question:
-            path: /game/current-question
+        handler-get-game-state:
+            path: /games/{game_id}/state
             method: GET
             task_processor: main-task-processor
 
         handler-submit-answer:
-            path: /game/submit-answer
+            path: /games/{game_id}/answers
             method: POST
             task_processor: main-task-processor
 
         handler-get-game-results:
-            path: /game/results
+            path: /games/{game_id}/results
             method: GET
             task_processor: main-task-processor
 

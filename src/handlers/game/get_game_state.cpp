@@ -1,4 +1,4 @@
-#include "get_current_question.hpp"
+#include "get_game_state.hpp"
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -14,7 +14,7 @@
 
 namespace game_userver {
 
-struct GetCurrentQuestion::Impl {
+struct GetGameState::Impl {
     userver::storages::postgres::ClusterPtr pg_cluster;
 
     explicit Impl(const userver::components::ComponentContext& context)
@@ -25,19 +25,19 @@ struct GetCurrentQuestion::Impl {
                          .GetCluster()) {}
 };
 
-GetCurrentQuestion::GetCurrentQuestion(
+GetGameState::GetGameState(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
     : HttpHandlerBase(config, component_context), impl_(component_context) {}
 
-GetCurrentQuestion::~GetCurrentQuestion() = default;
+GetGameState::~GetGameState() = default;
 
-auto GetCurrentQuestion::HandleRequestThrow(
+auto GetGameState::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const -> std::string {
-    auto game_session_id_str = request.GetArg("game_session_id");
+    auto game_session_id_str = request.GetPathArg("game_id");
     auto game_session_id = Utils::StringToUuid(game_session_id_str);
 
     logic::game::GameService game_service(impl_->pg_cluster);

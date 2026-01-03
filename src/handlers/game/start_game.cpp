@@ -37,11 +37,10 @@ auto StartGame::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const -> std::string {
-    const auto& request_body = request.RequestBody();
-    auto json = userver::formats::json::FromString(request_body);
-
-    auto game_session_id_str = json["game_session_id"].As<std::string>();
+    auto game_session_id_str = request.GetPathArg("game_id");
     auto game_session_id = Utils::StringToUuid(game_session_id_str);
+
+    // JSON body no longer needed for this endpoint
 
     logic::game::GameService game_service(impl_->pg_cluster);
     auto game_session = game_service.StartGame(game_session_id);

@@ -76,7 +76,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers/game/create_game_session.cpp
     src/handlers/game/add_player.cpp
     src/handlers/game/start_game.cpp
-    src/handlers/game/get_current_question.cpp
+    src/handlers/game/get_game_state.cpp
     src/handlers/game/submit_answer.cpp
     src/handlers/game/get_game_results.cpp
 

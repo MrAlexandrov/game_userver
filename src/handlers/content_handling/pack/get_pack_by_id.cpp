@@ -35,7 +35,7 @@ auto GetPack::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto& stringUuid = request.GetArg("uuid");
+    const auto& stringUuid = request.GetPathArg("pack_id");
 
     const auto uuid = Utils::StringToUuid(stringUuid);
     if (uuid.is_nil()) {

@@ -37,7 +37,9 @@ auto CreateVariant::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto variantData = Utils::GetVariantDataFromRequest(request);
+    auto question_id_str = request.GetPathArg("question_id");
+    auto variantData = Utils::GetVariantDataFromRequest(request);
+    variantData.question_id = Utils::StringToUuid(question_id_str);
 
     const auto createdVariantOpt =
         NStorage::CreateVariant(impl_->pg_cluster, variantData);

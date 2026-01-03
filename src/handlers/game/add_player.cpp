@@ -37,11 +37,11 @@ auto AddPlayer::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const -> std::string {
+    auto game_session_id_str = request.GetPathArg("game_id");
+    auto game_session_id = Utils::StringToUuid(game_session_id_str);
+
     const auto& request_body = request.RequestBody();
     auto json = userver::formats::json::FromString(request_body);
-
-    auto game_session_id_str = json["game_session_id"].As<std::string>();
-    auto game_session_id = Utils::StringToUuid(game_session_id_str);
     auto player_name = json["player_name"].As<std::string>();
 
     logic::game::GameService game_service(impl_->pg_cluster);

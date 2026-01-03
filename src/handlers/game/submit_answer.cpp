@@ -37,6 +37,8 @@ auto SubmitAnswer::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const -> std::string {
+    auto game_session_id_str = request.GetPathArg("game_id");
+
     const auto& request_body = request.RequestBody();
     auto json = userver::formats::json::FromString(request_body);
 

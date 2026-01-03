@@ -35,7 +35,7 @@ auto GetVariantsByQuestionId::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    const auto& stringQuestionId = request.GetArg("question_id");
+    const auto& stringQuestionId = request.GetPathArg("question_id");
 
     const auto variants = NStorage::GetVariantsByQuestionId(
         impl_->pg_cluster, Utils::StringToUuid(stringQuestionId)
