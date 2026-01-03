@@ -41,7 +41,7 @@ auto CreateQuestion::HandleRequestThrow(
     auto questionData = Utils::GetQuestionDataFromRequest(request);
     questionData.pack_id = Utils::StringToUuid(pack_id_str);
     const auto createdQuestionOpt =
-        NStorage::CreateQuestion(impl_->pg_cluster, questionData);
+        NStorage::CreateQuestion(impl_->pg_cluster, std::move(questionData));
 
     if (!createdQuestionOpt) {
         request.GetHttpResponse().SetStatus(

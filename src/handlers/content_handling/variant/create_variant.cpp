@@ -9,6 +9,7 @@
 #include "models/variant.hpp"
 #include "storage/variants.hpp"
 #include "utils/constants.hpp"
+#include "utils/string_to_uuid.hpp"
 #include "utils/variant.hpp"
 
 namespace game_userver {
@@ -37,8 +38,8 @@ auto CreateVariant::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    auto question_id_str = request.GetPathArg("question_id");
     auto variantData = Utils::GetVariantDataFromRequest(request);
+    const auto& question_id_str = request.GetPathArg("question_id");
     variantData.question_id = Utils::StringToUuid(question_id_str);
 
     const auto createdVariantOpt =
