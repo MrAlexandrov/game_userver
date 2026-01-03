@@ -13,18 +13,18 @@ struct Variant final {
     std::string text;
     bool is_correct;
 
-    auto Introspect() const;
+    [[nodiscard]] auto Introspect() const;
 };
 
-userver::formats::json::Value Serialize(
+auto Serialize(
     const Variant& variant,
     userver::formats::serialize::To<userver::formats::json::Value>
-);
+) -> userver::formats::json::Value;
 
-Variant Parse(
+auto Parse(
     const userver::formats::json::Value& json,
     userver::formats::parse::To<Variant>
-);
+) -> Variant;
 
 } // namespace Models
 
