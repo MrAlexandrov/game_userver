@@ -46,19 +46,16 @@ auto StartGame::HandleRequestThrow(
     logic::game::GameService game_service(impl_->pg_cluster);
     auto game_session = game_service.StartGame(game_session_id);
 
-    if (!game_session) {
+    userver::formats::json::ValueBuilder response;
+
+    if (!game_session.has_value()) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
-        return userver::formats::json::ToString(
-            userver::formats::json::ValueBuilder{
-                {"error", "Failed to start game"}
-        }
-                .ExtractValue()
-        );
+        response["error"] = "Failed to start game";
+        return userver::formats::json::ToString(response.ExtractValue());
     }
 
-    userver::formats::json::ValueBuilder response;
     response["id"] = boost::uuids::to_string(game_session->id);
     response["pack_id"] = boost::uuids::to_string(game_session->pack_id);
     response["state"] = game_session->state;

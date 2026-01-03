@@ -42,22 +42,19 @@ auto GetGameResults::HandleRequestThrow(
 
     logic::game::GameService game_service(impl_->pg_cluster);
 
+    userver::formats::json::ValueBuilder response;
+
     auto game_session = game_service.GetGameSession(game_session_id);
-    if (!game_session) {
+    if (!game_session.has_value()) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kNotFound
         );
-        return userver::formats::json::ToString(
-            userver::formats::json::ValueBuilder{
-                {"error", "Game session not found"}
-        }
-                .ExtractValue()
-        );
+        response["error"] = "Game session not found";
+        return userver::formats::json::ToString(response.ExtractValue());
     }
 
     auto players = game_service.GetPlayers(game_session_id);
 
-    userver::formats::json::ValueBuilder response;
     response["game_session"]["id"] = boost::uuids::to_string(game_session->id);
     response["game_session"]["state"] = game_session->state;
     response["game_session"]["current_question_index"] =

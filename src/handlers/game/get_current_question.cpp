@@ -43,32 +43,29 @@ auto GetCurrentQuestion::HandleRequestThrow(
     logic::game::GameService game_service(impl_->pg_cluster);
     auto game_question = game_service.GetCurrentQuestion(game_session_id);
 
-    if (!game_question) {
+    userver::formats::json::ValueBuilder response;
+
+    if (!game_question.has_value()) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kNotFound
         );
-        return userver::formats::json::ToString(
-            userver::formats::json::ValueBuilder{
-                {"error", "Question not found or game finished"}
-        }
-                .ExtractValue()
-        );
+        response["error"] = "Question not found or game finished";
+        return userver::formats::json::ToString(response.ExtractValue());
     }
 
-    userver::formats::json::ValueBuilder response;
     response["question"]["id"] =
         boost::uuids::to_string(game_question->question.id);
-    response["question"]["text"] = game_question->question.text;
-    if (game_question->question.image_url) {
+    response["question"]["text"] = game_question->question.data.text;
+    if (!game_question->question.data.image_url.empty()) {
         response["question"]["image_url"] =
-            game_question->question.image_url.value();
+            game_question->question.data.image_url;
     }
 
     auto variants_array = response["variants"];
     for (size_t i = 0; i < game_question->variants.size(); ++i) {
         const auto& variant = game_question->variants[i];
         variants_array[i]["id"] = boost::uuids::to_string(variant.id);
-        variants_array[i]["text"] = variant.text;
+        variants_array[i]["text"] = variant.data.text;
         // Don't send is_correct to client!
     }
 

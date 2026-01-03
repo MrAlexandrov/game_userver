@@ -47,19 +47,16 @@ auto AddPlayer::HandleRequestThrow(
     logic::game::GameService game_service(impl_->pg_cluster);
     auto player = game_service.AddPlayer(game_session_id, player_name);
 
-    if (!player) {
+    userver::formats::json::ValueBuilder response;
+
+    if (!player.has_value()) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
-        return userver::formats::json::ToString(
-            userver::formats::json::ValueBuilder{
-                {"error", "Failed to add player"}
-        }
-                .ExtractValue()
-        );
+        response["error"] = "Failed to add player";
+        return userver::formats::json::ToPrettyString(response.ExtractValue());
     }
 
-    userver::formats::json::ValueBuilder response;
     response["id"] = boost::uuids::to_string(player->id);
     response["game_session_id"] =
         boost::uuids::to_string(player->game_session_id);
