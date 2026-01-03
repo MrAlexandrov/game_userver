@@ -72,7 +72,11 @@ add_library(${PROJECT_NAME}_objs OBJECT
 
     src/logic/greeting/greeting.cpp
 
+    # src/models
+    src/models/game_session.cpp
     src/models/pack.cpp
+    src/models/player_answer.cpp
+    src/models/player.cpp
     src/models/question.cpp
     src/models/variant.cpp
 

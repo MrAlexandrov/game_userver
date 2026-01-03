@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package Models.Proto;
+
+message GameSession {
+    optional string id = 1;
+    optional string pack_id = 2;
+    optional string state = 3;  // waiting, active, finished
+    optional int32 current_question_index = 4;
+    optional int64 created_at = 5;
+    optional int64 started_at = 6;
+    optional int64 finished_at = 7;
+}
+
+message Player {
+    optional string id = 1;
+    optional string game_session_id = 2;
+    optional string name = 3;
+    optional int32 score = 4;
+    optional int64 joined_at = 5;
+}
+
+message PlayerAnswer {
+    optional string id = 1;
+    optional string player_id = 2;
+    optional string question_id = 3;
+    optional string variant_id = 4;
+    optional bool is_correct = 5;
+    optional int64 answered_at = 6;
+}
