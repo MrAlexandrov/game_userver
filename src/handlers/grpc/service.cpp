@@ -14,7 +14,9 @@
 #include "storage/questions.hpp"
 #include "storage/variants.hpp"
 #include "utils/constants.hpp"
+#include "utils/pack.hpp"
 #include "utils/question.hpp"
+#include "utils/variant.hpp"
 
 namespace game_userver {
 
@@ -32,13 +34,13 @@ Service::Service(
 auto Service::CreatePack(
     CallContext&, handlers::api::CreatePackRequest&& request
 ) -> Service::CreatePackResult {
-    if (request.title().empty()) {
-        return grpc::Status{
-            grpc::StatusCode::INVALID_ARGUMENT, "Title cannot be empty"
-        };
+    auto pack_data = Utils::GetPackDataFromRequest(std::move(request));
+    if (!pack_data.has_value()) {
+        return pack_data.error();
     }
 
-    auto createdPackOpt = NStorage::CreatePack(pg_cluster_, request.title());
+    const auto createdPackOpt =
+        NStorage::CreatePack(pg_cluster_, pack_data.value());
 
     if (!createdPackOpt.has_value()) {
         return grpc::Status{
@@ -50,7 +52,7 @@ auto Service::CreatePack(
     handlers::api::CreatePackResponse responce;
     auto* mutualPack = responce.mutable_pack();
     mutualPack->set_id(boost::uuids::to_string(createdPack.id));
-    mutualPack->set_title(std::move(createdPack.title));
+    mutualPack->set_title(std::move(createdPack.data.title));
     return responce;
 }
 
@@ -75,7 +77,7 @@ auto Service::GetPackById(
     handlers::api::GetPackByIdResponse responce;
     auto* mutualPack = responce.mutable_pack();
     mutualPack->set_id(boost::uuids::to_string(getPackById.id));
-    mutualPack->set_title(std::move(getPackById.title));
+    mutualPack->set_title(std::move(getPackById.data.title));
     return responce;
 }
 
@@ -89,7 +91,7 @@ auto Service::GetAllPacks(
     for (auto&& pack : getAllPacks) {
         Models::Proto::Pack packResponse;
         packResponse.set_id(boost::uuids::to_string(pack.id));
-        packResponse.set_title(std::move(pack.title));
+        packResponse.set_title(std::move(pack.data.title));
 
         mutualPacks->Add(std::move(packResponse));
     }
@@ -193,22 +195,12 @@ auto Service::GetQuestionsByPackId(
 auto Service::CreateVariant(
     CallContext& /*context*/, handlers::api::CreateVariantRequest&& request
 ) -> Service::CreateVariantResult {
-    if (request.text().empty()) {
-        return grpc::Status{
-            grpc::StatusCode::INVALID_ARGUMENT, "Variant text cannot be empty"
-        };
+    auto variant_data = Utils::GetVariantDataFromRequest(std::move(request));
+    if (!variant_data.has_value()) {
+        return variant_data.error();
     }
-
-    auto question_id = Utils::StringToUuid(request.question_id());
-    if (question_id.is_nil()) {
-        return grpc::Status{
-            grpc::StatusCode::INVALID_ARGUMENT,
-            "Invalid UUID format: " + request.question_id()
-        };
-    }
-    auto createdVariantOpt = NStorage::CreateVariant(
-        pg_cluster_, question_id, request.text(), request.is_correct()
-    );
+    auto createdVariantOpt =
+        NStorage::CreateVariant(pg_cluster_, variant_data.value());
 
     if (!createdVariantOpt.has_value()) {
         return grpc::Status{
