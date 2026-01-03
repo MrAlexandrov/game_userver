@@ -9,7 +9,7 @@ namespace game_userver {
 
 class GetPack final : public userver::server::handlers::HttpHandlerBase {
 public:
-    static constexpr std::string_view kName = "handler-get-pack-details";
+    static constexpr std::string_view kName = "handler-create-pack";
 
     GetPack(
         const userver::components::ComponentConfig&,
