@@ -80,7 +80,11 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/models/question.cpp
     src/models/variant.cpp
 
+    src/storage/game_sessions.cpp
     src/storage/packs.cpp
+    src/storage/player_answers.cpp
+    src/storage/players.cpp
+    src/storage/questions_and_variants.cpp
     src/storage/questions.cpp
     src/storage/variants.cpp
 
