@@ -47,7 +47,7 @@ auto CreateQuestion::HandleRequestThrow(
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
-        return {};
+        throw std::runtime_error("Failed to create question");
     }
 
     return userver::formats::json::ToPrettyString(

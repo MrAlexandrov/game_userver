@@ -1,6 +1,7 @@
 #include "create_variant.hpp"
 
 #include <sql_queries/sql_queries.hpp>
+#include <stdexcept>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
@@ -48,7 +49,7 @@ auto CreateVariant::HandleRequestThrow(
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
-        return {};
+        throw std::runtime_error("Failed to create variant");
     }
 
     return userver::formats::json::ToPrettyString(

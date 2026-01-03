@@ -48,7 +48,7 @@ auto CreatePack::HandleRequestThrow(
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
-        return {};
+        throw std::runtime_error("Failed to create pack");
     }
     const auto& [id, pack_title] = createdPackOpt.value();
 
