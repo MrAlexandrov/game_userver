@@ -14,9 +14,8 @@ using namespace sql_queries::sql;
 using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
-auto CreateVariant(
-    ClusterPtr pg_cluster_, const Models::Variant::VariantData& data
-) -> std::optional<Models::Variant> {
+auto CreateVariant(ClusterPtr pg_cluster_, const Utils::VariantData& data)
+    -> std::optional<Models::Variant> {
     auto result = pg_cluster_->Execute(
         kMaster, kCreateVariant, data.question_id, data.text, data.is_correct
     );

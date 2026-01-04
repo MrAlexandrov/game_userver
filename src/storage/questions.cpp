@@ -13,7 +13,7 @@ using namespace sql_queries::sql;
 using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
-auto CreateQuestion(ClusterPtr pg_cluster_, QuestionData&& data)
+auto CreateQuestion(ClusterPtr pg_cluster_, Utils::QuestionData&& data)
     -> std::optional<Models::Question> {
     auto result = pg_cluster_->Execute(
         kMaster, kCreateQuestion, data.pack_id, data.text, data.image_url

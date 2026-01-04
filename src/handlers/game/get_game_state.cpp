@@ -55,17 +55,16 @@ auto GetGameState::HandleRequestThrow(
 
     response["question"]["id"] =
         boost::uuids::to_string(game_question->question.id);
-    response["question"]["text"] = game_question->question.data.text;
-    if (!game_question->question.data.image_url.empty()) {
-        response["question"]["image_url"] =
-            game_question->question.data.image_url;
+    response["question"]["text"] = game_question->question.text;
+    if (!game_question->question.image_url.empty()) {
+        response["question"]["image_url"] = game_question->question.image_url;
     }
 
     auto variants_array = response["variants"];
     for (size_t i = 0; i < game_question->variants.size(); ++i) {
         const auto& variant = game_question->variants[i];
         variants_array[i]["id"] = boost::uuids::to_string(variant.id);
-        variants_array[i]["text"] = variant.data.text;
+        variants_array[i]["text"] = variant.text;
         // Don't send is_correct to client!
     }
 

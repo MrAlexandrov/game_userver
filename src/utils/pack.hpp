@@ -7,9 +7,11 @@
 #include <grpcpp/support/status.h>
 #include <userver/server/http/http_request.hpp>
 
-using PackData = Models::Pack::PackData;
-
 namespace Utils {
+
+struct PackData {
+    std::string title;
+};
 
 auto GetPackDataFromRequest(const userver::server::http::HttpRequest& request)
     -> PackData;

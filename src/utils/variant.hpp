@@ -7,9 +7,13 @@
 #include <grpcpp/support/status.h>
 #include <userver/server/http/http_request.hpp>
 
-using VariantData = Models::Variant::VariantData;
-
 namespace Utils {
+
+struct VariantData {
+    boost::uuids::uuid question_id;
+    std::string text;
+    bool is_correct;
+};
 
 auto GetVariantDataFromRequest(
     const userver::server::http::HttpRequest& request

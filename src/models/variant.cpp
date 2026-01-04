@@ -8,7 +8,7 @@
 namespace Models {
 
 auto Variant::Introspect() const {
-    return std::tie(id, data.question_id, data.text, data.is_correct);
+    return std::tie(id, question_id, text, is_correct);
 }
 
 auto Serialize(
@@ -18,9 +18,9 @@ auto Serialize(
 ) -> userver::formats::json::Value {
     userver::formats::json::ValueBuilder item;
     item["id"] = boost::uuids::to_string(variant.id);
-    item["question_id"] = boost::uuids::to_string(variant.data.question_id);
-    item["text"] = variant.data.text;
-    item["is_correct"] = variant.data.is_correct;
+    item["question_id"] = boost::uuids::to_string(variant.question_id);
+    item["text"] = variant.text;
+    item["is_correct"] = variant.is_correct;
     return item.ExtractValue();
 }
 
@@ -31,13 +31,10 @@ auto Parse(
 ) -> Variant {
     return Variant{
         .id = Utils::StringToUuid(json["id"].As<std::string>()),
-        .data = {
-                 .question_id =
-                Utils::StringToUuid(json["question_id"].As<std::string>()),
-                 .text = json["text"].As<std::string>(),
-                 .is_correct =
-                Utils::StringToBool(json["is_correct"].As<std::string>()),
-                 },
+        .question_id =
+            Utils::StringToUuid(json["question_id"].As<std::string>()),
+        .text = json["text"].As<std::string>(),
+        .is_correct = Utils::StringToBool(json["is_correct"].As<std::string>()),
     };
 }
 

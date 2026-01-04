@@ -10,12 +10,8 @@
 namespace Models {
 
 struct Pack final {
-    struct PackData {
-        std::string title;
-    };
-
     boost::uuids::uuid id{};
-    PackData data;
+    std::string title;
 
     [[nodiscard]] auto Introspect() const;
 };

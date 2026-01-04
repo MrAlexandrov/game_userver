@@ -7,9 +7,13 @@
 #include <grpcpp/support/status.h>
 #include <userver/server/http/http_request.hpp>
 
-using QuestionData = Models::Question::QuestionData;
-
 namespace Utils {
+
+struct QuestionData {
+    boost::uuids::uuid pack_id;
+    std::string text;
+    std::string image_url;
+};
 
 auto GetQuestionDataFromRequest(
     const userver::server::http::HttpRequest& request

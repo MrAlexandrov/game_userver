@@ -4,15 +4,15 @@
 #include <userver/storages/postgres/result_set.hpp>
 
 #include "models/variant.hpp"
+#include "utils/variant.hpp"
 
 namespace NStorage {
 
 using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
-auto CreateVariant(
-    ClusterPtr pg_cluster_, const Models::Variant::VariantData& data
-) -> std::optional<Models::Variant>;
+auto CreateVariant(ClusterPtr pg_cluster_, const Utils::VariantData& data)
+    -> std::optional<Models::Variant>;
 
 auto GetVariantById(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& variant_id

@@ -52,7 +52,7 @@ auto Service::CreatePack(
     handlers::api::CreatePackResponse responce;
     auto* mutualPack = responce.mutable_pack();
     mutualPack->set_id(boost::uuids::to_string(createdPack.id));
-    mutualPack->set_title(std::move(createdPack.data.title));
+    mutualPack->set_title(std::move(createdPack.title));
     return responce;
 }
 
@@ -77,7 +77,7 @@ auto Service::GetPackById(
     handlers::api::GetPackByIdResponse responce;
     auto* mutualPack = responce.mutable_pack();
     mutualPack->set_id(boost::uuids::to_string(getPackById.id));
-    mutualPack->set_title(std::move(getPackById.data.title));
+    mutualPack->set_title(std::move(getPackById.title));
     return responce;
 }
 
@@ -91,7 +91,7 @@ auto Service::GetAllPacks(
     for (auto&& pack : getAllPacks) {
         Models::Proto::Pack packResponse;
         packResponse.set_id(boost::uuids::to_string(pack.id));
-        packResponse.set_title(std::move(pack.data.title));
+        packResponse.set_title(std::move(pack.title));
 
         mutualPacks->Add(std::move(packResponse));
     }
@@ -120,11 +120,11 @@ auto Service::CreateQuestion(
     auto* mutableQuestion = response.mutable_question();
     mutableQuestion->set_id(boost::uuids::to_string(createdQuestion.id));
     mutableQuestion->set_pack_id(
-        boost::uuids::to_string(createdQuestion.data.pack_id)
+        boost::uuids::to_string(createdQuestion.pack_id)
     );
-    mutableQuestion->set_text(std::move(createdQuestion.data.text));
-    if (!createdQuestion.data.image_url.empty()) {
-        mutableQuestion->set_image_url(createdQuestion.data.image_url);
+    mutableQuestion->set_text(std::move(createdQuestion.text));
+    if (!createdQuestion.image_url.empty()) {
+        mutableQuestion->set_image_url(createdQuestion.image_url);
     }
 
     return response;
@@ -150,12 +150,10 @@ auto Service::GetQuestionById(
     handlers::api::GetQuestionByIdResponse response;
     auto* mutableQuestion = response.mutable_question();
     mutableQuestion->set_id(boost::uuids::to_string(question.id));
-    mutableQuestion->set_pack_id(
-        boost::uuids::to_string(question.data.pack_id)
-    );
-    mutableQuestion->set_text(std::move(question.data.text));
-    if (!question.data.image_url.empty()) {
-        mutableQuestion->set_image_url(std::move(question.data.image_url));
+    mutableQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
+    mutableQuestion->set_text(std::move(question.text));
+    if (!question.image_url.empty()) {
+        mutableQuestion->set_image_url(std::move(question.image_url));
     }
 
     return response;
@@ -180,12 +178,10 @@ auto Service::GetQuestionsByPackId(
     for (auto&& question : questions) {
         auto* newQuestion = mutableQuestions->Add();
         newQuestion->set_id(boost::uuids::to_string(question.id));
-        newQuestion->set_pack_id(
-            boost::uuids::to_string(question.data.pack_id)
-        );
-        newQuestion->set_text(std::move(question.data.text));
-        if (!question.data.image_url.empty()) {
-            newQuestion->set_image_url(std::move(question.data.image_url));
+        newQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
+        newQuestion->set_text(std::move(question.text));
+        if (!question.image_url.empty()) {
+            newQuestion->set_image_url(std::move(question.image_url));
         }
     }
 
@@ -213,10 +209,10 @@ auto Service::CreateVariant(
     auto* mutableVariant = response.mutable_variant();
     mutableVariant->set_id(boost::uuids::to_string(createdVariant.id));
     mutableVariant->set_question_id(
-        boost::uuids::to_string(createdVariant.data.question_id)
+        boost::uuids::to_string(createdVariant.question_id)
     );
-    mutableVariant->set_text(std::move(createdVariant.data.text));
-    mutableVariant->set_is_correct(createdVariant.data.is_correct);
+    mutableVariant->set_text(std::move(createdVariant.text));
+    mutableVariant->set_is_correct(createdVariant.is_correct);
 
     return response;
 }
@@ -242,10 +238,10 @@ auto Service::GetVariantById(
     auto* mutableVariant = response.mutable_variant();
     mutableVariant->set_id(boost::uuids::to_string(variant.id));
     mutableVariant->set_question_id(
-        boost::uuids::to_string(variant.data.question_id)
+        boost::uuids::to_string(variant.question_id)
     );
-    mutableVariant->set_text(std::move(variant.data.text));
-    mutableVariant->set_is_correct(variant.data.is_correct);
+    mutableVariant->set_text(std::move(variant.text));
+    mutableVariant->set_is_correct(variant.is_correct);
 
     return response;
 }
@@ -270,10 +266,10 @@ auto Service::GetVariantsByQuestionId(
         auto* newVariant = mutableVariants->Add();
         newVariant->set_id(boost::uuids::to_string(variant.id));
         newVariant->set_question_id(
-            boost::uuids::to_string(variant.data.question_id)
+            boost::uuids::to_string(variant.question_id)
         );
-        newVariant->set_text(std::move(variant.data.text));
-        newVariant->set_is_correct(variant.data.is_correct);
+        newVariant->set_text(std::move(variant.text));
+        newVariant->set_is_correct(variant.is_correct);
     }
 
     return response;

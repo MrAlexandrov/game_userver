@@ -8,14 +8,10 @@
 namespace Models {
 
 struct Variant final {
-    struct VariantData {
-        boost::uuids::uuid question_id;
-        std::string text;
-        bool is_correct;
-    };
-
     boost::uuids::uuid id{};
-    VariantData data;
+    boost::uuids::uuid question_id;
+    std::string text;
+    bool is_correct;
 
     [[nodiscard]] auto Introspect() const;
 };
