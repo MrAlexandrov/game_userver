@@ -42,10 +42,9 @@ auto CreatePack::HandleRequestThrow(
 ) const -> std::string {
     using userver::logging::Level::kDebug;
 
-    const auto packData = Utils::GetPackDataFromRequest(request);
+    const auto pack = Utils::GetPackFromRequest(request);
 
-    const auto createdPackOpt =
-        NStorage::CreatePack(impl_->pg_cluster, packData);
+    const auto createdPackOpt = NStorage::CreatePack(impl_->pg_cluster, pack);
     if (!createdPackOpt) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError

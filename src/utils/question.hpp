@@ -9,17 +9,10 @@
 
 namespace Utils {
 
-struct QuestionData {
-    boost::uuids::uuid pack_id;
-    std::string text;
-    std::string image_url;
-};
+auto GetQuestionFromRequest(const userver::server::http::HttpRequest& request)
+    -> Models::Question;
 
-auto GetQuestionDataFromRequest(
-    const userver::server::http::HttpRequest& request
-) -> QuestionData;
-
-auto GetQuestionDataFromRequest(handlers::api::CreateQuestionRequest&& request)
-    -> std::expected<QuestionData, grpc::Status>;
+auto GetQuestionFromRequest(handlers::api::CreateQuestionRequest&& request)
+    -> std::expected<Models::Question, grpc::Status>;
 
 } // namespace Utils

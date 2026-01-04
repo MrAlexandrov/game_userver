@@ -38,12 +38,12 @@ auto CreateVariant::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    auto variantData = Utils::GetVariantDataFromRequest(request);
+    auto variant = Utils::GetVariantFromRequest(request);
     const auto& question_id_str = request.GetPathArg("question_id");
-    variantData.question_id = Utils::StringToUuid(question_id_str);
+    variant.question_id = Utils::StringToUuid(question_id_str);
 
     const auto createdVariantOpt =
-        NStorage::CreateVariant(impl_->pg_cluster, variantData);
+        NStorage::CreateVariant(impl_->pg_cluster, variant);
 
     if (!createdVariantOpt) {
         request.GetHttpResponse().SetStatus(

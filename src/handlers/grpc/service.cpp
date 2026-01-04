@@ -34,13 +34,12 @@ Service::Service(
 auto Service::CreatePack(
     CallContext&, handlers::api::CreatePackRequest&& request
 ) -> Service::CreatePackResult {
-    auto pack_data = Utils::GetPackDataFromRequest(std::move(request));
-    if (!pack_data.has_value()) {
-        return pack_data.error();
+    auto pack = Utils::GetPackFromRequest(std::move(request));
+    if (!pack.has_value()) {
+        return pack.error();
     }
 
-    const auto createdPackOpt =
-        NStorage::CreatePack(pg_cluster_, pack_data.value());
+    const auto createdPackOpt = NStorage::CreatePack(pg_cluster_, pack.value());
 
     if (!createdPackOpt.has_value()) {
         return grpc::Status{
@@ -101,13 +100,13 @@ auto Service::GetAllPacks(
 auto Service::CreateQuestion(
     CallContext& /*context*/, handlers::api::CreateQuestionRequest&& request
 ) -> Service::CreateQuestionResult {
-    auto question_data = Utils::GetQuestionDataFromRequest(std::move(request));
-    if (!question_data.has_value()) {
-        return question_data.error();
+    auto question = Utils::GetQuestionFromRequest(std::move(request));
+    if (!question.has_value()) {
+        return question.error();
     }
 
     const auto createdQuestionOpt =
-        NStorage::CreateQuestion(pg_cluster_, std::move(question_data.value()));
+        NStorage::CreateQuestion(pg_cluster_, std::move(question.value()));
 
     if (!createdQuestionOpt.has_value()) {
         return grpc::Status{
@@ -191,12 +190,12 @@ auto Service::GetQuestionsByPackId(
 auto Service::CreateVariant(
     CallContext& /*context*/, handlers::api::CreateVariantRequest&& request
 ) -> Service::CreateVariantResult {
-    auto variant_data = Utils::GetVariantDataFromRequest(std::move(request));
-    if (!variant_data.has_value()) {
-        return variant_data.error();
+    auto variant = Utils::GetVariantFromRequest(std::move(request));
+    if (!variant.has_value()) {
+        return variant.error();
     }
     auto createdVariantOpt =
-        NStorage::CreateVariant(pg_cluster_, variant_data.value());
+        NStorage::CreateVariant(pg_cluster_, variant.value());
 
     if (!createdVariantOpt.has_value()) {
         return grpc::Status{

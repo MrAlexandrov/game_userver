@@ -14,10 +14,11 @@ using namespace sql_queries::sql;
 using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
-auto CreateVariant(ClusterPtr pg_cluster_, const Utils::VariantData& data)
+auto CreateVariant(ClusterPtr pg_cluster_, const Models::Variant& variant)
     -> std::optional<Models::Variant> {
     auto result = pg_cluster_->Execute(
-        kMaster, kCreateVariant, data.question_id, data.text, data.is_correct
+        kMaster, kCreateVariant, variant.question_id, variant.text,
+        variant.is_correct
     );
     return result.AsOptionalSingleRow<Models::Variant>(
         userver::storages::postgres::kRowTag

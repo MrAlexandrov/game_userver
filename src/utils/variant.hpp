@@ -9,17 +9,10 @@
 
 namespace Utils {
 
-struct VariantData {
-    boost::uuids::uuid question_id;
-    std::string text;
-    bool is_correct;
-};
+auto GetVariantFromRequest(const userver::server::http::HttpRequest& request)
+    -> Models::Variant;
 
-auto GetVariantDataFromRequest(
-    const userver::server::http::HttpRequest& request
-) -> VariantData;
-
-auto GetVariantDataFromRequest(handlers::api::CreateVariantRequest&& request)
-    -> std::expected<VariantData, grpc::Status>;
+auto GetVariantFromRequest(handlers::api::CreateVariantRequest&& request)
+    -> std::expected<Models::Variant, grpc::Status>;
 
 } // namespace Utils

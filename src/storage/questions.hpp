@@ -4,14 +4,13 @@
 #include <userver/storages/postgres/result_set.hpp>
 
 #include "models/question.hpp"
-#include "utils/question.hpp"
 
 namespace NStorage {
 
 using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
-auto CreateQuestion(ClusterPtr pg_cluster_, Utils::QuestionData&& data)
+auto CreateQuestion(ClusterPtr pg_cluster_, Models::Question&& question)
     -> std::optional<Models::Question>;
 
 auto GetQuestionById(

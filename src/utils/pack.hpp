@@ -9,14 +9,10 @@
 
 namespace Utils {
 
-struct PackData {
-    std::string title;
-};
+auto GetPackFromRequest(const userver::server::http::HttpRequest& request)
+    -> Models::Pack;
 
-auto GetPackDataFromRequest(const userver::server::http::HttpRequest& request)
-    -> PackData;
-
-auto GetPackDataFromRequest(handlers::api::CreatePackRequest&& request)
-    -> std::expected<PackData, grpc::Status>;
+auto GetPackFromRequest(handlers::api::CreatePackRequest&& request)
+    -> std::expected<Models::Pack, grpc::Status>;
 
 } // namespace Utils

@@ -37,11 +37,11 @@ auto CreateQuestion::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    auto questionData = Utils::GetQuestionDataFromRequest(request);
+    auto question = Utils::GetQuestionFromRequest(request);
     const auto& pack_id_str = request.GetPathArg("pack_id");
-    questionData.pack_id = Utils::StringToUuid(pack_id_str);
+    question.pack_id = Utils::StringToUuid(pack_id_str);
     const auto createdQuestionOpt =
-        NStorage::CreateQuestion(impl_->pg_cluster, std::move(questionData));
+        NStorage::CreateQuestion(impl_->pg_cluster, std::move(question));
 
     if (!createdQuestionOpt) {
         request.GetHttpResponse().SetStatus(
