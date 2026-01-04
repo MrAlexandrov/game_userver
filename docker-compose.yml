@@ -29,8 +29,8 @@ services:
           - POSTGRES_USER=user
           - POSTGRES_PASSWORD=password
           - PREFIX=${PREFIX:-~/.local}
-          - CPU_LIMIT=4
-          - CC
+          - CPU_LIMIT=8
+          - CC=gcc-13
           - CCACHE_DIR=/game_userver/.ccache
           - CCACHE_HASHDIR
           - CCACHE_NOHASHDIR
@@ -38,7 +38,7 @@ services:
           - CCACHE_SIZE
           - CMAKE_OPTS
           - CORES_DIR=/cores
-          - CXX
+          - CXX=g++-13
           - MAKE_OPTS
           - CMAKE_OPTIONS
         volumes:
@@ -48,7 +48,12 @@ services:
           - 8080:8080
         working_dir: /game_userver
         entrypoint:
-          - ./tests/run_as_user.sh
+          - ./run_as_user.sh
+        command: >
+          bash -c "
+            cd /game_userver && make build-release
+            /game_userver/build_release/game_userver --config /game_userver/configs/static_config.yaml --config_vars /game_userver/configs/config_vars.yaml
+          "
         depends_on:
           postgres:
             condition: service_healthy

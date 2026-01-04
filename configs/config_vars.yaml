@@ -9,4 +9,4 @@ server-port: 8080
 grpc-server-port: 8081
 
 # change to URI of your postgres database
-pg-connection: postgresql://user:password@localhost:5433/game_userver_db_1
+pg-connection: postgresql://user:password@postgres:5432/game_userver_db_1

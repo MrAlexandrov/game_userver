@@ -3,6 +3,8 @@
 # Exit on any error and treat unset variables as errors
 set -euo pipefail
 
+sudo apt install -y g++-13 gcc-13
+
 DIR_UID="$(stat -c '%u' .)"
 
 if ! id -u user > /dev/null 2> /dev/null; then
