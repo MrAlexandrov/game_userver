@@ -34,11 +34,9 @@ auto GetQuestionsAndVariantsByPackId(
                 row["question_id"].As<boost::uuids::uuid>();
             Models::Question question = {
                 .id = question_id,
-                .data = {
-                         .pack_id = row["question_pack_id"].As<boost::uuids::uuid>(),
-                         .text = row["question_text"].As<std::string>(),
-                         .image_url = row["question_image_url"].As<std::string>(),
-                         },
+                .pack_id = row["question_pack_id"].As<boost::uuids::uuid>(),
+                .text = row["question_text"].As<std::string>(),
+                .image_url = row["question_image_url"].As<std::string>(),
             };
             questions_map[question_id] = std::move(question);
         }
@@ -49,11 +47,9 @@ auto GetQuestionsAndVariantsByPackId(
                 row["variant_question_id"].As<boost::uuids::uuid>();
             Models::Variant variant = {
                 .id = row["variant_id"].As<boost::uuids::uuid>(),
-                .data = {
-                         .question_id = question_id,
-                         .text = row["variant_text"].As<std::string>(),
-                         .is_correct = row["variant_is_correct"].As<bool>(),
-                         },
+                .question_id = question_id,
+                .text = row["variant_text"].As<std::string>(),
+                .is_correct = row["variant_is_correct"].As<bool>(),
             };
             variants_map[question_id].push_back(std::move(variant));
         }

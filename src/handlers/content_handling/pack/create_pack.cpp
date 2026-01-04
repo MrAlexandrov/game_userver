@@ -52,10 +52,10 @@ auto CreatePack::HandleRequestThrow(
         );
         throw std::runtime_error("Failed to create pack");
     }
-    const auto& [id, data] = createdPackOpt.value();
+    const auto& [id, title] = createdPackOpt.value();
 
     LOG(kDebug) << "inserted pack:\n"
-                << boost::uuids::to_string(id) << " " << data.title;
+                << boost::uuids::to_string(id) << " " << title;
 
     return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{createdPackOpt.value()}
