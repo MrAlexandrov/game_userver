@@ -51,7 +51,7 @@ services:
         working_dir: /game_userver
         entrypoint:
           - ./run_as_user.sh
-        command: ["make", "--in-docker-start-release"]
+        command: ["bash", "-c", "make -- --in-docker-start-release"]
         depends_on:
           postgres:
             condition: service_healthy
