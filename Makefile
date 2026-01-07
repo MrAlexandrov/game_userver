@@ -27,19 +27,34 @@ CMAKE_RELEASE_FLAGS += -DCMAKE_BUILD_TYPE=Release $(CMAKE_COMMON_FLAGS)
 .PHONY: all
 all: test-debug test-release
 
+# Build Docker image
+.PHONY: docker-build
+docker-build:
+	$(DOCKER_COMPOSE) build
+
+# Start services (build if needed)
+.PHONY: up
 up:
-	$(DOCKER_COMPOSE) down
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) up --build -d
 	$(DOCKER_COMPOSE) logs -f
 
+# Stop services
+.PHONY: down
 down:
 	$(DOCKER_COMPOSE) down
 
+# Rebuild from scratch and start
+.PHONY: restart
 restart:
 	$(DOCKER_COMPOSE) down
 	$(DOCKER_COMPOSE) build --no-cache
 	$(DOCKER_COMPOSE) up -d
 	$(DOCKER_COMPOSE) logs -f
+
+# Rebuild Docker image without cache
+.PHONY: docker-rebuild
+docker-rebuild:
+	$(DOCKER_COMPOSE) build --no-cache
 
 logs:
 	$(DOCKER_COMPOSE) logs -f

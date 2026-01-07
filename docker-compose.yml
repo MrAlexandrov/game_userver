@@ -22,7 +22,12 @@ services:
           retries: 5
 
     game-userver:
-        image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                USER_UID: ${USER_UID:-1000}
+                USER_GID: ${USER_GID:-1000}
         privileged: true
         environment:
           - POSTGRES_DB=game_userver_db_1
@@ -47,13 +52,7 @@ services:
         ports:
           - 8080:8080
         working_dir: /game_userver
-        entrypoint:
-          - ./run_as_user.sh
-        command: >
-          bash -c "
-            cd /game_userver && make build-release
-            /game_userver/build_release/game_userver --config /game_userver/configs/static_config.yaml --config_vars /game_userver/configs/config_vars.yaml
-          "
+        command: make --in-docker-start-release
         depends_on:
           postgres:
             condition: service_healthy

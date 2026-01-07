@@ -3,18 +3,25 @@
 # Exit on any error and treat unset variables as errors
 set -euo pipefail
 
-sudo apt install -y g++-13 gcc-13
+# This script is now simplified since compilers are installed in Dockerfile
+# It only handles user creation/modification if needed
 
 DIR_UID="$(stat -c '%u' .)"
 
-if ! id -u user > /dev/null 2> /dev/null; then
+# Check if user exists and handle UID conflicts
+if ! id -u user > /dev/null 2>&1; then
+    # User doesn't exist, create it
     if [ "$DIR_UID" = "0" ]; then
         useradd --create-home --no-user-group user
     else
         useradd --create-home --no-user-group --uid $DIR_UID user
     fi
 elif [ "$DIR_UID" != "0" ]; then
-    usermod -u $DIR_UID user
+    # User exists but UID might be different
+    CURRENT_UID=$(id -u user)
+    if [ "$CURRENT_UID" != "$DIR_UID" ]; then
+        usermod -u $DIR_UID user
+    fi
 fi
 
 HOME=/home/user sudo -E -u user "$@"
