@@ -25,9 +25,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-            args:
-                USER_UID: ${USER_UID:-1000}
-                USER_GID: ${USER_GID:-1000}
         privileged: true
         environment:
           - POSTGRES_DB=game_userver_db_1
@@ -52,6 +49,8 @@ services:
         ports:
           - 8080:8080
         working_dir: /game_userver
+        entrypoint:
+          - ./run_as_user.sh
         command: make --in-docker-start-release
         depends_on:
           postgres:
