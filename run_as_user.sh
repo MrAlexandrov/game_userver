@@ -14,13 +14,15 @@ if ! id -u user > /dev/null 2>&1; then
     if [ "$DIR_UID" = "0" ]; then
         useradd --create-home --no-user-group user
     else
-        useradd --create-home --no-user-group --uid $DIR_UID user
+        # Use --non-unique to allow UID conflicts with system users
+        useradd --create-home --no-user-group --non-unique --uid $DIR_UID user
     fi
 elif [ "$DIR_UID" != "0" ]; then
     # User exists but UID might be different
     CURRENT_UID=$(id -u user)
     if [ "$CURRENT_UID" != "$DIR_UID" ]; then
-        usermod -u $DIR_UID user
+        # Use --non-unique to allow UID conflicts
+        usermod --non-unique -u $DIR_UID user
     fi
 fi
 
