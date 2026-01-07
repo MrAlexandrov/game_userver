@@ -1,12 +1,13 @@
 FROM ghcr.io/userver-framework/ubuntu-24.04-userver-base:latest
 
-# Install C++23 compatible compilers (already available in Ubuntu 24.04)
+# Install C++23 compatible compilers and required tools
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     g++-13 \
     gcc-13 \
     cmake \
     ccache \
+    sudo \
     && rm -rf /var/lib/apt/lists/*
 
 # Set C++23 compilers as default
