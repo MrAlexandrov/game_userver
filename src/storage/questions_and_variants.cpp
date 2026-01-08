@@ -41,8 +41,8 @@ auto GetQuestionsAndVariantsByPackId(
             questions_map[question_id] = std::move(question);
         }
 
-        // Try to get variant data
-        {
+        // Try to get variant data (only if variant exists - not NULL from LEFT JOIN)
+        if (!row["variant_id"].IsNull()) {
             const auto question_id =
                 row["variant_question_id"].As<boost::uuids::uuid>();
             Models::Variant variant = {
