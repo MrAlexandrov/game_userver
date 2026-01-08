@@ -60,12 +60,12 @@ auto GetGameState::HandleRequestThrow(
         response["question"]["image_url"] = game_question->question.image_url;
     }
 
-    auto variants_array = response["variants"];
-    for (size_t i = 0; i < game_question->variants.size(); ++i) {
-        const auto& variant = game_question->variants[i];
-        variants_array[i]["id"] = boost::uuids::to_string(variant.id);
-        variants_array[i]["text"] = variant.text;
+    for (const auto& variant : game_question->variants) {
+        userver::formats::json::ValueBuilder variant_builder;
+        variant_builder["id"] = boost::uuids::to_string(variant.id);
+        variant_builder["text"] = variant.text;
         // Don't send is_correct to client!
+        response["variants"].PushBack(variant_builder.ExtractValue());
     }
 
     return userver::formats::json::ToPrettyString(response.ExtractValue());
