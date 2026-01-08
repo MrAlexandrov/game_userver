@@ -50,6 +50,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers/content_handling/component_list.cpp
     src/handlers/content_handling/pack/component_list.cpp
     src/handlers/content_handling/pack/create_pack.cpp
+    src/handlers/content_handling/pack/create_pack_from_yaml.cpp
     src/handlers/content_handling/pack/get_all_packs.cpp
     src/handlers/content_handling/pack/get_pack_by_id.cpp
     src/handlers/content_handling/question/component_list.cpp

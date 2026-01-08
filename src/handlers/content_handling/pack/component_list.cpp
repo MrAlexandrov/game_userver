@@ -1,6 +1,7 @@
 #include "component_list.hpp"
 
 #include "create_pack.hpp"
+#include "create_pack_from_yaml.hpp"
 #include "get_all_packs.hpp"
 #include "get_pack_by_id.hpp"
 
@@ -9,6 +10,7 @@ namespace game_userver::pack {
 auto GetPackHandlersComponentList() -> userver::components::ComponentList {
     return userver::components::ComponentList()
         .Append<CreatePack>()
+        .Append<CreatePackFromYaml>()
         .Append<GetAllPacks>()
         .Append<GetPack>();
 }
