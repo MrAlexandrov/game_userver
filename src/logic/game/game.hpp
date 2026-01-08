@@ -12,6 +12,7 @@
 #include "models/player_answer.hpp"
 #include "models/question.hpp"
 #include "models/variant.hpp"
+#include "game_observer.hpp"
 
 namespace game_userver::logic::game {
 
@@ -62,8 +63,17 @@ public:
     [[nodiscard]] auto GetPlayerAnswers(const boost::uuids::uuid& player_id)
         -> std::vector<Models::PlayerAnswer>;
 
+    // Observer management
+    void AddObserver(std::shared_ptr<IGameObserver> observer);
+    void RemoveObserver(std::shared_ptr<IGameObserver> observer);
+    void ClearObservers();
+    [[nodiscard]] GameObserverManager& GetObserverManager();
+
 private:
+    void NotifyObservers(const GameEvent& event);
+
     ClusterPtr pg_cluster_;
+    GameObserverManager observer_manager_;
 };
 
 } // namespace game_userver::logic::game
