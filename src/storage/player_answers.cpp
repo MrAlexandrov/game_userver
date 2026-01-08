@@ -52,4 +52,20 @@ auto CheckVariantCorrectnessById(
     return row["is_correct"].As<bool>();
 }
 
+auto GetAnswersCountForQuestion(
+    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
+    const boost::uuids::uuid& question_id
+) -> int {
+    auto result = pg_cluster_->Execute(
+        kSlave, kGetAnswersCountForQuestion, game_session_id, question_id
+    );
+
+    if (result.IsEmpty()) {
+        return 0;
+    }
+
+    const auto row = result[0];
+    return row["count"].As<int>();
+}
+
 } // namespace NStorage

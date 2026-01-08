@@ -31,4 +31,9 @@ auto CheckVariantCorrectnessById(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& variant_id
 ) -> std::optional<bool>;
 
+auto GetAnswersCountForQuestion(
+    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
+    const boost::uuids::uuid& question_id
+) -> int;
+
 } // namespace NStorage

@@ -127,20 +127,36 @@ auto GameService::SubmitAnswer(
         }
     }
 
+    // Get all players in this game session
+    auto all_players =
+        NStorage::GetPlayersByGameSessionId(pg_cluster_, game_session->id);
+
+    // Get count of answers for current question
+    auto answers_count = NStorage::GetAnswersCountForQuestion(
+        pg_cluster_, game_session->id, current_question.id
+    );
+
+    // Check if all players have answered
+    bool all_players_answered =
+        (answers_count >= static_cast<int>(all_players.size()));
+
     // Check if this was the last question
-    if (game_session->current_question_index ==
-        static_cast<int>(questions_and_variants.size()) - 1) {
-        // End the game
+    bool is_last_question =
+        (game_session->current_question_index ==
+         static_cast<int>(questions_and_variants.size()) - 1);
+
+    if (is_last_question && all_players_answered) {
+        // All players answered the last question - end the game
         NStorage::EndGameSession(pg_cluster_, player->game_session_id);
-        return is_correct ? GameResult::kGameFinished
-                          : GameResult::kGameFinished;
-    } else {
-        // Advance to the next question
+        return GameResult::kGameFinished;
+    } else if (!is_last_question && all_players_answered) {
+        // All players answered - advance to the next question
         NStorage::AdvanceToNextQuestion(
             pg_cluster_, player->game_session_id,
             game_session->current_question_index + 1
         );
     }
+    // If not all players answered yet, just return the result without advancing
 
     return is_correct ? GameResult::kCorrect : GameResult::kIncorrect;
 }
