@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../game_observer.hpp"
-#include <userver/logging/log.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <userver/logging/log.hpp>
 
 namespace game_userver::logic::game::observers {
 
@@ -10,7 +10,12 @@ namespace game_userver::logic::game::observers {
 class LoggingObserver : public IGameObserver {
 public:
     void OnEvent(const GameEvent& event) override {
-        std::visit([this](const auto& e) { LogEvent(e); }, event);
+        std::visit(
+            [this](const auto& e) {
+                LogEvent(e);
+            },
+            event
+        );
     }
 
 private:
@@ -53,8 +58,7 @@ private:
     void LogEvent(const AllPlayersAnsweredEvent& event) {
         LOG_INFO() << "All players answered question "
                    << boost::uuids::to_string(event.question_id)
-                   << " (index: " << event.question_index
-                   << ") in game "
+                   << " (index: " << event.question_index << ") in game "
                    << boost::uuids::to_string(event.game_session_id)
                    << ", total answers: " << event.answers_count;
     }

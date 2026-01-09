@@ -1,9 +1,9 @@
 #pragma once
 
 #include "game_events.hpp"
+#include <functional>
 #include <memory>
 #include <vector>
-#include <functional>
 
 namespace game_userver::logic::game {
 
@@ -38,12 +38,17 @@ public:
     }
 
     // Очистить всех наблюдателей
-    void ClearObservers() { observers_.clear(); }
+    void ClearObservers() {
+        observers_.clear();
+    }
 
     // Уведомить всех наблюдателей о событии
     void NotifyObservers(const GameEvent& event) const {
         GameEventType event_type = std::visit(
-            [](const auto& e) { return e.type; }, event
+            [](const auto& e) {
+                return e.type;
+            },
+            event
         );
 
         for (const auto& observer : observers_) {
@@ -54,7 +59,9 @@ public:
     }
 
     // Получить количество наблюдателей
-    [[nodiscard]] size_t GetObserverCount() const { return observers_.size(); }
+    [[nodiscard]] size_t GetObserverCount() const {
+        return observers_.size();
+    }
 
 private:
     std::vector<std::shared_ptr<IGameObserver>> observers_;

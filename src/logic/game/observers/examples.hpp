@@ -5,8 +5,8 @@
 #include "notification_observer.hpp"
 #include "statistics_observer.hpp"
 
-#include <userver/logging/log.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <userver/logging/log.hpp>
 
 namespace game_userver::logic::game::observers {
 
@@ -14,7 +14,12 @@ namespace game_userver::logic::game::observers {
 class GameProgressObserver : public IGameObserver {
 public:
     void OnEvent(const GameEvent& event) override {
-        std::visit([this](const auto& e) { TrackProgress(e); }, event);
+        std::visit(
+            [this](const auto& e) {
+                TrackProgress(e);
+            },
+            event
+        );
     }
 
     bool ShouldHandleEvent(GameEventType type) const override {
@@ -46,8 +51,8 @@ private:
 
     void TrackProgress(const GameFinishedEvent& event) {
         LOG_INFO() << "[PROGRESS] Game finished: "
-                   << boost::uuids::to_string(event.game_session_id)
-                   << " with " << event.total_questions << " questions";
+                   << boost::uuids::to_string(event.game_session_id) << " with "
+                   << event.total_questions << " questions";
     }
 
     void TrackProgress(const PlayerScoreUpdatedEvent& event) {}
@@ -56,8 +61,8 @@ private:
 // Пример: Observer для отправки уведомлений в Telegram
 class TelegramNotificationObserver : public IGameObserver {
 public:
-    using TelegramSender =
-        std::function<void(const std::string& chat_id, const std::string& message)>;
+    using TelegramSender = std::function<
+        void(const std::string& chat_id, const std::string& message)>;
 
     TelegramNotificationObserver(
         TelegramSender sender, const std::string& admin_chat_id
@@ -65,7 +70,12 @@ public:
         : sender_(std::move(sender)), admin_chat_id_(admin_chat_id) {}
 
     void OnEvent(const GameEvent& event) override {
-        std::visit([this](const auto& e) { SendTelegramNotification(e); }, event);
+        std::visit(
+            [this](const auto& e) {
+                SendTelegramNotification(e);
+            },
+            event
+        );
     }
 
     bool ShouldHandleEvent(GameEventType type) const override {
@@ -98,7 +108,8 @@ private:
 
     void SendTelegramNotification(const GameFinishedEvent& event) {
         std::string message = "🏁 Игра завершена!\n";
-        message += "Всего вопросов: " + std::to_string(event.total_questions) + "\n";
+        message +=
+            "Всего вопросов: " + std::to_string(event.total_questions) + "\n";
         message += "Игроков: " + std::to_string(event.total_players);
         SendMessage(message);
     }
@@ -110,8 +121,8 @@ private:
             try {
                 sender_(admin_chat_id_, message);
             } catch (const std::exception& e) {
-                LOG_ERROR() << "Failed to send Telegram notification: "
-                            << e.what();
+                LOG_ERROR()
+                    << "Failed to send Telegram notification: " << e.what();
             }
         }
     }
@@ -124,7 +135,12 @@ private:
 class MetricsObserver : public IGameObserver {
 public:
     void OnEvent(const GameEvent& event) override {
-        std::visit([this](const auto& e) { CollectMetrics(e); }, event);
+        std::visit(
+            [this](const auto& e) {
+                CollectMetrics(e);
+            },
+            event
+        );
     }
 
     struct Metrics {
@@ -137,9 +153,13 @@ public:
         int total_incorrect_answers = 0;
     };
 
-    [[nodiscard]] const Metrics& GetMetrics() const { return metrics_; }
+    [[nodiscard]] const Metrics& GetMetrics() const {
+        return metrics_;
+    }
 
-    void ResetMetrics() { metrics_ = Metrics{}; }
+    void ResetMetrics() {
+        metrics_ = Metrics{};
+    }
 
 private:
     void CollectMetrics(const GameSessionCreatedEvent& event) {

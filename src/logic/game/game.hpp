@@ -7,12 +7,12 @@
 
 #include <userver/storages/postgres/cluster.hpp>
 
+#include "game_observer.hpp"
 #include "models/game_session.hpp"
 #include "models/player.hpp"
 #include "models/player_answer.hpp"
 #include "models/question.hpp"
 #include "models/variant.hpp"
-#include "game_observer.hpp"
 
 namespace game_userver::logic::game {
 

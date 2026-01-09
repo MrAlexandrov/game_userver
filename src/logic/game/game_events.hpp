@@ -34,8 +34,7 @@ struct GameEventBase {
     GameEventBase(
         GameEventType event_type, const boost::uuids::uuid& session_id
     )
-        : type(event_type),
-          timestamp(std::chrono::system_clock::now()),
+        : type(event_type), timestamp(std::chrono::system_clock::now()),
           game_session_id(session_id) {}
 };
 
@@ -71,8 +70,7 @@ struct GameStartedEvent : GameEventBase {
         const boost::uuids::uuid& session_id, int players, int questions
     )
         : GameEventBase(GameEventType::kGameStarted, session_id),
-          total_players(players),
-          total_questions(questions) {}
+          total_players(players), total_questions(questions) {}
 };
 
 // Событие: Представлен вопрос
@@ -86,8 +84,7 @@ struct QuestionPresentedEvent : GameEventBase {
         const Models::Question& question_val, int index, int total
     )
         : GameEventBase(GameEventType::kQuestionPresented, session_id),
-          question(question_val),
-          question_index(index),
+          question(question_val), question_index(index),
           total_questions(total) {}
 };
 
@@ -107,11 +104,8 @@ struct AnswerSubmittedEvent : GameEventBase {
         const std::string& name
     )
         : GameEventBase(GameEventType::kAnswerSubmitted, session_id),
-          player_id(player_id_val),
-          question_id(question_id_val),
-          variant_id(variant_id_val),
-          is_correct(correct),
-          player_name(name) {}
+          player_id(player_id_val), question_id(question_id_val),
+          variant_id(variant_id_val), is_correct(correct), player_name(name) {}
 };
 
 // Событие: Все игроки ответили на вопрос
@@ -127,10 +121,8 @@ struct AllPlayersAnsweredEvent : GameEventBase {
         int answers
     )
         : GameEventBase(GameEventType::kAllPlayersAnswered, session_id),
-          question_id(question_id_val),
-          question_index(index),
-          total_players(players),
-          answers_count(answers) {}
+          question_id(question_id_val), question_index(index),
+          total_players(players), answers_count(answers) {}
 };
 
 // Событие: Переход к следующему вопросу
@@ -142,8 +134,7 @@ struct QuestionAdvancedEvent : GameEventBase {
         const boost::uuids::uuid& session_id, int prev_index, int new_index
     )
         : GameEventBase(GameEventType::kQuestionAdvanced, session_id),
-          previous_question_index(prev_index),
-          new_question_index(new_index) {}
+          previous_question_index(prev_index), new_question_index(new_index) {}
 };
 
 // Событие: Игра завершена
@@ -155,8 +146,7 @@ struct GameFinishedEvent : GameEventBase {
         const boost::uuids::uuid& session_id, int questions, int players
     )
         : GameEventBase(GameEventType::kGameFinished, session_id),
-          total_questions(questions),
-          total_players(players) {}
+          total_questions(questions), total_players(players) {}
 };
 
 // Событие: Обновлён счёт игрока
@@ -172,9 +162,7 @@ struct PlayerScoreUpdatedEvent : GameEventBase {
         int old_val, int new_val
     )
         : GameEventBase(GameEventType::kPlayerScoreUpdated, session_id),
-          player_id(player_id_val),
-          player_name(name),
-          old_score(old_val),
+          player_id(player_id_val), player_name(name), old_score(old_val),
           new_score(new_val) {}
 };
 

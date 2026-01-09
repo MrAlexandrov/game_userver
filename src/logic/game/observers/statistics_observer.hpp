@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../game_observer.hpp"
-#include <map>
-#include <mutex>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <map>
+#include <mutex>
 
 namespace game_userver::logic::game::observers {
 
@@ -26,7 +26,12 @@ struct GameSessionStats {
 class StatisticsObserver : public IGameObserver {
 public:
     void OnEvent(const GameEvent& event) override {
-        std::visit([this](const auto& e) { ProcessEvent(e); }, event);
+        std::visit(
+            [this](const auto& e) {
+                ProcessEvent(e);
+            },
+            event
+        );
     }
 
     // Получить статистику по игровой сессии

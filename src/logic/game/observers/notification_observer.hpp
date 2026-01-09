@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../game_observer.hpp"
-#include <userver/logging/log.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <functional>
 #include <string>
+#include <userver/logging/log.hpp>
 
 namespace game_userver::logic::game::observers {
 
@@ -26,7 +26,8 @@ struct Notification {
 };
 
 // Observer для отправки уведомлений
-// Может использоваться для уведомления администратора, отправки в Telegram и т.д.
+// Может использоваться для уведомления администратора, отправки в Telegram и
+// т.д.
 class NotificationObserver : public IGameObserver {
 public:
     using NotificationHandler = std::function<void(const Notification&)>;
@@ -35,7 +36,12 @@ public:
         : handler_(std::move(handler)) {}
 
     void OnEvent(const GameEvent& event) override {
-        std::visit([this](const auto& e) { ProcessEvent(e); }, event);
+        std::visit(
+            [this](const auto& e) {
+                ProcessEvent(e);
+            },
+            event
+        );
     }
 
     bool ShouldHandleEvent(GameEventType type) const override {
@@ -56,7 +62,8 @@ private:
         Notification notification{
             NotificationType::kPlayerJoined, event.game_session_id,
             "Player '" + event.player.name + "' joined the game",
-            event.timestamp};
+            event.timestamp
+        };
         SendNotification(notification);
     }
 
@@ -66,7 +73,8 @@ private:
             "Game started with " + std::to_string(event.total_players) +
                 " players and " + std::to_string(event.total_questions) +
                 " questions",
-            event.timestamp};
+            event.timestamp
+        };
         SendNotification(notification);
     }
 
@@ -85,7 +93,8 @@ private:
             "All " + std::to_string(event.total_players) +
                 " players answered question " +
                 std::to_string(event.question_index + 1),
-            event.timestamp};
+            event.timestamp
+        };
         SendNotification(notification);
     }
 
@@ -99,17 +108,19 @@ private:
             "Game finished! Total questions: " +
                 std::to_string(event.total_questions) +
                 ", players: " + std::to_string(event.total_players),
-            event.timestamp};
+            event.timestamp
+        };
         SendNotification(notification);
     }
 
     void ProcessEvent(const PlayerScoreUpdatedEvent& event) {
         Notification notification{
             NotificationType::kPlayerScoreChanged, event.game_session_id,
-            "Player '" + event.player_name + "' score updated: " +
-                std::to_string(event.old_score) + " -> " +
+            "Player '" + event.player_name +
+                "' score updated: " + std::to_string(event.old_score) + " -> " +
                 std::to_string(event.new_score),
-            event.timestamp};
+            event.timestamp
+        };
         SendNotification(notification);
     }
 
@@ -131,12 +142,11 @@ class AdminNotificationObserver : public NotificationObserver {
 public:
     AdminNotificationObserver()
         : NotificationObserver([](const Notification& notification) {
-              LOG_WARNING() << "[ADMIN NOTIFICATION] "
-                            << "Game: "
-                            << boost::uuids::to_string(
-                                   notification.game_session_id
-                               )
-                            << " - " << notification.message;
+              LOG_WARNING()
+                  << "[ADMIN NOTIFICATION] "
+                  << "Game: "
+                  << boost::uuids::to_string(notification.game_session_id)
+                  << " - " << notification.message;
           }) {}
 };
 
