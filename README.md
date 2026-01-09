@@ -79,6 +79,8 @@ For detailed setup instructions, see:
 - [Development Setup Guide](docs/development_setup.md) - Comprehensive setup guide
 - [Setup Guide](docs/setup_guide.md) - Detailed instructions for compilation and running the service
 - [Editor Setup](docs/editor_setup.md) - Instructions for configuring autocompletion in various editors
+- [Telegram Bot](telegram_bot/README.md) - Telegram bot frontend for the quiz game
+- [Bot Migration Guide](TELEGRAM_BOT_MIGRATION.md) - Migration guide from old bot version
 
 ## License
 
