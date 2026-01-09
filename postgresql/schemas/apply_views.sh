@@ -15,7 +15,7 @@ echo -e "${BLUE}=== Применение SQL Views ===${NC}"
 # Параметры подключения (можно переопределить через переменные окружения)
 DB_HOST="${DB_HOST:-localhost}"
 DB_PORT="${DB_PORT:-5432}"
-DB_NAME="${DB_NAME:-game_db}"
+DB_NAME="${DB_NAME:-game_userver_db_1}"
 DB_USER="${DB_USER:-user}"
 
 # Путь к файлу с views
