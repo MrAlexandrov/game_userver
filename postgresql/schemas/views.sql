@@ -308,36 +308,36 @@ COMMENT ON VIEW quiz.game_history_view IS
 'История завершённых игр с результатами и статистикой';
 
 
--- View: Топ игроков (общий рейтинг)
-CREATE OR REPLACE VIEW quiz.top_players_view AS
-SELECT 
-    pl.name AS player_name,
-    COUNT(DISTINCT pl.game_session_id) AS games_played,
-    SUM(pl.score) AS total_score,
-    ROUND(AVG(pl.score), 2) AS average_score,
-    (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id) AS total_answers,
-    (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id AND pa.is_correct = true) AS correct_answers,
-    CASE 
-        WHEN (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id) > 0 THEN
-            ROUND(
-                (SELECT COUNT(*)::NUMERIC FROM quiz.player_answers pa WHERE pa.player_id = pl.id AND pa.is_correct = true) * 100.0 / 
-                (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id),
-                2
-            )
-        ELSE 0
-    END AS accuracy_percentage,
-    -- Количество побед
-    (SELECT COUNT(*) FROM (
-        SELECT game_session_id, MAX(score) as max_score
-        FROM quiz.players
-        GROUP BY game_session_id
-    ) AS max_scores
-    WHERE max_scores.game_session_id IN (SELECT game_session_id FROM quiz.players WHERE name = pl.name)
-    AND max_scores.max_score = (SELECT score FROM quiz.players WHERE game_session_id = max_scores.game_session_id AND name = pl.name)
-    ) AS wins
-FROM quiz.players pl
-GROUP BY pl.name
-ORDER BY total_score DESC, accuracy_percentage DESC;
+-- -- View: Топ игроков (общий рейтинг)
+-- CREATE OR REPLACE VIEW quiz.top_players_view AS
+-- SELECT 
+--     pl.name AS player_name,
+--     COUNT(DISTINCT pl.game_session_id) AS games_played,
+--     SUM(pl.score) AS total_score,
+--     ROUND(AVG(pl.score), 2) AS average_score,
+--     (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id) AS total_answers,
+--     (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id AND pa.is_correct = true) AS correct_answers,
+--     CASE 
+--         WHEN (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id) > 0 THEN
+--             ROUND(
+--                 (SELECT COUNT(*)::NUMERIC FROM quiz.player_answers pa WHERE pa.player_id = pl.id AND pa.is_correct = true) * 100.0 / 
+--                 (SELECT COUNT(*) FROM quiz.player_answers pa WHERE pa.player_id = pl.id),
+--                 2
+--             )
+--         ELSE 0
+--     END AS accuracy_percentage,
+--     -- Количество побед
+--     (SELECT COUNT(*) FROM (
+--         SELECT game_session_id, MAX(score) as max_score
+--         FROM quiz.players
+--         GROUP BY game_session_id
+--     ) AS max_scores
+--     WHERE max_scores.game_session_id IN (SELECT game_session_id FROM quiz.players WHERE name = pl.name)
+--     AND max_scores.max_score = (SELECT score FROM quiz.players WHERE game_session_id = max_scores.game_session_id AND name = pl.name)
+--     ) AS wins
+-- FROM quiz.players pl
+-- GROUP BY pl.name
+-- ORDER BY total_score DESC, accuracy_percentage DESC;
 
 COMMENT ON VIEW quiz.top_players_view IS 
 'Общий рейтинг игроков по всем играм';
