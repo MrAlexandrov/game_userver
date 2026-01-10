@@ -339,5 +339,5 @@ COMMENT ON VIEW quiz.game_history_view IS
 -- GROUP BY pl.name
 -- ORDER BY total_score DESC, accuracy_percentage DESC;
 
-COMMENT ON VIEW quiz.top_players_view IS 
-'Общий рейтинг игроков по всем играм';
+-- COMMENT ON VIEW quiz.top_players_view IS 
+-- 'Общий рейтинг игроков по всем играм';
