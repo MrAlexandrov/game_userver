@@ -128,7 +128,7 @@ export DB_CONNECTION := postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postg
 
 # Internal hidden targets that are used only in docker environment
 --in-docker-start-debug --in-docker-start-release: --in-docker-start-%: install-%
-	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql
+# 	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql
 	/home/user/.local/bin/$(PROJECT_NAME) \
 		--config /home/user/.local/etc/$(PROJECT_NAME)/static_config.yaml \
 		--config_vars /home/user/.local/etc/$(PROJECT_NAME)/config_vars.docker.yaml
