@@ -10,7 +10,7 @@ services:
           - 5432:5432
         volumes:
           - ./postgresql/schemas:/docker-entrypoint-initdb.d
-          - ./.pgdata:/var/lib/postgresql/data
+          - ./postgres_data/var/lib/postgresql/data
         networks:
           - postgres
         healthcheck:
