@@ -5,24 +5,18 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json.hpp>
 #include <userver/logging/log.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
-#include "logic/game/game.hpp"
-#include "utils/constants.hpp"
+#include "components/game_service/game_service_component.hpp"
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
 struct AddPlayer::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
+    logic::game::GameService& game_service;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
+        : game_service(context.FindComponent<components::GameServiceComponent>()
+                           .GetGameService()) {}
 };
 
 AddPlayer::AddPlayer(
@@ -44,8 +38,7 @@ auto AddPlayer::HandleRequestThrow(
     auto json = userver::formats::json::FromString(request_body);
     auto player_name = json["player_name"].As<std::string>();
 
-    logic::game::GameService game_service(impl_->pg_cluster);
-    auto player = game_service.AddPlayer(game_session_id, player_name);
+    auto player = impl_->game_service.AddPlayer(game_session_id, player_name);
 
     userver::formats::json::ValueBuilder response;
 

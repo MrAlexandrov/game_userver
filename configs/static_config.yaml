@@ -160,6 +160,10 @@ components_manager:
             sync-start: true
             connlimit_mode: manual
 
+        game-service:
+            # Singleton GameService component
+            # No additional configuration needed
+
         grpc-server:
             # The single listening port for incoming RPCs
             port: $grpc-server-port

@@ -5,24 +5,18 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json.hpp>
 #include <userver/logging/log.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
-#include "logic/game/game.hpp"
-#include "utils/constants.hpp"
+#include "components/game_service/game_service_component.hpp"
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
 
 struct CreateGameSession::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
+    logic::game::GameService& game_service;
 
     explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
+        : game_service(context.FindComponent<components::GameServiceComponent>()
+                           .GetGameService()) {}
 };
 
 CreateGameSession::CreateGameSession(
@@ -43,8 +37,8 @@ auto CreateGameSession::HandleRequestThrow(
     auto pack_id_str = json["pack_id"].As<std::string>();
     auto pack_id = Utils::StringToUuid(pack_id_str);
 
-    logic::game::GameService game_service(impl_->pg_cluster);
-    auto game_session = game_service.CreateGameSession(pack_id);
+    // Используем singleton GameService из компонента
+    auto game_session = impl_->game_service.CreateGameSession(pack_id);
 
     userver::formats::json::ValueBuilder response;
 
