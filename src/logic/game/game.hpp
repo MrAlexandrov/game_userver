@@ -8,6 +8,7 @@
 #include <userver/storages/postgres/cluster.hpp>
 
 #include "game_observer.hpp"
+#include "logic/validators/answer_validator.hpp"
 #include "models/game_session.hpp"
 #include "models/player.hpp"
 #include "models/player_answer.hpp"
@@ -16,6 +17,7 @@
 
 namespace game_userver::logic::game {
 
+using game_userver::logic::validators::PlayerAnswerInput;
 using userver::storages::postgres::ClusterPtr;
 
 enum class GameResult {
@@ -51,7 +53,7 @@ public:
 
     [[nodiscard]] auto SubmitAnswer(
         const boost::uuids::uuid& player_id,
-        const boost::uuids::uuid& variant_id
+        const PlayerAnswerInput& answer_input
     ) -> GameResult;
 
     [[nodiscard]] auto GetGameSession(const boost::uuids::uuid& game_session_id)

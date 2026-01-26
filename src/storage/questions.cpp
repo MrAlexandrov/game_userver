@@ -1,5 +1,6 @@
 #include "questions.hpp"
 #include "models/question.hpp"
+#include "models/question_type.hpp"
 
 #include <sql_queries/sql_queries.hpp>
 #include <userver/storages/postgres/cluster_types.hpp>
@@ -17,7 +18,7 @@ auto CreateQuestion(ClusterPtr pg_cluster_, Models::Question&& question)
     -> std::optional<Models::Question> {
     auto result = pg_cluster_->Execute(
         kMaster, kCreateQuestion, question.pack_id, question.text,
-        question.image_url
+        question.image_url, Models::ToString(question.question_type)
     );
     return result.AsOptionalSingleRow<Models::Question>(
         userver::storages::postgres::kRowTag

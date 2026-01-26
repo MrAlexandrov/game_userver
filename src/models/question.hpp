@@ -5,6 +5,8 @@
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
+#include "question_type.hpp"
+
 namespace Models {
 
 struct Question final {
@@ -12,6 +14,7 @@ struct Question final {
     boost::uuids::uuid pack_id;
     std::string text;
     std::string image_url;
+    QuestionType question_type;
 
     [[nodiscard]] auto Introspect() const;
 };

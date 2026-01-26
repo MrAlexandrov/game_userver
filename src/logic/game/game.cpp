@@ -2,6 +2,7 @@
 
 #include <userver/utils/assert.hpp>
 
+#include "logic/validators/validator_factory.hpp"
 #include "storage/game_sessions.hpp"
 #include "storage/player_answers.hpp"
 #include "storage/players.hpp"
@@ -131,16 +132,8 @@ auto GameService::GetCurrentQuestion(const boost::uuids::uuid& game_session_id)
 }
 
 auto GameService::SubmitAnswer(
-    const boost::uuids::uuid& player_id, const boost::uuids::uuid& variant_id
+    const boost::uuids::uuid& player_id, const PlayerAnswerInput& answer_input
 ) -> GameResult {
-    // First, check if the variant is correct
-    auto is_correct_opt =
-        NStorage::CheckVariantCorrectnessById(pg_cluster_, variant_id);
-    if (!is_correct_opt) {
-        return GameResult::kError;
-    }
-
-    bool is_correct = is_correct_opt.value();
 
     // Get the player to know which game session they're in
     auto player = NStorage::GetPlayerById(pg_cluster_, player_id);
@@ -172,9 +165,19 @@ auto GameService::SubmitAnswer(
     const auto& [current_question, _] =
         questions_and_variants[game_session->current_question_index];
 
+    // Use validator factory to validate answer
+    validators::ValidatorFactory validator_factory(pg_cluster_);
+    auto validator =
+        validator_factory.CreateValidator(current_question.question_type);
+
+    auto validation_result =
+        validator->Validate(current_question.id, answer_input);
+    bool is_correct = validation_result.is_correct;
+
     // Submit the player's answer
     auto player_answer = NStorage::SubmitPlayerAnswer(
-        pg_cluster_, player_id, current_question.id, variant_id, is_correct
+        pg_cluster_, player_id, current_question.id, answer_input.variant_id,
+        answer_input.text_answer, is_correct
     );
 
     if (!player_answer) {
@@ -182,8 +185,12 @@ auto GameService::SubmitAnswer(
     }
 
     // Уведомляем наблюдателей об отправке ответа
+    // For variant_id in event, use the submitted value or nil UUID for text
+    // answers
+    auto event_variant_id =
+        answer_input.variant_id.value_or(boost::uuids::nil_uuid());
     NotifyObservers(AnswerSubmittedEvent(
-        game_session->id, player_id, current_question.id, variant_id,
+        game_session->id, player_id, current_question.id, event_variant_id,
         is_correct, player->name
     ));
 

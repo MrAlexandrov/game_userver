@@ -8,7 +8,7 @@
 namespace Models {
 
 auto Question::Introspect() const {
-    return std::tie(id, pack_id, text, image_url);
+    return std::tie(id, pack_id, text, image_url, question_type);
 }
 
 auto Serialize(
@@ -21,6 +21,7 @@ auto Serialize(
     item["pack_id"] = boost::uuids::to_string(question.pack_id);
     item["text"] = question.text;
     item["image_url"] = question.image_url;
+    item["question_type"] = ToString(question.question_type);
     return item.ExtractValue();
 }
 
@@ -34,6 +35,8 @@ auto Parse(
         .pack_id = Utils::StringToUuid(json["pack_id"].As<std::string>()),
         .text = json["text"].As<std::string>(),
         .image_url = json["image_url"].As<std::string>(),
+        .question_type =
+            ParseQuestionType(json["question_type"].As<std::string>()),
     };
 }
 

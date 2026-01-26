@@ -19,8 +19,9 @@ using userver::storages::postgres::ResultSet;
 
 auto SubmitPlayerAnswer(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id,
-    const boost::uuids::uuid& question_id, const boost::uuids::uuid& variant_id,
-    bool is_correct
+    const boost::uuids::uuid& question_id,
+    const std::optional<boost::uuids::uuid>& variant_id,
+    const std::optional<std::string>& text_answer, bool is_correct
 ) -> std::optional<Models::PlayerAnswer>;
 
 auto GetPlayerAnswersByPlayerId(

@@ -2,42 +2,37 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <chrono>
-#include <optional>
 #include <string>
-
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
 namespace Models {
 
-struct PlayerAnswer final {
+struct TextAnswer final {
     boost::uuids::uuid id{};
-    boost::uuids::uuid player_id{};
-    boost::uuids::uuid question_id{};
-    std::optional<boost::uuids::uuid> variant_id{}; // For multiple_choice
-    std::optional<std::string> text_answer{};       // For free_text
-    bool is_correct{};
-    std::chrono::system_clock::time_point answered_at;
+    boost::uuids::uuid question_id;
+    std::string text;
+    std::chrono::system_clock::time_point created_at;
 
     [[nodiscard]] auto Introspect() const;
 };
 
 auto Serialize(
-    const PlayerAnswer& player_answer,
+    const TextAnswer& text_answer,
     userver::formats::serialize::To<userver::formats::json::Value>
 ) -> userver::formats::json::Value;
 
 auto Parse(
     const userver::formats::json::Value& json,
-    userver::formats::parse::To<PlayerAnswer>
-) -> PlayerAnswer;
+    userver::formats::parse::To<TextAnswer>
+) -> TextAnswer;
 
 } // namespace Models
 
 namespace userver::storages::postgres::io {
 
-template <> struct CppToUserPg<Models::PlayerAnswer> {
-    static constexpr DBTypeName postgres_name{"quiz.player_answer"};
+template <> struct CppToUserPg<Models::TextAnswer> {
+    static constexpr DBTypeName postgres_name{"quiz.text_answer"};
 };
 
 } // namespace userver::storages::postgres::io

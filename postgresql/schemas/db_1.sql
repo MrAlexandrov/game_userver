@@ -23,10 +23,12 @@ CREATE TABLE IF NOT EXISTS quiz.questions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     pack_id UUID NOT NULL REFERENCES quiz.packs(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
-    image_url TEXT
+    image_url TEXT,
+    question_type TEXT NOT NULL DEFAULT 'multiple_choice'
+        CHECK (question_type IN ('multiple_choice', 'free_text', 'custom'))
 );
 
--- Таблица variants
+-- Таблица variants (для вопросов типа multiple_choice)
 CREATE TABLE IF NOT EXISTS quiz.variants (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     question_id UUID NOT NULL REFERENCES quiz.questions(id) ON DELETE CASCADE,
@@ -34,9 +36,18 @@ CREATE TABLE IF NOT EXISTS quiz.variants (
     is_correct BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+-- Таблица text_answers (для вопросов типа free_text)
+CREATE TABLE IF NOT EXISTS quiz.text_answers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    question_id UUID NOT NULL REFERENCES quiz.questions(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- Индексы для ускорения JOIN'ов и фильтрации
 CREATE INDEX idx_questions_pack_id ON quiz.questions(pack_id);
 CREATE INDEX idx_variants_question_id ON quiz.variants(question_id);
+CREATE INDEX idx_text_answers_question_id ON quiz.text_answers(question_id);
 
 ---
 
@@ -49,7 +60,8 @@ CREATE TYPE quiz.question AS (
     id UUID,
     pack_id UUID,
     text TEXT,
-    image_url TEXT
+    image_url TEXT,
+    question_type TEXT
 );
 
 CREATE TYPE quiz.variant AS (
@@ -57,6 +69,13 @@ CREATE TYPE quiz.variant AS (
     question_id UUID,
     text TEXT,
     is_correct BOOLEAN
+);
+
+CREATE TYPE quiz.text_answer AS (
+    id UUID,
+    question_id UUID,
+    text TEXT,
+    created_at TIMESTAMP
 );
 
 -- Таблица game_sessions
@@ -79,14 +98,19 @@ CREATE TABLE IF NOT EXISTS quiz.players (
     joined_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Таблица player_answers
+-- Таблица player_answers (универсальная для всех типов вопросов)
 CREATE TABLE IF NOT EXISTS quiz.player_answers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     player_id UUID NOT NULL REFERENCES quiz.players(id) ON DELETE CASCADE,
     question_id UUID NOT NULL REFERENCES quiz.questions(id) ON DELETE CASCADE,
-    variant_id UUID NOT NULL REFERENCES quiz.variants(id) ON DELETE CASCADE,
+    variant_id UUID REFERENCES quiz.variants(id) ON DELETE CASCADE,  -- Для multiple_choice
+    text_answer TEXT,  -- Для free_text
     is_correct BOOLEAN NOT NULL,
-    answered_at TIMESTAMP NOT NULL DEFAULT NOW()
+    answered_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT check_answer_type CHECK (
+        (variant_id IS NOT NULL AND text_answer IS NULL) OR
+        (variant_id IS NULL AND text_answer IS NOT NULL)
+    )
 );
 
 -- Индексы для game tables
@@ -118,6 +142,7 @@ CREATE TYPE quiz.player_answer AS (
     player_id UUID,
     question_id UUID,
     variant_id UUID,
+    text_answer TEXT,
     is_correct BOOLEAN,
     answered_at TIMESTAMP
 );

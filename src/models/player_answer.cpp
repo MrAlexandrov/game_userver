@@ -8,7 +8,8 @@ namespace Models {
 
 auto PlayerAnswer::Introspect() const {
     return std::tie(
-        id, player_id, question_id, variant_id, is_correct, answered_at
+        id, player_id, question_id, variant_id, text_answer, is_correct,
+        answered_at
     );
 }
 
@@ -21,7 +22,15 @@ auto Serialize(
     item["id"] = boost::uuids::to_string(player_answer.id);
     item["player_id"] = boost::uuids::to_string(player_answer.player_id);
     item["question_id"] = boost::uuids::to_string(player_answer.question_id);
-    item["variant_id"] = boost::uuids::to_string(player_answer.variant_id);
+
+    if (player_answer.variant_id.has_value()) {
+        item["variant_id"] = boost::uuids::to_string(*player_answer.variant_id);
+    }
+
+    if (player_answer.text_answer.has_value()) {
+        item["text_answer"] = *player_answer.text_answer;
+    }
+
     item["is_correct"] = player_answer.is_correct;
 
     // Convert time point to string
@@ -46,8 +55,16 @@ auto Parse(
         Utils::StringToUuid(json["player_id"].As<std::string>());
     player_answer.question_id =
         Utils::StringToUuid(json["question_id"].As<std::string>());
-    player_answer.variant_id =
-        Utils::StringToUuid(json["variant_id"].As<std::string>());
+
+    if (json.HasMember("variant_id")) {
+        player_answer.variant_id =
+            Utils::StringToUuid(json["variant_id"].As<std::string>());
+    }
+
+    if (json.HasMember("text_answer")) {
+        player_answer.text_answer = json["text_answer"].As<std::string>();
+    }
+
     player_answer.is_correct = json["is_correct"].As<bool>();
 
     // Convert timestamp from milliseconds
