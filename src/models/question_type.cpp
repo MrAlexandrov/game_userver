@@ -6,7 +6,7 @@ namespace Models {
 
 namespace {
 
-constexpr userver::utils::TrivialBiMap kQuestionTypeMap = [](auto selector) {
+constexpr userver::utils::TrivialBiMap kQuestionTypeMap = [](auto selector) -> auto {
     return selector()
         .Case("multiple_choice", QuestionType::kMultipleChoice)
         .Case("free_text", QuestionType::kFreeText)
@@ -16,11 +16,11 @@ constexpr userver::utils::TrivialBiMap kQuestionTypeMap = [](auto selector) {
 } // namespace
 
 auto ToString(QuestionType type) -> std::string {
-    return std::string{kQuestionTypeMap.TryFindByFirst(type).value()};
+    return std::string{kQuestionTypeMap.TryFindBySecond(type).value()};
 }
 
 auto ParseQuestionType(std::string_view str) -> QuestionType {
-    auto result = kQuestionTypeMap.TryFindBySecond(str);
+    auto result = kQuestionTypeMap.TryFindByFirst(str);
     if (!result) {
         throw std::invalid_argument(
             "Unknown question type: " + std::string(str)
