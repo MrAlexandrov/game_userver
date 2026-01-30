@@ -1,6 +1,6 @@
 #include "utils/string_to_uuid.hpp"
 
-#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid.hpp> // NOLINT
 #include <boost/uuid/uuid_io.hpp>
 #include <userver/utest/utest.hpp>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid.hpp> // NOLINT
 #include <string>
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>

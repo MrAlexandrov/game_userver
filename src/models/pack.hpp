@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid.hpp> // NOLINT
 #include <string>
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value.hpp>

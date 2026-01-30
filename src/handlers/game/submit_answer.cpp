@@ -1,6 +1,6 @@
 #include "submit_answer.hpp"
 
-#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid.hpp> // NOLINT
 #include <boost/uuid/uuid_io.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json.hpp>

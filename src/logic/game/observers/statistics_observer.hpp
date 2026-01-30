@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../game_observer.hpp"
-#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid.hpp> // NOLINT
 #include <boost/uuid/uuid_io.hpp>
 #include <map>
 #include <mutex>

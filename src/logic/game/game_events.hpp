@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid.hpp> // NOLINT
 #include <chrono>
 #include <string>
 #include <variant>
