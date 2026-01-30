@@ -36,7 +36,7 @@ userver_add_sql_library(
     OUTPUT_DIR
     ${CMAKE_CURRENT_BINARY_DIR}
     SQL_FILES
-    src/queries/*.sql
+    src/queries/**/*.sql
 )
 
 add_library(${PROJECT_NAME}_objs OBJECT
