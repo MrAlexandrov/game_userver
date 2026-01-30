@@ -1,0 +1,25 @@
+title: Викторина по географии
+questions:
+  - text: Столица России
+    variants:
+      - text: Санкт-Петербург
+      - text: Москва
+        is_correct: true
+      - text: Казань
+      - text: Кострома
+  
+  - text: Самая длинная река в мире
+    variants:
+      - text: Нил
+        is_correct: true
+      - text: Амазонка
+      - text: Волга
+      - text: Миссисипи
+  
+  - text: Самая высокая гора в мире
+    variants:
+      - text: Килиманджаро
+      - text: Эльбрус
+      - text: Эверест
+        is_correct: true
+      - text: Монблан
