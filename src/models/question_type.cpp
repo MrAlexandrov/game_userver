@@ -6,7 +6,9 @@ namespace Models {
 
 std::string ToString(const QuestionType& questionType) {
     std::string type;
-    const auto& enumerators = userver::storages::postgres::io::CppToUserPg<QuestionType>().enumerators;
+    const auto& enumerators =
+        userver::storages::postgres::io::CppToUserPg<QuestionType>()
+            .enumerators;
     for (const auto& [literal, enumerator] : enumerators) {
         if (literal == questionType) {
             type = std::string{enumerator.data(), enumerator.size()};
@@ -21,13 +23,15 @@ QuestionType Parse(
     userver::formats::parse::To<QuestionType>
 ) {
     const auto& stringValue = value.As<std::string>();
-    const auto& enumerators = userver::storages::postgres::io::CppToUserPg<QuestionType>().enumerators;
+    const auto& enumerators =
+        userver::storages::postgres::io::CppToUserPg<QuestionType>()
+            .enumerators;
     for (const auto& [literal, enumerator] : enumerators) {
         if (enumerator == stringValue) {
             return literal;
         }
     }
-    
+
     throw userver::formats::json::ParseException(
         "Value of '" + value.GetPath() + "' (" + stringValue +
         ") is not parsable to QuestionType enum"
@@ -38,7 +42,8 @@ userver::formats::json::Value Serialize(
     const QuestionType& questionType,
     userver::formats::serialize::To<userver::formats::json::Value>
 ) {
-    return userver::formats::json::ValueBuilder(ToString(questionType)).ExtractValue();
+    return userver::formats::json::ValueBuilder(ToString(questionType))
+        .ExtractValue();
 }
 
 } // namespace Models

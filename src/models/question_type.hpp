@@ -36,12 +36,13 @@ userver::formats::json::Value Serialize(
 namespace userver::storages::postgres::io {
 
 template <>
-struct CppToUserPg<Models::QuestionType> : EnumMappingBase<Models::QuestionType> {
+struct CppToUserPg<Models::QuestionType>
+    : EnumMappingBase<Models::QuestionType> {
     static constexpr DBTypeName postgres_name = "text";
-    static constexpr EnumeratorList enumerators {
+    static constexpr EnumeratorList enumerators{
         {Models::QuestionType::kMultipleChoice, "multiple_choice"},
-        {Models::QuestionType::kFreeText, "free_text"},
-        {Models::QuestionType::kCustom, "custom"},
+        {Models::QuestionType::kFreeText,       "free_text"      },
+        {Models::QuestionType::kCustom,         "custom"         },
     };
 };
 
