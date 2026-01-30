@@ -37,9 +37,4 @@ const logic::game::GameService& GameServiceComponent::GetGameService() const {
     return *game_service_;
 }
 
-userver::yaml_config::Schema GameServiceComponent::GetStaticConfigSchema() {
-    return userver::yaml_config::MakeSchema<
-        userver::components::ComponentConfig>();
-}
-
 } // namespace game_userver::components

@@ -188,7 +188,7 @@ auto GameService::SubmitAnswer(
     // For variant_id in event, use the submitted value or nil UUID for text
     // answers
     auto event_variant_id =
-        answer_input.variant_id.value_or(boost::uuids::nil_uuid());
+        answer_input.variant_id.value_or(boost::uuids::uuid{});
     NotifyObservers(AnswerSubmittedEvent(
         game_session->id, player_id, current_question.id, event_variant_id,
         is_correct, player->name
