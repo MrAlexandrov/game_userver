@@ -29,7 +29,7 @@ public:
     [[nodiscard]] logic::game::GameService& GetGameService();
     [[nodiscard]] const logic::game::GameService& GetGameService() const;
 
-    static userver::yaml_config::Schema GetStaticConfigSchema();
+    // static userver::yaml_config::Schema GetStaticConfigSchema();
 
 private:
     std::unique_ptr<logic::game::GameService> game_service_;

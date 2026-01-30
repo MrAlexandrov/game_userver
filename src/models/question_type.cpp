@@ -1,32 +1,44 @@
 #include "question_type.hpp"
 
-#include <userver/utils/trivial_map.hpp>
+#include <userver/formats/json/value_builder.hpp>
 
 namespace Models {
 
-namespace {
-
-constexpr userver::utils::TrivialBiMap kQuestionTypeMap = [](auto selector) -> auto {
-    return selector()
-        .Case("multiple_choice", QuestionType::kMultipleChoice)
-        .Case("free_text", QuestionType::kFreeText)
-        .Case("custom", QuestionType::kCustom);
-};
-
-} // namespace
-
-auto ToString(QuestionType type) -> std::string {
-    return std::string{kQuestionTypeMap.TryFindBySecond(type).value()};
+std::string ToString(const QuestionType& questionType) {
+    std::string type;
+    const auto& enumerators = userver::storages::postgres::io::CppToUserPg<QuestionType>().enumerators;
+    for (const auto& [literal, enumerator] : enumerators) {
+        if (literal == questionType) {
+            type = std::string{enumerator.data(), enumerator.size()};
+            break;
+        }
+    }
+    return type;
 }
 
-auto ParseQuestionType(std::string_view str) -> QuestionType {
-    auto result = kQuestionTypeMap.TryFindByFirst(str);
-    if (!result) {
-        throw std::invalid_argument(
-            "Unknown question type: " + std::string(str)
-        );
+QuestionType Parse(
+    const userver::formats::json::Value& value,
+    userver::formats::parse::To<QuestionType>
+) {
+    const auto& stringValue = value.As<std::string>();
+    const auto& enumerators = userver::storages::postgres::io::CppToUserPg<QuestionType>().enumerators;
+    for (const auto& [literal, enumerator] : enumerators) {
+        if (enumerator == stringValue) {
+            return literal;
+        }
     }
-    return *result;
+    
+    throw userver::formats::json::ParseException(
+        "Value of '" + value.GetPath() + "' (" + stringValue +
+        ") is not parsable to QuestionType enum"
+    );
+}
+
+userver::formats::json::Value Serialize(
+    const QuestionType& questionType,
+    userver::formats::serialize::To<userver::formats::json::Value>
+) {
+    return userver::formats::json::ValueBuilder(ToString(questionType)).ExtractValue();
 }
 
 } // namespace Models

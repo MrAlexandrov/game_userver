@@ -87,6 +87,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     # src/logic
     src/logic/game/game.cpp
     src/logic/greeting/greeting.cpp
+    src/logic/validators/answer_validator.cpp
+    src/logic/validators/validator_factory.cpp
 
     # src/models
     src/models/game_session.cpp
@@ -94,6 +96,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/models/player_answer.cpp
     src/models/player.cpp
     src/models/question.cpp
+    src/models/question_type.cpp
+    src/models/text_answer.cpp
     src/models/variant.cpp
 
     src/storage/game_sessions.cpp
@@ -102,6 +106,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/storage/players.cpp
     src/storage/questions_and_variants.cpp
     src/storage/questions.cpp
+    src/storage/text_answers.cpp
     src/storage/variants.cpp
 
     # src/utils
