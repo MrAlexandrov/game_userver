@@ -7,7 +7,10 @@ namespace Custom {
 
 class Dependencies {
 public:
-    Dependencies(const userver::components::ComponentConfig&, const userver::components::ComponentContext&);
+    Dependencies(
+        const userver::components::ComponentConfig&,
+        const userver::components::ComponentContext&
+    );
 
     struct Extra {};
 
@@ -16,4 +19,4 @@ public:
 private:
 };
 
-}  // namespace Custom
+} // namespace Custom
