@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
-#include <userver/components/component_fwd.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
-#include <userver/utils/fast_pimpl.hpp>
 
 namespace game_userver {
+
+namespace components {
+class Storage;
+} // namespace components
 
 class CreateQuestion final : public userver::server::handlers::HttpHandlerBase {
 public:
@@ -24,10 +26,7 @@ public:
     ) const -> std::string override;
 
 private:
-    struct Impl;
-    static constexpr size_t kSize = 16;
-    static constexpr size_t kAlignment = 8;
-    userver::utils::FastPimpl<Impl, kSize, kAlignment> impl_;
+    const components::Storage& storage_;
 };
 
 } // namespace game_userver

@@ -1,32 +1,18 @@
 #include "get_questions_by_pack_id.hpp"
 
-#include <sql_queries/sql_queries.hpp>
 #include <userver/components/component_context.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
-#include "storage/questions.hpp"
-#include "utils/constants.hpp"
+#include "components/storage/storage.hpp"
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
-
-struct GetQuestionsByPackId::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
-
-    explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
-};
 
 GetQuestionsByPackId::GetQuestionsByPackId(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context), impl_(component_context) {}
+    : HttpHandlerBase(config, component_context),
+      storage_(component_context.FindComponent<components::Storage>()) {}
 
 GetQuestionsByPackId::~GetQuestionsByPackId() = default;
 
@@ -37,9 +23,8 @@ auto GetQuestionsByPackId::HandleRequestThrow(
 ) const -> std::string {
     const auto& stringPackId = request.GetPathArg("pack_id");
 
-    const auto questions = NStorage::GetQuestionsByPackId(
-        impl_->pg_cluster, Utils::StringToUuid(stringPackId)
-    );
+    const auto questions =
+        storage_.GetQuestionsByPackId(Utils::StringToUuid(stringPackId));
 
     userver::formats::json::ValueBuilder result{
         userver::formats::common::Type::kArray

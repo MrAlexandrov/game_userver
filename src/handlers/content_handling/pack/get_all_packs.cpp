@@ -6,36 +6,25 @@
 #include <userver/storages/postgres/cluster.hpp>
 #include <userver/storages/postgres/component.hpp>
 
-#include "storage/packs.hpp"
-#include "utils/constants.hpp"
+#include "components/storage/storage.hpp"
 
 namespace game_userver {
 
-struct GetAllPacks::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
-
-    explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
-};
-
 GetAllPacks::GetAllPacks(
     const userver::components::ComponentConfig& config,
-    const userver::components::ComponentContext& component_context
+    const userver::components::ComponentContext& context
 )
-    : HttpHandlerBase(config, component_context), impl_(component_context) {}
+    : HttpHandlerBase(config, context),
+      storage_(context.FindComponent<components::Storage>()) {}
 
 GetAllPacks::~GetAllPacks() = default;
 
-std::string GetAllPacks::HandleRequestThrow(
+auto GetAllPacks::HandleRequestThrow(
     const userver::server::http::HttpRequest& /*request*/,
     userver::server::request::RequestContext&
     /*context*/
-) const {
-    const auto packs = NStorage::GetAllPacks(impl_->pg_cluster);
+) const -> std::string {
+    const auto packs = storage_.GetAllPacks();
 
     userver::formats::json::ValueBuilder result{
         userver::formats::common::Type::kArray

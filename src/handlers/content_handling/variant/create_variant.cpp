@@ -1,35 +1,21 @@
 #include "create_variant.hpp"
 
-#include <sql_queries/sql_queries.hpp>
 #include <stdexcept>
 #include <userver/components/component_context.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
+#include "components/storage/storage.hpp"
 #include "models/variant.hpp"
-#include "storage/variants.hpp"
-#include "utils/constants.hpp"
 #include "utils/string_to_uuid.hpp"
 #include "utils/variant.hpp"
 
 namespace game_userver {
 
-struct CreateVariant::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
-
-    explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
-};
-
 CreateVariant::CreateVariant(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context), impl_(component_context) {}
+    : HttpHandlerBase(config, component_context),
+      storage_(component_context.FindComponent<components::Storage>()) {}
 
 CreateVariant::~CreateVariant() = default;
 
@@ -42,8 +28,7 @@ auto CreateVariant::HandleRequestThrow(
     const auto& question_id_str = request.GetPathArg("question_id");
     variant.question_id = Utils::StringToUuid(question_id_str);
 
-    const auto createdVariantOpt =
-        NStorage::CreateVariant(impl_->pg_cluster, variant);
+    const auto createdVariantOpt = storage_.CreateVariant(variant);
 
     if (!createdVariantOpt) {
         request.GetHttpResponse().SetStatus(

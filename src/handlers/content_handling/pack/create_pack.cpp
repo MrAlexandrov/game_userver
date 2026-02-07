@@ -2,36 +2,21 @@
 
 #include <boost/uuid/uuid.hpp> // NOLINT
 #include <boost/uuid/uuid_io.hpp>
-#include <sql_queries/sql_queries.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/logging/log.hpp>
-#include <userver/storages/postgres/cluster.hpp>
-#include <userver/storages/postgres/component.hpp>
 
+#include "components/storage/storage.hpp"
 #include "models/pack.hpp"
-#include "storage/packs.hpp"
-
-#include "utils/constants.hpp"
 #include "utils/pack.hpp"
 
 namespace game_userver {
-
-struct CreatePack::Impl {
-    userver::storages::postgres::ClusterPtr pg_cluster;
-
-    explicit Impl(const userver::components::ComponentContext& context)
-        : pg_cluster(context
-                         .FindComponent<userver::components::Postgres>(
-                             Constants::kDatabaseName
-                         )
-                         .GetCluster()) {}
-};
 
 CreatePack::CreatePack(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
 )
-    : HttpHandlerBase(config, component_context), impl_(component_context) {}
+    : HttpHandlerBase(config, component_context),
+      storage_(component_context.FindComponent<components::Storage>()) {}
 
 CreatePack::~CreatePack() = default;
 
@@ -44,7 +29,7 @@ auto CreatePack::HandleRequestThrow(
 
     const auto pack = Utils::GetPackFromRequest(request);
 
-    const auto createdPackOpt = NStorage::CreatePack(impl_->pg_cluster, pack);
+    const auto createdPackOpt = storage_.CreatePack(pack);
     if (!createdPackOpt) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError

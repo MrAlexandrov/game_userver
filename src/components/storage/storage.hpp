@@ -35,7 +35,7 @@ public:
     [[nodiscard]] auto GetPackById(const boost::uuids::uuid& pack_id)
         -> std::optional<Models::Pack>;
 
-    [[nodiscard]] auto GetAllPacks() -> std::vector<Models::Pack>;
+    [[nodiscard]] auto GetAllPacks() const -> std::vector<Models::Pack>;
 
     // ===== Questions =====
     [[nodiscard]] auto CreateQuestion(Models::Question&& question)

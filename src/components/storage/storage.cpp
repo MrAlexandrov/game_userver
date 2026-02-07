@@ -26,7 +26,7 @@ Storage::Storage(
                       )
                       .GetCluster()) {}
 
-Storage::~Storage() {}
+Storage::~Storage() = default;
 
 // ===== Packs =====
 
@@ -40,7 +40,7 @@ auto Storage::GetPackById(const boost::uuids::uuid& pack_id)
     return NStorage::GetPackById(pg_cluster_, pack_id);
 }
 
-auto Storage::GetAllPacks() -> std::vector<Models::Pack> {
+auto Storage::GetAllPacks() const -> std::vector<Models::Pack> {
     return NStorage::GetAllPacks(pg_cluster_);
 }
 
