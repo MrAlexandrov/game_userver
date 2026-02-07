@@ -9,13 +9,14 @@
 
 namespace game_userver {
 
-void AppendGameHandlers(userver::components::ComponentList& component_list) {
-    component_list.Append<CreateGameSession>();
-    component_list.Append<AddPlayer>();
-    component_list.Append<StartGame>();
-    component_list.Append<GetGameState>();
-    component_list.Append<SubmitAnswer>();
-    component_list.Append<GetGameResults>();
+auto GetGameHandlers() -> userver::components::ComponentList {
+    return userver::components::ComponentList()
+        .Append<CreateGameSession>()
+        .Append<AddPlayer>()
+        .Append<StartGame>()
+        .Append<GetGameState>()
+        .Append<SubmitAnswer>()
+        .Append<GetGameResults>();
 }
 
 } // namespace game_userver

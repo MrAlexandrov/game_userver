@@ -16,9 +16,8 @@ auto GetHandlersComponentList() -> userver::components::ComponentList {
             )
             .AppendComponentList(game_userver::GetGrpcComponentList())
             .AppendComponentList(game_userver::GetHelloComponentList())
-            .AppendComponentList(game_userver::GetHelloPostgresComponentList());
-
-    game_userver::AppendGameHandlers(component_list);
+            .AppendComponentList(game_userver::GetHelloPostgresComponentList())
+            .AppendComponentList(game_userver::GetGameHandlers());
 
     return component_list;
 }
