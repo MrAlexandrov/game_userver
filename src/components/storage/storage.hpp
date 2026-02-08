@@ -29,76 +29,82 @@ public:
     ~Storage() override;
 
     // ===== Packs =====
-    [[nodiscard]] auto CreatePack(const Models::Pack& pack)
+    [[nodiscard]] auto CreatePack(const Models::Pack& pack) const
         -> std::optional<Models::Pack>;
 
-    [[nodiscard]] auto GetPackById(const boost::uuids::uuid& pack_id)
+    [[nodiscard]] auto GetPackById(const boost::uuids::uuid& pack_id) const
         -> std::optional<Models::Pack>;
 
     [[nodiscard]] auto GetAllPacks() const -> std::vector<Models::Pack>;
 
     // ===== Questions =====
-    [[nodiscard]] auto CreateQuestion(Models::Question&& question)
+    [[nodiscard]] auto CreateQuestion(Models::Question&& question) const
         -> std::optional<Models::Question>;
 
-    [[nodiscard]] auto GetQuestionById(const boost::uuids::uuid& question_id)
+    [[nodiscard]] auto
+    GetQuestionById(const boost::uuids::uuid& question_id) const
         -> std::optional<Models::Question>;
 
-    [[nodiscard]] auto GetQuestionsByPackId(const boost::uuids::uuid& pack_id)
+    [[nodiscard]] auto
+    GetQuestionsByPackId(const boost::uuids::uuid& pack_id) const
         -> std::vector<Models::Question>;
 
     // ===== Variants =====
-    [[nodiscard]] auto CreateVariant(const Models::Variant& variant)
-        -> std::optional<Models::Variant>;
-
-    [[nodiscard]] auto GetVariantById(const boost::uuids::uuid& variant_id)
+    [[nodiscard]] auto CreateVariant(const Models::Variant& variant) const
         -> std::optional<Models::Variant>;
 
     [[nodiscard]] auto
-    GetVariantsByQuestionId(const boost::uuids::uuid& question_id)
+    GetVariantById(const boost::uuids::uuid& variant_id) const
+        -> std::optional<Models::Variant>;
+
+    [[nodiscard]] auto
+    GetVariantsByQuestionId(const boost::uuids::uuid& question_id) const
         -> std::vector<Models::Variant>;
 
     [[nodiscard]] auto
-    CheckVariantCorrectness(const boost::uuids::uuid& variant_id)
+    CheckVariantCorrectness(const boost::uuids::uuid& variant_id) const
         -> std::optional<bool>;
 
     // ===== Game Sessions =====
-    [[nodiscard]] auto CreateGameSession(const boost::uuids::uuid& pack_id)
+    [[nodiscard]] auto
+    CreateGameSession(const boost::uuids::uuid& pack_id) const
         -> std::optional<Models::GameSession>;
 
     [[nodiscard]] auto
-    GetGameSessionById(const boost::uuids::uuid& game_session_id)
+    GetGameSessionById(const boost::uuids::uuid& game_session_id) const
         -> std::optional<Models::GameSession>;
 
     [[nodiscard]] auto
-    StartGameSession(const boost::uuids::uuid& game_session_id)
+    StartGameSession(const boost::uuids::uuid& game_session_id) const
         -> std::optional<Models::GameSession>;
 
     [[nodiscard]] auto AdvanceToNextQuestion(
         const boost::uuids::uuid& game_session_id, int current_question_index
-    ) -> std::optional<Models::GameSession>;
+    ) const -> std::optional<Models::GameSession>;
 
-    [[nodiscard]] auto EndGameSession(const boost::uuids::uuid& game_session_id)
+    [[nodiscard]] auto
+    EndGameSession(const boost::uuids::uuid& game_session_id) const
         -> std::optional<Models::GameSession>;
 
-    [[nodiscard]] auto GetAllGameSessions() -> std::vector<Models::GameSession>;
+    [[nodiscard]] auto GetAllGameSessions() const
+        -> std::vector<Models::GameSession>;
 
     // ===== Players =====
     [[nodiscard]] auto AddPlayer(
         const boost::uuids::uuid& game_session_id,
         const std::string& player_name
-    ) -> std::optional<Models::Player>;
+    ) const -> std::optional<Models::Player>;
 
-    [[nodiscard]] auto GetPlayerById(const boost::uuids::uuid& player_id)
+    [[nodiscard]] auto GetPlayerById(const boost::uuids::uuid& player_id) const
         -> std::optional<Models::Player>;
 
     [[nodiscard]] auto
-    GetPlayersByGameSessionId(const boost::uuids::uuid& game_session_id)
+    GetPlayersByGameSessionId(const boost::uuids::uuid& game_session_id) const
         -> std::vector<Models::Player>;
 
-    [[nodiscard]] auto
-    UpdatePlayerScore(const boost::uuids::uuid& player_id, int score_delta)
-        -> std::optional<Models::Player>;
+    [[nodiscard]] auto UpdatePlayerScore(
+        const boost::uuids::uuid& player_id, int score_delta
+    ) const -> std::optional<Models::Player>;
 
     // ===== Player Answers =====
     [[nodiscard]] auto SubmitPlayerAnswer(
@@ -106,33 +112,35 @@ public:
         const boost::uuids::uuid& question_id,
         const std::optional<boost::uuids::uuid>& variant_id,
         const std::optional<std::string>& text_answer, bool is_correct
-    ) -> std::optional<Models::PlayerAnswer>;
+    ) const -> std::optional<Models::PlayerAnswer>;
 
     [[nodiscard]] auto
-    GetPlayerAnswersByPlayerId(const boost::uuids::uuid& player_id)
+    GetPlayerAnswersByPlayerId(const boost::uuids::uuid& player_id) const
         -> std::vector<Models::PlayerAnswer>;
 
     // ===== Text Answers =====
-    [[nodiscard]] auto CreateTextAnswer(const Models::TextAnswer& text_answer)
+    [[nodiscard]] auto
+    CreateTextAnswer(const Models::TextAnswer& text_answer) const
         -> std::optional<Models::TextAnswer>;
 
     [[nodiscard]] auto
-    GetTextAnswerById(const boost::uuids::uuid& text_answer_id)
+    GetTextAnswerById(const boost::uuids::uuid& text_answer_id) const
         -> std::optional<Models::TextAnswer>;
 
     [[nodiscard]] auto
-    GetTextAnswersByQuestionId(const boost::uuids::uuid& question_id)
+    GetTextAnswersByQuestionId(const boost::uuids::uuid& question_id) const
         -> std::vector<Models::TextAnswer>;
 
     [[nodiscard]] auto GetAnswersCountForQuestion(
         const boost::uuids::uuid& game_session_id,
         const boost::uuids::uuid& question_id
-    ) -> int;
+    ) const -> int;
 
     // ===== Questions and Variants =====
-    [[nodiscard]] auto GetQuestionsAndVariantsByPackId(
-        const boost::uuids::uuid& pack_id
-    ) -> std::vector<std::pair<Models::Question, std::vector<Models::Variant>>>;
+    [[nodiscard]] auto
+    GetQuestionsAndVariantsByPackId(const boost::uuids::uuid& pack_id) const
+        -> std::vector<
+            std::pair<Models::Question, std::vector<Models::Variant>>>;
 
     [[nodiscard]] auto GetCluster() const
         -> userver::storages::postgres::ClusterPtr;
