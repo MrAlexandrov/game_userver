@@ -16,3 +16,4 @@ Makefile.local
 CMakeUserPresets.json
 .pytest_cache
 third_party
+postgres_data
