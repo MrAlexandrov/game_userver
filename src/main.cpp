@@ -11,8 +11,7 @@
 #include <userver/ugrpc/server/component_list.hpp>
 #include <userver/utils/daemon_run.hpp>
 
-#include "components/game_service/game_service_component.hpp"
-#include "components/hello_grpc/hello_grpc.hpp"
+#include "components/component_list.hpp"
 #include "handlers/component_list.hpp"
 
 #include "utils//constants.hpp"
@@ -23,13 +22,12 @@ int main(int argc, char* argv[]) {
             .Append<userver::server::handlers::Ping>()
             .Append<userver::components::TestsuiteSupport>()
             .Append<userver::components::HttpClient>()
-            .Append<game_userver::HelloGrpc>()
             .Append<userver::clients::dns::Component>()
             .Append<userver::server::handlers::TestsControl>()
             .Append<userver::congestion_control::Component>()
             .Append<userver::components::Postgres>(Constants::kDatabaseName)
-            .Append<game_userver::components::GameServiceComponent>()
             .AppendComponentList(userver::ugrpc::server::MinimalComponentList())
+            .AppendComponentList(game_userver::GetComponentsComponentList())
             .AppendComponentList(game_userver::GetHandlersComponentList());
 
     return userver::utils::DaemonMain(argc, argv, component_list);

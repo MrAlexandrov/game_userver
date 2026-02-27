@@ -41,6 +41,7 @@ userver_add_sql_library(
 
 add_library(${PROJECT_NAME}_objs OBJECT
     # src/components
+    src/components/component_list.cpp
     src/components/storage/storage.cpp
     src/components/hello_grpc/hello_grpc.cpp
     src/components/game_service/game_service_component.cpp

@@ -5,6 +5,7 @@ CompileFlags:
     - -I${project_root}/build_debug
     - -I${project_root}/build_debug/proto
     - -I${project_root}/third_party/userver
+    - -Wno-builtin-definition
   Remove: []
   CompilationDatabase: build_debug/
 
@@ -15,6 +16,10 @@ Diagnostics:
       - bugprone-*
       - performance-*
       - readability-*
+    Remove:
+      - bugprone-easily-swappable-parameters
+      - readability-identifier-length
+      - modernize-use-trailing-return-type
 
 Index:
   Background: Build

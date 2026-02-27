@@ -15,7 +15,7 @@ pytest_plugins = [
     'pytest_userver.plugins.grpc',
 ]
 USERVER_CONFIG_HOOKS = [
-    # 'prepare_service_config_grpc',
+    'userver_pg_config',
 ]
 
 
@@ -116,9 +116,23 @@ def initial_data_path(service_source_dir):
 
 @pytest.fixture(scope='session')
 def pgsql_local(service_source_dir, pgsql_local_create):
-    """Create schemas databases for tests"""
+    """Create schemas databases for tests - only db_1"""
     databases = discover.find_schemas(
         'game_userver',
         [service_source_dir.joinpath('postgresql/schemas')],
     )
-    return pgsql_local_create(list(databases.values()))
+    # Only use db_1, ignore views
+    return pgsql_local_create([databases['db_1']])
+
+
+@pytest.fixture(scope='session')
+def userver_pg_config(service_source_dir):
+    """
+    Override userver postgres config to use db_1.
+    This fixture is required because we have multiple schema files.
+    """
+    def _patch_config(config_yaml, config_vars):
+        components = config_yaml['components_manager']['components']
+        if 'postgres-db-1' in components:
+            components['postgres-db-1']['dbconnection'] = '#db_1'
+    return _patch_config
