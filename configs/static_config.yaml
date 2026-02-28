@@ -160,6 +160,8 @@ components_manager:
             sync-start: true
             connlimit_mode: manual
 
+        storage: {}
+
         game-service:
             # Singleton GameService component
             # No additional configuration needed

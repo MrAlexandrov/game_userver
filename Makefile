@@ -3,18 +3,35 @@ CMAKE_COMMON_FLAGS ?= -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 CMAKE_DEBUG_FLAGS ?= -DUSERVER_SANITIZE='addr ub'
 CMAKE_RELEASE_FLAGS ?=
 CMAKE_OS_FLAGS ?= -DUSERVER_FEATURE_CRYPTOPP_BLAKE2=0 -DUSERVER_FEATURE_REDIS_HI_MALLOC=1
-NPROCS ?= $(shell nproc)
+UNAME_S := $(shell uname -s)
+NPROCS ?= $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu)
 CLANG_FORMAT ?= clang-format
 DOCKER_COMPOSE ?= docker compose
 
-ifeq ($(KERNEL),Darwin)
-CMAKE_COMMON_FLAGS += -DUSERVER_NO_WERROR=1 -DUSERVER_CHECK_PACKAGE_VERSIONS=0 \
+# macOS build notes:
+#   brew remove --ignore-dependencies abseil  # required! brew abseil conflicts with CPM abseil
+#   brew link postgresql@16
+#   brew link --force zlib icu4c openldap curl cyrus-sasl
+ifeq ($(UNAME_S),Darwin)
+CMAKE_COMMON_FLAGS += \
+  -DUSERVER_NO_WERROR=1 \
+  -DUSERVER_CHECK_PACKAGE_VERSIONS=0 \
+  -DUSERVER_FEATURE_CRYPTOPP_BLAKE2=0 \
   -DUSERVER_DOWNLOAD_PACKAGE_CRYPTOPP=1 \
-  -DOPENSSL_ROOT_DIR=$(shell brew --prefix openssl) \
+  -DUSERVER_FORCE_DOWNLOAD_ABSEIL=1 \
+  -DUSERVER_FORCE_DOWNLOAD_RE2=1 \
+  -DUSERVER_FORCE_DOWNLOAD_PROTOBUF=1 \
+  -DUSERVER_FORCE_DOWNLOAD_GRPC=1 \
+  -DUSERVER_FORCE_DOWNLOAD_YAML_CPP=1 \
+  -DUSERVER_FEATURE_TESTSUITE=OFF \
+  -DUSERVER_PYTHON_PATH=$(shell brew --prefix python@3.13)/bin/python3.13 \
+  -DOPENSSL_ROOT_DIR=$(shell brew --prefix openssl@3) \
   -DUSERVER_PG_INCLUDE_DIR=$(shell pg_config --includedir) \
   -DUSERVER_PG_LIBRARY_DIR=$(shell pg_config --libdir) \
   -DUSERVER_PG_SERVER_LIBRARY_DIR=$(shell pg_config --pkglibdir) \
   -DUSERVER_PG_SERVER_INCLUDE_DIR=$(shell pg_config --includedir-server)
+# nproc is Linux-only; sysctl fallback for macOS
+NPROCS := $(shell sysctl -n hw.logicalcpu)
 endif
 
 
@@ -90,10 +107,20 @@ test-debug test-release: test-%: build-%
 	cd build_$* && ((test -t 1 && GTEST_COLOR=1 PYTEST_ADDOPTS="--color=yes" ctest -V) || ctest -V)
 	pycodestyle tests
 
-# Start the service (via testsuite service runner)
+# Start the service
+# On macOS: testsuite is disabled, run binary directly (postgres must be accessible on localhost:5432)
+#           Start postgres first: docker compose up postgres -d
+# On Linux: use testsuite service runner (userver cmake target)
 .PHONY: start-debug start-release
+ifeq ($(UNAME_S),Darwin)
+start-debug start-release: start-%: build-%
+	./build_$*/$(PROJECT_NAME) \
+		--config $(CURDIR)/configs/static_config.yaml \
+		--config_vars $(CURDIR)/configs/config_vars.local.yaml
+else
 start-debug start-release: start-%: build-%
 	cmake --build build_$* -v --target start-$(PROJECT_NAME)
+endif
 
 .PHONY: service-start-debug service-start-release
 service-start-debug service-start-release: service-start-%: start-%

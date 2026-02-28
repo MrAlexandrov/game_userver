@@ -16,6 +16,7 @@ auto GetQuestionFromRequest(const userver::server::http::HttpRequest& request)
         .pack_id = Utils::StringToUuid(""), // Will be set in handler from path
         .text = body["text"].As<std::string>(),
         .image_url = body["image_url"].As<std::string>(),
+        // TODO: add something to awoid warning
     };
 }
 
@@ -43,6 +44,7 @@ auto GetQuestionFromRequest(handlers::api::CreateQuestionRequest&& request)
         .pack_id = Utils::StringToUuid(request.pack_id()),
         .text = request.text(),
         .image_url = request.image_url(),
+        // TODO: add something to awoid warning
     };
 }
 

@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.12...3.31)
-set(CMAKE_CXX_COMPILER "g++-13")
-set(CMAKE_C_COMPILER "gcc-13")
+# On Linux use GCC 13; on macOS let CMake auto-detect (Apple Clang)
+if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+  set(CMAKE_CXX_COMPILER "g++-13")
+  set(CMAKE_C_COMPILER "gcc-13")
+endif()
 project(game_userver CXX)
 
 # Adding userver dependency
@@ -18,6 +21,25 @@ if(NOT userver_FOUND)  # Fallback to subdirectory usage
         add_subdirectory(third_party/userver)
     else()
         message(FATAL_ERROR "Either install the userver or provide a path to it")
+    endif()
+endif()
+
+# On macOS: apply patch to fix missing absl includes in gRPC 1.59.1 CFStream backend.
+# gRPC cfstream_endpoint.cc and dns_service_resolver.cc are missing absl/strings includes
+# which are required with Apple Clang 16+.
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+    set(_grpc_cfstream_dir "${CMAKE_BINARY_DIR}/_deps/grpc-src/src/core/lib/event_engine/cf_engine")
+    if(EXISTS "${_grpc_cfstream_dir}/cfstream_endpoint.cc")
+        execute_process(
+            COMMAND patch --forward --reject-file=- -p1
+                    -i "${CMAKE_CURRENT_SOURCE_DIR}/cmake/grpc_macos_cfstream_fix.patch"
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/_deps/grpc-src"
+            RESULT_VARIABLE _patch_result
+            OUTPUT_QUIET ERROR_QUIET
+        )
+        if(_patch_result EQUAL 0)
+            message(STATUS "Applied gRPC macOS CFStream patch")
+        endif()
     endif()
 endif()
 

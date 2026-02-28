@@ -1,0 +1,20 @@
+--- a/src/core/lib/event_engine/cf_engine/cfstream_endpoint.cc
++++ b/src/core/lib/event_engine/cf_engine/cfstream_endpoint.cc
+@@ -20,6 +20,8 @@
+ #ifdef AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER
+
++#include "absl/strings/str_cat.h"
++
+ #include "src/core/lib/event_engine/cf_engine/cfstream_endpoint.h"
+ #include "src/core/lib/event_engine/trace.h"
+ #include "src/core/lib/gprpp/strerror.h"
+--- a/src/core/lib/event_engine/cf_engine/dns_service_resolver.cc
++++ b/src/core/lib/event_engine/cf_engine/dns_service_resolver.cc
+@@ -21,6 +21,9 @@
+ #ifdef AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER
+
+ #include "absl/strings/str_format.h"
++#include "absl/strings/str_cat.h"
++#include "absl/strings/numbers.h"
+
+ #include "src/core/lib/address_utils/parse_address.h"
