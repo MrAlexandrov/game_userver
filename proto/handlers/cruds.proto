@@ -33,6 +33,7 @@ message CreateQuestionRequest {
   string pack_id = 1;
   string text = 2;
   string image_url = 3;
+  string question_type = 4;
 }
 
 message CreateQuestionResponse {

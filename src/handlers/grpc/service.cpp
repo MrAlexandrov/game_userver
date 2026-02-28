@@ -125,6 +125,7 @@ auto Service::CreateQuestion(
     if (!createdQuestion.image_url.empty()) {
         mutableQuestion->set_image_url(createdQuestion.image_url);
     }
+    mutableQuestion->set_question_type(Models::ToString(createdQuestion.question_type));
 
     return response;
 }
@@ -154,6 +155,7 @@ auto Service::GetQuestionById(
     if (!question.image_url.empty()) {
         mutableQuestion->set_image_url(std::move(question.image_url));
     }
+    mutableQuestion->set_question_type(Models::ToString(question.question_type));
 
     return response;
 }
@@ -182,6 +184,7 @@ auto Service::GetQuestionsByPackId(
         if (!question.image_url.empty()) {
             newQuestion->set_image_url(std::move(question.image_url));
         }
+        newQuestion->set_question_type(Models::ToString(question.question_type));
     }
 
     return response;

@@ -4,6 +4,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json.hpp>
+#include <userver/formats/parse/common_containers.hpp>
 #include <userver/logging/log.hpp>
 
 #include "components/game_service/game_service_component.hpp"
@@ -38,11 +39,18 @@ auto SubmitAnswer::HandleRequestThrow(
 
     auto player_id_str = json["player_id"].As<std::string>();
     auto player_id = Utils::StringToUuid(player_id_str);
-    auto variant_id_str = json["variant_id"].As<std::string>();
-    auto variant_id = Utils::StringToUuid(variant_id_str);
 
     logic::validators::PlayerAnswerInput answer_input;
-    answer_input.variant_id = variant_id;
+
+    auto variant_id_str = json["variant_id"].As<std::optional<std::string>>();
+    if (variant_id_str.has_value() && !variant_id_str->empty()) {
+        answer_input.variant_id = Utils::StringToUuid(*variant_id_str);
+    }
+
+    auto text_answer = json["text_answer"].As<std::optional<std::string>>();
+    if (text_answer.has_value()) {
+        answer_input.text_answer = std::move(*text_answer);
+    }
 
     auto result = impl_->game_service.SubmitAnswer(player_id, answer_input);
 

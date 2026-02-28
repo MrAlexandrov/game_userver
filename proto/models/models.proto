@@ -12,6 +12,7 @@ message Question {
     optional string pack_id = 2;
     optional string text = 3;
     optional string image_url = 4;
+    optional string question_type = 5;
 }
 
 message Variant {

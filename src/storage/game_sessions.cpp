@@ -27,7 +27,7 @@ auto GetGameSessionById(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id
 ) -> std::optional<Models::GameSession> {
     auto result =
-        pg_cluster_->Execute(kMaster, kGetGameSessionById, game_session_id);
+        pg_cluster_->Execute(kSlave, kGetGameSessionById, game_session_id);
     return result.AsOptionalSingleRow<Models::GameSession>(
         userver::storages::postgres::kRowTag
     );

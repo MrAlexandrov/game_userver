@@ -57,8 +57,9 @@ auto GetAnswersCountForQuestion(
     ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
     const boost::uuids::uuid& question_id
 ) -> int {
+    // Use kMaster to guarantee we see the answer just submitted in this request
     auto result = pg_cluster_->Execute(
-        kSlave, kGetAnswersCountForQuestion, game_session_id, question_id
+        kMaster, kGetAnswersCountForQuestion, game_session_id, question_id
     );
 
     if (result.IsEmpty()) {

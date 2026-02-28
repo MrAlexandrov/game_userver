@@ -52,6 +52,12 @@ auto GameService::CreateGameSession(const boost::uuids::uuid& pack_id)
 auto GameService::AddPlayer(
     const boost::uuids::uuid& game_session_id, const std::string& player_name
 ) -> std::optional<Models::Player> {
+    auto current_session =
+        NStorage::GetGameSessionById(pg_cluster_, game_session_id);
+    if (!current_session || current_session->state != "waiting") {
+        return std::nullopt;
+    }
+
     auto player =
         NStorage::AddPlayer(pg_cluster_, game_session_id, player_name);
 
@@ -65,6 +71,12 @@ auto GameService::AddPlayer(
 
 auto GameService::StartGame(const boost::uuids::uuid& game_session_id)
     -> std::optional<Models::GameSession> {
+    auto current_session =
+        NStorage::GetGameSessionById(pg_cluster_, game_session_id);
+    if (!current_session || current_session->state != "waiting") {
+        return std::nullopt;
+    }
+
     auto game_session =
         NStorage::StartGameSession(pg_cluster_, game_session_id);
 
@@ -144,7 +156,7 @@ auto GameService::SubmitAnswer(
     // Get the game session to know which question was answered
     auto game_session =
         NStorage::GetGameSessionById(pg_cluster_, player->game_session_id);
-    if (!game_session) {
+    if (!game_session || game_session->state != "active") {
         return GameResult::kError;
     }
 
