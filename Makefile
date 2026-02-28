@@ -108,12 +108,13 @@ test-debug test-release: test-%: build-%
 	pycodestyle tests
 
 # Start the service
-# On macOS: testsuite is disabled, run binary directly (postgres must be accessible on localhost:5432)
-#           Start postgres first: docker compose up postgres -d
+# On macOS: testsuite is disabled; postgres is started via docker compose automatically
 # On Linux: use testsuite service runner (userver cmake target)
 .PHONY: start-debug start-release
 ifeq ($(UNAME_S),Darwin)
 start-debug start-release: start-%: build-%
+	$(DOCKER_COMPOSE) up postgres -d
+	@echo "Waiting for postgres..." && until [ "$$(docker inspect -f '{{.State.Health.Status}}' postgres 2>/dev/null)" = "healthy" ]; do sleep 1; done
 	./build_$*/$(PROJECT_NAME) \
 		--config $(CURDIR)/configs/static_config.yaml \
 		--config_vars $(CURDIR)/configs/config_vars.local.yaml
@@ -154,6 +155,15 @@ format:
 export DB_CONNECTION := postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
 # Internal hidden targets that are used only in docker environment
+
+# --in-docker-run: build (reuses existing build cache) and run from build dir directly.
+# Fast on subsequent starts because build_* is mounted from host volume.
+--in-docker-run-debug --in-docker-run-release: --in-docker-run-%: build-%
+	./build_$*/$(PROJECT_NAME) \
+		--config $(CURDIR)/configs/static_config.yaml \
+		--config_vars $(CURDIR)/configs/config_vars.docker.yaml
+
+# --in-docker-start: full build + cmake install to /home/user/.local/ (used for integration tests)
 --in-docker-start-debug --in-docker-start-release: --in-docker-start-%: install-%
 # 	psql ${DB_CONNECTION} -f ./postgresql/data/initial_data.sql
 	/home/user/.local/bin/$(PROJECT_NAME) \

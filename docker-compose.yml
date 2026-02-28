@@ -44,12 +44,14 @@ services:
         volumes:
           - .:/game_userver:rw
           - ${TC_CORES_DIR:-./.cores}:/cores:rw
+          - cpm-cache:/home/user/.cache/CPM
         ports:
           - 8080:8080
+          - 8081:8081
         working_dir: /game_userver
         entrypoint:
           - ./run_as_user.sh
-        command: ["bash", "-c", "make -- --in-docker-start-release"]
+        command: ["bash", "-c", "make -- --in-docker-run-release"]
         depends_on:
           postgres:
             condition: service_healthy
@@ -59,3 +61,6 @@ services:
 networks:
     postgres:
         driver: bridge
+
+volumes:
+    cpm-cache:

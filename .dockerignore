@@ -1,0 +1,16 @@
+# Build artifacts - large, not needed for Docker image build
+build_debug/
+build_release/
+.ccache/
+.cores/
+postgres_data/
+
+# Git
+.git/
+
+# Logs and temp files
+*.log
+logs.logs
+
+# macOS
+.DS_Store
