@@ -36,8 +36,11 @@ auto GetQuestionsAndVariantsByPackId(
                 .id = question_id,
                 .pack_id = row["question_pack_id"].As<boost::uuids::uuid>(),
                 .text = row["question_text"].As<std::string>(),
-                .image_url = row["question_image_url"].As<std::optional<std::string>>().value_or(""),
-                .question_type = row["question_type"].As<Models::QuestionType>(),
+                .image_url = row["question_image_url"]
+                                 .As<std::optional<std::string>>()
+                                 .value_or(""),
+                .question_type =
+                    row["question_type"].As<Models::QuestionType>(),
             };
             questions_map[question_id] = std::move(question);
         }
