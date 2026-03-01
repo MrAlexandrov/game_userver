@@ -1,5 +1,6 @@
 #pragma once
 
+#include "components/storage/storage.hpp"
 #include <handlers/cruds.pb.h> // for responce
 
 #include <handlers/cruds_service.usrv.pb.hpp>
@@ -65,7 +66,7 @@ public:
     ) -> GetVariantsByQuestionIdResult override;
 
 private:
-    userver::storages::postgres::ClusterPtr pg_cluster_;
+    const game_userver::components::Storage storage_;
 };
 
 } // namespace game_userver

@@ -10,10 +10,6 @@
 #include <userver/storages/postgres/component.hpp>
 #include <utils/string_to_uuid.hpp>
 
-#include "storage/packs.hpp" // for db request CreatePack
-#include "storage/questions.hpp"
-#include "storage/variants.hpp"
-#include "utils/constants.hpp"
 #include "utils/pack.hpp"
 #include "utils/question.hpp"
 #include "utils/variant.hpp"
@@ -25,21 +21,16 @@ Service::Service(
     const userver::components::ComponentContext& component_context
 )
     : handlers::api::QuizServiceBase::Component(config, component_context),
-      pg_cluster_(component_context
-                      .FindComponent<userver::components::Postgres>(
-                          Constants::kDatabaseName
-                      )
-                      .GetCluster()) {}
+      storage_(config, component_context) {}
 
 auto Service::CreatePack(
-    CallContext&, handlers::api::CreatePackRequest&& request
+    CallContext& /*context*/, handlers::api::CreatePackRequest&& request
 ) -> Service::CreatePackResult {
     auto pack = Utils::GetPackFromRequest(std::move(request));
     if (!pack.has_value()) {
         return pack.error();
     }
-
-    const auto createdPackOpt = NStorage::CreatePack(pg_cluster_, pack.value());
+    const auto createdPackOpt = storage_.CreatePack(pack.value());
 
     if (!createdPackOpt.has_value()) {
         return grpc::Status{
@@ -65,7 +56,7 @@ auto Service::GetPackById(
             "Invalid UUID format: " + request.id()
         };
     }
-    auto getPackByIdOpt = NStorage::GetPackById(pg_cluster_, pack_id);
+    auto getPackByIdOpt = storage_.GetPackById(pack_id);
 
     if (!getPackByIdOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Pack not found"};
@@ -83,7 +74,7 @@ auto Service::GetPackById(
 auto Service::GetAllPacks(
     CallContext& /*context*/, handlers::api::GetAllPacksRequest&& request
 ) -> Service::GetAllPacksResult {
-    auto getAllPacks = NStorage::GetAllPacks(pg_cluster_);
+    auto getAllPacks = storage_.GetAllPacks();
 
     handlers::api::GetAllPacksResponse responce;
     auto* mutualPacks = responce.mutable_packs();
@@ -106,7 +97,7 @@ auto Service::CreateQuestion(
     }
 
     const auto createdQuestionOpt =
-        NStorage::CreateQuestion(pg_cluster_, std::move(question.value()));
+        storage_.CreateQuestion(std::move(question.value()));
 
     if (!createdQuestionOpt.has_value()) {
         return grpc::Status{
@@ -142,7 +133,7 @@ auto Service::GetQuestionById(
             "Invalid UUID format: " + request.id()
         };
     }
-    auto questionOpt = NStorage::GetQuestionById(pg_cluster_, question_id);
+    auto questionOpt = storage_.GetQuestionById(question_id);
 
     if (!questionOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Question not found"};
@@ -175,7 +166,7 @@ auto Service::GetQuestionsByPackId(
             "Invalid UUID format: " + request.pack_id()
         };
     }
-    auto questions = NStorage::GetQuestionsByPackId(pg_cluster_, pack_id);
+    auto questions = storage_.GetQuestionsByPackId(pack_id);
 
     handlers::api::GetQuestionsByPackIdResponse response;
     auto* mutableQuestions = response.mutable_questions();
@@ -203,8 +194,7 @@ auto Service::CreateVariant(
     if (!variant.has_value()) {
         return variant.error();
     }
-    auto createdVariantOpt =
-        NStorage::CreateVariant(pg_cluster_, variant.value());
+    auto createdVariantOpt = storage_.CreateVariant(variant.value());
 
     if (!createdVariantOpt.has_value()) {
         return grpc::Status{
@@ -235,7 +225,7 @@ auto Service::GetVariantById(
             "Invalid UUID format: " + request.id()
         };
     }
-    auto variantOpt = NStorage::GetVariantById(pg_cluster_, variant_id);
+    auto variantOpt = storage_.GetVariantById(variant_id);
 
     if (!variantOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Variant not found"};
@@ -265,7 +255,7 @@ auto Service::GetVariantsByQuestionId(
             "Invalid UUID format: " + request.question_id()
         };
     }
-    auto variants = NStorage::GetVariantsByQuestionId(pg_cluster_, question_id);
+    auto variants = storage_.GetVariantsByQuestionId(question_id);
 
     handlers::api::GetVariantsByQuestionIdResponse response;
     auto* mutableVariants = response.mutable_variants();
