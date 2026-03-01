@@ -1,15 +1,18 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp> // NOLINT
 #include <string>
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
+#include "question.hpp"
+
 namespace Models {
 
 struct Variant final {
-    boost::uuids::uuid id{};
-    boost::uuids::uuid question_id;
+    using VariantId = boost::uuids::uuid;
+
+    VariantId id;
+    Question::QuestionId question_id;
     std::string text;
     bool is_correct;
 

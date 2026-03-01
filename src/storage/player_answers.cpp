@@ -6,6 +6,7 @@
 #include <userver/storages/postgres/io/io_fwd.hpp>
 
 #include "models/player_answer.hpp"
+#include "models/variant.hpp"
 
 namespace NStorage {
 
@@ -15,9 +16,9 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto SubmitPlayerAnswer(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id,
-    const boost::uuids::uuid& question_id,
-    const std::optional<boost::uuids::uuid>& variant_id,
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id,
+    const Models::Question::QuestionId& question_id,
+    const std::optional<Models::Variant::VariantId>& variant_id,
     const std::optional<std::string>& text_answer, bool is_correct
 ) -> std::optional<Models::PlayerAnswer> {
     auto result = pg_cluster_->Execute(
@@ -30,7 +31,7 @@ auto SubmitPlayerAnswer(
 }
 
 auto GetPlayerAnswersByPlayerId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id
 ) -> std::vector<Models::PlayerAnswer> {
     auto result =
         pg_cluster_->Execute(kSlave, kGetPlayerAnswersByPlayerId, player_id);
@@ -40,7 +41,7 @@ auto GetPlayerAnswersByPlayerId(
 }
 
 auto CheckVariantCorrectnessById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& variant_id
+    ClusterPtr pg_cluster_, const Models::Variant::VariantId& variant_id
 ) -> std::optional<bool> {
     auto result =
         pg_cluster_->Execute(kSlave, kCheckVariantCorrectnessById, variant_id);
@@ -54,8 +55,9 @@ auto CheckVariantCorrectnessById(
 }
 
 auto GetAnswersCountForQuestion(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
-    const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id,
+    const Models::Question::QuestionId& question_id
 ) -> int {
     // Use kMaster to guarantee we see the answer just submitted in this request
     auto result = pg_cluster_->Execute(

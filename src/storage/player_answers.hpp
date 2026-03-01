@@ -18,23 +18,24 @@ using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
 auto SubmitPlayerAnswer(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id,
-    const boost::uuids::uuid& question_id,
-    const std::optional<boost::uuids::uuid>& variant_id,
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id,
+    const Models::Question::QuestionId& question_id,
+    const std::optional<Models::Variant::VariantId>& variant_id,
     const std::optional<std::string>& text_answer, bool is_correct
 ) -> std::optional<Models::PlayerAnswer>;
 
 auto GetPlayerAnswersByPlayerId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id
 ) -> std::vector<Models::PlayerAnswer>;
 
 auto CheckVariantCorrectnessById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& variant_id
+    ClusterPtr pg_cluster_, const Models::Variant::VariantId& variant_id
 ) -> std::optional<bool>;
 
 auto GetAnswersCountForQuestion(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
-    const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id,
+    const Models::Question::QuestionId& question_id
 ) -> int;
 
 } // namespace NStorage

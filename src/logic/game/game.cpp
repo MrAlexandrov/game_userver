@@ -3,6 +3,7 @@
 #include <userver/utils/assert.hpp>
 
 #include "logic/validators/validator_factory.hpp"
+#include "models/variant.hpp"
 #include "storage/game_sessions.hpp"
 #include "storage/player_answers.hpp"
 #include "storage/players.hpp"
@@ -37,7 +38,7 @@ void GameService::NotifyObservers(const GameEvent& event) {
     observer_manager_.NotifyObservers(event);
 }
 
-auto GameService::CreateGameSession(const boost::uuids::uuid& pack_id)
+auto GameService::CreateGameSession(const Models::Pack::PackId& pack_id)
     -> std::optional<Models::GameSession> {
     auto game_session = NStorage::CreateGameSession(pg_cluster_, pack_id);
 
@@ -50,7 +51,8 @@ auto GameService::CreateGameSession(const boost::uuids::uuid& pack_id)
 }
 
 auto GameService::AddPlayer(
-    const boost::uuids::uuid& game_session_id, const std::string& player_name
+    const Models::GameSession::GameSessionId& game_session_id,
+    const std::string& player_name
 ) -> std::optional<Models::Player> {
     auto current_session =
         NStorage::GetGameSessionById(pg_cluster_, game_session_id);
@@ -69,8 +71,9 @@ auto GameService::AddPlayer(
     return player;
 }
 
-auto GameService::StartGame(const boost::uuids::uuid& game_session_id)
-    -> std::optional<Models::GameSession> {
+auto GameService::StartGame(
+    const Models::GameSession::GameSessionId& game_session_id
+) -> std::optional<Models::GameSession> {
     auto current_session =
         NStorage::GetGameSessionById(pg_cluster_, game_session_id);
     if (!current_session || current_session->state != "waiting") {
@@ -107,8 +110,9 @@ auto GameService::StartGame(const boost::uuids::uuid& game_session_id)
     return game_session;
 }
 
-auto GameService::GetCurrentQuestion(const boost::uuids::uuid& game_session_id)
-    -> std::optional<GameQuestion> {
+auto GameService::GetCurrentQuestion(
+    const Models::GameSession::GameSessionId& game_session_id
+) -> std::optional<GameQuestion> {
     // Get the game session to know which pack and current question index
     auto game_session =
         NStorage::GetGameSessionById(pg_cluster_, game_session_id);
@@ -144,7 +148,8 @@ auto GameService::GetCurrentQuestion(const boost::uuids::uuid& game_session_id)
 }
 
 auto GameService::SubmitAnswer(
-    const boost::uuids::uuid& player_id, const PlayerAnswerInput& answer_input
+    const Models::Player::PlayerId& player_id,
+    const PlayerAnswerInput& answer_input
 ) -> GameResult {
 
     // Get the player to know which game session they're in
@@ -200,7 +205,7 @@ auto GameService::SubmitAnswer(
     // For variant_id in event, use the submitted value or nil UUID for text
     // answers
     auto event_variant_id =
-        answer_input.variant_id.value_or(boost::uuids::uuid{});
+        answer_input.variant_id.value_or(Models::Variant::VariantId{});
     NotifyObservers(AnswerSubmittedEvent(
         game_session->id, player_id, current_question.id, event_variant_id,
         is_correct, player->name
@@ -284,17 +289,19 @@ auto GameService::SubmitAnswer(
     return is_correct ? GameResult::kCorrect : GameResult::kIncorrect;
 }
 
-auto GameService::GetGameSession(const boost::uuids::uuid& game_session_id)
-    -> std::optional<Models::GameSession> {
+auto GameService::GetGameSession(
+    const Models::GameSession::GameSessionId& game_session_id
+) -> std::optional<Models::GameSession> {
     return NStorage::GetGameSessionById(pg_cluster_, game_session_id);
 }
 
-auto GameService::GetPlayers(const boost::uuids::uuid& game_session_id)
-    -> std::vector<Models::Player> {
+auto GameService::GetPlayers(
+    const Models::GameSession::GameSessionId& game_session_id
+) -> std::vector<Models::Player> {
     return NStorage::GetPlayersByGameSessionId(pg_cluster_, game_session_id);
 }
 
-auto GameService::GetPlayerAnswers(const boost::uuids::uuid& player_id)
+auto GameService::GetPlayerAnswers(const Models::Player::PlayerId& player_id)
     -> std::vector<Models::PlayerAnswer> {
     return NStorage::GetPlayerAnswersByPlayerId(pg_cluster_, player_id);
 }

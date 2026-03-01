@@ -1,17 +1,20 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp> // NOLINT
 #include <chrono>
 #include <string>
 
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
+#include "models/game_session.hpp"
+
 namespace Models {
 
 struct Player final {
-    boost::uuids::uuid id;
-    boost::uuids::uuid game_session_id;
+    using PlayerId = boost::uuids::uuid;
+
+    PlayerId id;
+    GameSession::GameSessionId game_session_id;
     std::string name;
     int score;
     std::chrono::system_clock::time_point joined_at;

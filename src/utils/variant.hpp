@@ -9,8 +9,8 @@
 
 namespace Utils {
 
-auto GetVariantFromRequest(const userver::server::http::HttpRequest& request)
-    -> Models::Variant;
+Models::Variant
+GetVariantFromRequest(const userver::server::http::HttpRequest& request);
 
 auto GetVariantFromRequest(handlers::api::CreateVariantRequest&& request)
     -> std::expected<Models::Variant, grpc::Status>;

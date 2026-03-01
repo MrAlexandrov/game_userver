@@ -4,7 +4,6 @@
 #include <userver/components/component_context.hpp>
 
 #include "components/storage/storage.hpp"
-#include "models/variant.hpp"
 #include "utils/string_to_uuid.hpp"
 #include "utils/variant.hpp"
 
@@ -25,8 +24,6 @@ auto CreateVariant::HandleRequestThrow(
     /*context*/
 ) const -> std::string {
     auto variant = Utils::GetVariantFromRequest(request);
-    const auto& question_id_str = request.GetPathArg("question_id");
-    variant.question_id = Utils::StringToUuid(question_id_str);
 
     const auto createdVariantOpt = storage_.CreateVariant(variant);
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <string_view>
 
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/enum_types.hpp>
@@ -9,7 +8,7 @@
 
 namespace Models {
 
-enum class QuestionType {
+enum class QuestionType : std::uint8_t {
     kMultipleChoice,
     kFreeText,
     kCustom

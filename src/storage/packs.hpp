@@ -13,7 +13,7 @@ using userver::storages::postgres::ResultSet;
 auto CreatePack(ClusterPtr pg_cluster_, const Models::Pack& pack)
     -> std::optional<Models::Pack>;
 
-auto GetPackById(ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id)
+auto GetPackById(ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id)
     -> std::optional<Models::Pack>;
 
 auto GetAllPacks(ClusterPtr pg_cluster_) -> std::vector<Models::Pack>;

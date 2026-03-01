@@ -14,11 +14,11 @@ auto CreateQuestion(ClusterPtr pg_cluster_, Models::Question&& question)
     -> std::optional<Models::Question>;
 
 auto GetQuestionById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_, const Models::Question::QuestionId& question_id
 ) -> std::optional<Models::Question>;
 
 auto GetQuestionsByPackId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
+    ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id
 ) -> std::vector<Models::Question>;
 
 } // namespace NStorage

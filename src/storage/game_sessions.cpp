@@ -15,7 +15,7 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto CreateGameSession(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
+    ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id
 ) -> std::optional<Models::GameSession> {
     auto result = pg_cluster_->Execute(kMaster, kCreateGameSession, pack_id);
     return result.AsOptionalSingleRow<Models::GameSession>(
@@ -24,7 +24,8 @@ auto CreateGameSession(
 }
 
 auto GetGameSessionById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id
 ) -> std::optional<Models::GameSession> {
     auto result =
         pg_cluster_->Execute(kSlave, kGetGameSessionById, game_session_id);
@@ -34,7 +35,8 @@ auto GetGameSessionById(
 }
 
 auto StartGameSession(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id
 ) -> std::optional<Models::GameSession> {
     auto result =
         pg_cluster_->Execute(kMaster, kStartGameSession, game_session_id);
@@ -44,7 +46,8 @@ auto StartGameSession(
 }
 
 auto AdvanceToNextQuestion(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id,
     int current_question_index
 ) -> std::optional<Models::GameSession> {
     auto result = pg_cluster_->Execute(
@@ -57,7 +60,8 @@ auto AdvanceToNextQuestion(
 }
 
 auto EndGameSession(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id
 ) -> std::optional<Models::GameSession> {
     auto result =
         pg_cluster_->Execute(kMaster, kEndGameSession, game_session_id);

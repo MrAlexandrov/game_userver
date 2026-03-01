@@ -1,17 +1,20 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp> // NOLINT
 #include <chrono>
 #include <string>
 
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
+#include "models/pack.hpp"
+
 namespace Models {
 
 struct GameSession final {
-    boost::uuids::uuid id;
-    boost::uuids::uuid pack_id;
+    using GameSessionId = boost::uuids::uuid;
+
+    GameSessionId id;
+    Pack::PackId pack_id;
     std::string state; // waiting, active, finished
     int current_question_index;
     std::chrono::system_clock::time_point created_at;

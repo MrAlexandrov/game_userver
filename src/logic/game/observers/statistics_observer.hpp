@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../game_observer.hpp"
+#include "logic/game/game_observer.hpp"
+#include "models/game_session.hpp"
 #include <boost/uuid/uuid.hpp> // NOLINT
 #include <boost/uuid/uuid_io.hpp>
 #include <map>
@@ -10,7 +11,7 @@ namespace game_userver::logic::game::observers {
 
 // Статистика по игровой сессии
 struct GameSessionStats {
-    boost::uuids::uuid game_session_id;
+    Models::GameSession::GameSessionId game_session_id;
     int total_players = 0;
     int total_questions = 0;
     int questions_answered = 0;
@@ -36,7 +37,7 @@ public:
 
     // Получить статистику по игровой сессии
     [[nodiscard]] std::optional<GameSessionStats>
-    GetStats(const boost::uuids::uuid& game_session_id) const {
+    GetStats(const Models::GameSession::GameSessionId& game_session_id) const {
         std::lock_guard<std::mutex> lock(mutex_);
         auto it = stats_.find(game_session_id);
         if (it != stats_.end()) {
@@ -46,7 +47,7 @@ public:
     }
 
     // Получить все статистики
-    [[nodiscard]] std::map<boost::uuids::uuid, GameSessionStats>
+    [[nodiscard]] std::map<Models::GameSession::GameSessionId, GameSessionStats>
     GetAllStats() const {
         std::lock_guard<std::mutex> lock(mutex_);
         return stats_;
@@ -115,7 +116,7 @@ private:
     }
 
     mutable std::mutex mutex_;
-    std::map<boost::uuids::uuid, GameSessionStats> stats_;
+    std::map<Models::GameSession::GameSessionId, GameSessionStats> stats_;
 };
 
 } // namespace game_userver::logic::game::observers

@@ -15,7 +15,8 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto AddPlayer(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id,
     const std::string& name
 ) -> std::optional<Models::Player> {
     auto result =
@@ -25,8 +26,9 @@ auto AddPlayer(
     );
 }
 
-auto GetPlayerById(ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id)
-    -> std::optional<Models::Player> {
+auto GetPlayerById(
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id
+) -> std::optional<Models::Player> {
     auto result = pg_cluster_->Execute(kMaster, kGetPlayerById, player_id);
     return result.AsOptionalSingleRow<Models::Player>(
         userver::storages::postgres::kRowTag
@@ -34,7 +36,8 @@ auto GetPlayerById(ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id)
 }
 
 auto GetPlayersByGameSessionId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id
 ) -> std::vector<Models::Player> {
     auto result = pg_cluster_->Execute(
         kSlave, kGetPlayersByGameSessionId, game_session_id
@@ -45,7 +48,7 @@ auto GetPlayersByGameSessionId(
 }
 
 auto UpdatePlayerScore(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id,
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id,
     int score_increment
 ) -> std::optional<Models::Player> {
     auto result = pg_cluster_->Execute(

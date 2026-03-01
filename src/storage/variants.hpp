@@ -14,11 +14,11 @@ auto CreateVariant(ClusterPtr pg_cluster_, const Models::Variant& variant)
     -> std::optional<Models::Variant>;
 
 auto GetVariantById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& variant_id
+    ClusterPtr pg_cluster_, const Models::Variant::VariantId& variant_id
 ) -> std::optional<Models::Variant>;
 
 auto GetVariantsByQuestionId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_, const Models::Question::QuestionId& question_id
 ) -> std::vector<Models::Variant>;
 
 } // namespace NStorage

@@ -12,7 +12,7 @@ using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
 auto GetQuestionsAndVariantsByPackId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
+    ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id
 ) -> std::vector<std::pair<Models::Question, std::vector<Models::Variant>>>;
 
 } // namespace NStorage

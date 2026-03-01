@@ -11,19 +11,22 @@ using userver::storages::postgres::ClusterPtr;
 using userver::storages::postgres::ResultSet;
 
 auto AddPlayer(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id,
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id,
     const std::string& name
 ) -> std::optional<Models::Player>;
 
-auto GetPlayerById(ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id)
-    -> std::optional<Models::Player>;
+auto GetPlayerById(
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id
+) -> std::optional<Models::Player>;
 
 auto GetPlayersByGameSessionId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& game_session_id
+    ClusterPtr pg_cluster_,
+    const Models::GameSession::GameSessionId& game_session_id
 ) -> std::vector<Models::Player>;
 
 auto UpdatePlayerScore(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& player_id,
+    ClusterPtr pg_cluster_, const Models::Player::PlayerId& player_id,
     int score_increment
 ) -> std::optional<Models::Player>;
 

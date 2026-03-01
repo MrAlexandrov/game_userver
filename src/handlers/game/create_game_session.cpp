@@ -7,6 +7,7 @@
 #include <userver/logging/log.hpp>
 
 #include "components/game_service/game_service_component.hpp"
+#include "utils/pack.hpp"
 #include "utils/string_to_uuid.hpp"
 
 namespace game_userver {
@@ -31,18 +32,13 @@ auto CreateGameSession::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const -> std::string {
-    const auto& request_body = request.RequestBody();
-    auto json = userver::formats::json::FromString(request_body);
-
-    auto pack_id_str = json["pack_id"].As<std::string>();
-    auto pack_id = Utils::StringToUuid(pack_id_str);
-
-    // Используем singleton GameService из компонента
-    auto game_session = impl_->game_service.CreateGameSession(pack_id);
+    const auto pack_id = Utils::GetPackIdFromRequest(request);
+    const auto game_session_opt =
+        impl_->game_service.CreateGameSession(pack_id);
 
     userver::formats::json::ValueBuilder response;
 
-    if (!game_session.has_value()) {
+    if (!game_session_opt.has_value()) {
         request.GetHttpResponse().SetStatus(
             userver::server::http::HttpStatus::kInternalServerError
         );
@@ -50,10 +46,12 @@ auto CreateGameSession::HandleRequestThrow(
         return userver::formats::json::ToString(response.ExtractValue());
     }
 
-    response["id"] = boost::uuids::to_string(game_session->id);
-    response["pack_id"] = boost::uuids::to_string(game_session->pack_id);
-    response["state"] = game_session->state;
-    response["current_question_index"] = game_session->current_question_index;
+    const auto& game_session = game_session_opt.value();
+
+    response["id"] = boost::uuids::to_string(game_session.id);
+    response["pack_id"] = boost::uuids::to_string(game_session.pack_id);
+    response["state"] = game_session.state;
+    response["current_question_index"] = game_session.current_question_index;
 
     return userver::formats::json::ToPrettyString(response.ExtractValue());
 }

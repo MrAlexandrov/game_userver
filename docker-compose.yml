@@ -44,7 +44,7 @@ services:
         volumes:
           - .:/game_userver:rw
           - ${TC_CORES_DIR:-./.cores}:/cores:rw
-          - cpm-cache:/home/user/.cache/CPM
+          # - cpm-cache:/home/user/.cache/CPM
         ports:
           - 8080:8080
           - 8081:8081
@@ -62,5 +62,5 @@ networks:
     postgres:
         driver: bridge
 
-volumes:
-    cpm-cache:
+# volumes:
+    # cpm-cache:

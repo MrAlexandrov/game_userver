@@ -5,6 +5,7 @@
 #include <userver/storages/postgres/component.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
 
+#include "models/pack.hpp"
 #include "models/question.hpp"
 #include "models/variant.hpp"
 
@@ -18,23 +19,24 @@ using userver::storages::postgres::ClusterHostType::kMaster;
 using userver::storages::postgres::ClusterHostType::kSlave;
 
 auto GetQuestionsAndVariantsByPackId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
+    ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id
 ) -> std::vector<std::pair<Models::Question, std::vector<Models::Variant>>> {
     const auto result =
         pg_cluster_->Execute(kSlave, kGetQuestionsAndVariantsByPackId, pack_id);
 
     // Group variants by question_id
-    std::map<boost::uuids::uuid, Models::Question> questions_map;
-    std::map<boost::uuids::uuid, std::vector<Models::Variant>> variants_map;
+    std::map<Models::Question::QuestionId, Models::Question> questions_map;
+    std::map<Models::Question::QuestionId, std::vector<Models::Variant>>
+        variants_map;
 
     for (const auto& row : result) {
         // Try to get question data
         {
             const auto question_id =
-                row["question_id"].As<boost::uuids::uuid>();
+                row["question_id"].As<Models::Question::QuestionId>();
             Models::Question question = {
                 .id = question_id,
-                .pack_id = row["question_pack_id"].As<boost::uuids::uuid>(),
+                .pack_id = row["question_pack_id"].As<Models::Pack::PackId>(),
                 .text = row["question_text"].As<std::string>(),
                 .image_url = row["question_image_url"]
                                  .As<std::optional<std::string>>()
@@ -49,9 +51,9 @@ auto GetQuestionsAndVariantsByPackId(
         // JOIN)
         if (!row["variant_id"].IsNull()) {
             const auto question_id =
-                row["variant_question_id"].As<boost::uuids::uuid>();
+                row["variant_question_id"].As<Models::Question::QuestionId>();
             Models::Variant variant = {
-                .id = row["variant_id"].As<boost::uuids::uuid>(),
+                .id = row["variant_id"].As<Models::Variant::VariantId>(),
                 .question_id = question_id,
                 .text = row["variant_text"].As<std::string>(),
                 .is_correct = row["variant_is_correct"].As<bool>(),

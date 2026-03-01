@@ -21,6 +21,7 @@ std::string ToString(const QuestionType& questionType) {
 QuestionType Parse(
     const userver::formats::json::Value& value,
     userver::formats::parse::To<QuestionType>
+    /*unused*/
 ) {
     const auto& stringValue = value.As<std::string>();
     const auto& enumerators =

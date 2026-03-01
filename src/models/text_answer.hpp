@@ -1,16 +1,19 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp> // NOLINT
 #include <chrono>
 #include <string>
 #include <userver/formats/json/value.hpp>
 #include <userver/storages/postgres/io/row_types.hpp>
 
+#include "models/question.hpp"
+
 namespace Models {
 
 struct TextAnswer final {
-    boost::uuids::uuid id{};
-    boost::uuids::uuid question_id;
+    using TextAnswerId = boost::uuids::uuid;
+
+    TextAnswerId id;
+    Question::QuestionId question_id;
     std::string text;
     std::chrono::system_clock::time_point created_at;
 

@@ -15,7 +15,8 @@ MultipleChoiceValidator::MultipleChoiceValidator(ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
 
 auto MultipleChoiceValidator::Validate(
-    const boost::uuids::uuid& question_id, const PlayerAnswerInput& player_input
+    const Models::Question::QuestionId& question_id,
+    const PlayerAnswerInput& player_input
 ) -> ValidationResult {
     if (!player_input.variant_id.has_value()) {
         return ValidationResult{
@@ -54,7 +55,8 @@ FreeTextValidator::FreeTextValidator(ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
 
 auto FreeTextValidator::Validate(
-    const boost::uuids::uuid& question_id, const PlayerAnswerInput& player_input
+    const Models::Question::QuestionId& question_id,
+    const PlayerAnswerInput& player_input
 ) -> ValidationResult {
     if (!player_input.text_answer.has_value()) {
         return ValidationResult{

@@ -26,7 +26,8 @@ auto CreateTextAnswer(
 }
 
 auto GetTextAnswerById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& text_answer_id
+    ClusterPtr pg_cluster_,
+    const Models::TextAnswer::TextAnswerId& text_answer_id
 ) -> std::optional<Models::TextAnswer> {
     auto result =
         pg_cluster_->Execute(kSlave, kGetTextAnswerById, text_answer_id);
@@ -36,7 +37,7 @@ auto GetTextAnswerById(
 }
 
 auto GetTextAnswersByQuestionId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_, const Models::Question::QuestionId& question_id
 ) -> std::vector<Models::TextAnswer> {
     auto result =
         pg_cluster_->Execute(kSlave, kGetTextAnswersByQuestionId, question_id);

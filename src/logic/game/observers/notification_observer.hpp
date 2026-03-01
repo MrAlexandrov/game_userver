@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game_observer.hpp"
+#include "models/game_session.hpp"
 #include <boost/uuid/uuid_io.hpp>
 #include <functional>
 #include <string>
@@ -20,7 +21,7 @@ enum class NotificationType {
 // Структура уведомления
 struct Notification {
     NotificationType type;
-    boost::uuids::uuid game_session_id;
+    Models::GameSession::GameSessionId game_session_id;
     std::string message;
     std::chrono::system_clock::time_point timestamp;
 };

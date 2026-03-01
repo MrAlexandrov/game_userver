@@ -23,12 +23,12 @@ auto GetPack::HandleRequestThrow(
 ) const -> std::string {
     const auto& stringUuid = request.GetPathArg("pack_id");
 
-    const auto uuid = Utils::StringToUuid(stringUuid);
-    if (uuid.is_nil()) {
+    const auto pack_id = Utils::StringToUuid(stringUuid);
+    if (pack_id.is_nil()) {
         return "Incorrect uuid";
     }
 
-    const auto packOpt = storage_.GetPackById(uuid);
+    const auto packOpt = storage_.GetPackById(pack_id);
     if (!packOpt) {
         return {};
     }

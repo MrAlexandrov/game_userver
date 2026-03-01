@@ -7,11 +7,15 @@
 
 #include "question_type.hpp"
 
+#include "models/pack.hpp"
+
 namespace Models {
 
 struct Question final {
-    boost::uuids::uuid id{};
-    boost::uuids::uuid pack_id;
+    using QuestionId = boost::uuids::uuid;
+
+    QuestionId id;
+    Pack::PackId pack_id;
     std::string text;
     std::string image_url;
     QuestionType question_type;

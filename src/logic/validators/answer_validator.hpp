@@ -1,14 +1,12 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp> // NOLINT
-#include <memory>
 #include <optional>
 #include <string>
 
 #include <userver/storages/postgres/cluster.hpp>
 
-#include "models/player_answer.hpp"
 #include "models/question.hpp"
+#include "models/variant.hpp"
 
 namespace game_userver::logic::validators {
 
@@ -16,8 +14,8 @@ using userver::storages::postgres::ClusterPtr;
 
 // Структура для передачи ответа игрока
 struct PlayerAnswerInput {
-    std::optional<boost::uuids::uuid> variant_id; // Для multiple_choice
-    std::optional<std::string> text_answer;       // Для free_text
+    std::optional<Models::Variant::VariantId> variant_id; // Для multiple_choice
+    std::optional<std::string> text_answer;               // Для free_text
 };
 
 // Результат валидации
@@ -33,7 +31,7 @@ public:
 
     // Проверить правильность ответа
     [[nodiscard]] virtual auto Validate(
-        const boost::uuids::uuid& question_id,
+        const Models::Question::QuestionId& question_id,
         const PlayerAnswerInput& player_input
     ) -> ValidationResult = 0;
 };
@@ -44,7 +42,7 @@ public:
     explicit MultipleChoiceValidator(ClusterPtr pg_cluster);
 
     [[nodiscard]] auto Validate(
-        const boost::uuids::uuid& question_id,
+        const Models::Question::QuestionId& question_id,
         const PlayerAnswerInput& player_input
     ) -> ValidationResult override;
 
@@ -58,7 +56,7 @@ public:
     explicit FreeTextValidator(ClusterPtr pg_cluster);
 
     [[nodiscard]] auto Validate(
-        const boost::uuids::uuid& question_id,
+        const Models::Question::QuestionId& question_id,
         const PlayerAnswerInput& player_input
     ) -> ValidationResult override;
 

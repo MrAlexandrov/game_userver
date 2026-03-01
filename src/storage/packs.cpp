@@ -23,7 +23,7 @@ auto CreatePack(ClusterPtr pg_cluster_, const Models::Pack& pack)
     );
 }
 
-auto GetPackById(ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id)
+auto GetPackById(ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id)
     -> std::optional<Models::Pack> {
     auto result = pg_cluster_->Execute(kMaster, kGetPackById, pack_id);
     return result.AsOptionalSingleRow<Models::Pack>(

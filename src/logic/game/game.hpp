@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/uuid/uuid.hpp> // NOLINT
 #include <optional>
 #include <string>
 #include <vector>
@@ -10,6 +9,7 @@
 #include "game_observer.hpp"
 #include "logic/validators/answer_validator.hpp"
 #include "models/game_session.hpp"
+#include "models/pack.hpp"
 #include "models/player.hpp"
 #include "models/player_answer.hpp"
 #include "models/question.hpp"
@@ -36,33 +36,37 @@ class GameService final {
 public:
     explicit GameService(ClusterPtr pg_cluster);
 
-    [[nodiscard]] auto CreateGameSession(const boost::uuids::uuid& pack_id)
+    [[nodiscard]] auto CreateGameSession(const Models::Pack::PackId& pack_id)
         -> std::optional<Models::GameSession>;
 
     [[nodiscard]] auto AddPlayer(
-        const boost::uuids::uuid& game_session_id,
+        const Models::GameSession::GameSessionId& game_session_id,
         const std::string& player_name
     ) -> std::optional<Models::Player>;
 
-    [[nodiscard]] auto StartGame(const boost::uuids::uuid& game_session_id)
+    [[nodiscard]] auto
+    StartGame(const Models::GameSession::GameSessionId& game_session_id)
         -> std::optional<Models::GameSession>;
 
-    [[nodiscard]] auto
-    GetCurrentQuestion(const boost::uuids::uuid& game_session_id)
-        -> std::optional<GameQuestion>;
+    [[nodiscard]] auto GetCurrentQuestion(
+        const Models::GameSession::GameSessionId& game_session_id
+    ) -> std::optional<GameQuestion>;
 
     [[nodiscard]] auto SubmitAnswer(
-        const boost::uuids::uuid& player_id,
+        const Models::Player::PlayerId& player_id,
         const PlayerAnswerInput& answer_input
     ) -> GameResult;
 
-    [[nodiscard]] auto GetGameSession(const boost::uuids::uuid& game_session_id)
+    [[nodiscard]] auto
+    GetGameSession(const Models::GameSession::GameSessionId& game_session_id)
         -> std::optional<Models::GameSession>;
 
-    [[nodiscard]] auto GetPlayers(const boost::uuids::uuid& game_session_id)
+    [[nodiscard]] auto
+    GetPlayers(const Models::GameSession::GameSessionId& game_session_id)
         -> std::vector<Models::Player>;
 
-    [[nodiscard]] auto GetPlayerAnswers(const boost::uuids::uuid& player_id)
+    [[nodiscard]] auto
+    GetPlayerAnswers(const Models::Player::PlayerId& player_id)
         -> std::vector<Models::PlayerAnswer>;
 
     // Observer management

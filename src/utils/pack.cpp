@@ -17,6 +17,15 @@ auto GetPackFromRequest(const userver::server::http::HttpRequest& request)
     };
 }
 
+Models::Pack::PackId
+GetPackIdFromRequest(const userver::server::http::HttpRequest& request) {
+    const auto& body = request.RequestBody();
+    auto json = userver::formats::json::FromString(body);
+
+    auto pack_id_str = json["pack_id"].As<std::string>();
+    return Utils::StringToUuid(pack_id_str);
+}
+
 auto GetPackFromRequest(handlers::api::CreatePackRequest&& request)
     -> std::expected<Models::Pack, grpc::Status> {
     if (request.title().empty()) {

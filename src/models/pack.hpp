@@ -10,7 +10,9 @@
 namespace Models {
 
 struct Pack final {
-    boost::uuids::uuid id{};
+    using PackId = boost::uuids::uuid;
+
+    PackId id;
     std::string title;
 
     [[nodiscard]] auto Introspect() const;

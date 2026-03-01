@@ -26,7 +26,7 @@ auto CreateQuestion(ClusterPtr pg_cluster_, Models::Question&& question)
 }
 
 auto GetQuestionById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_, const Models::Question::QuestionId& question_id
 ) -> std::optional<Models::Question> {
     auto result = pg_cluster_->Execute(kSlave, kGetQuestionById, question_id);
     return result.AsOptionalSingleRow<Models::Question>(
@@ -35,7 +35,7 @@ auto GetQuestionById(
 }
 
 auto GetQuestionsByPackId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& pack_id
+    ClusterPtr pg_cluster_, const Models::Pack::PackId& pack_id
 ) -> std::vector<Models::Question> {
     auto result = pg_cluster_->Execute(kSlave, kGetQuestionsByPackId, pack_id);
     return result.AsContainer<std::vector<Models::Question>>(

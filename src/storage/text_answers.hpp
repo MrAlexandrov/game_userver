@@ -15,11 +15,12 @@ auto CreateTextAnswer(
 ) -> std::optional<Models::TextAnswer>;
 
 auto GetTextAnswerById(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& text_answer_id
+    ClusterPtr pg_cluster_,
+    const Models::TextAnswer::TextAnswerId& text_answer_id
 ) -> std::optional<Models::TextAnswer>;
 
 auto GetTextAnswersByQuestionId(
-    ClusterPtr pg_cluster_, const boost::uuids::uuid& question_id
+    ClusterPtr pg_cluster_, const Models::Question::QuestionId& question_id
 ) -> std::vector<Models::TextAnswer>;
 
 } // namespace NStorage
