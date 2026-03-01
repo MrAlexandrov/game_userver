@@ -16,6 +16,38 @@
 
 namespace game_userver {
 
+namespace {
+
+void FillMutablePack(::Models::Proto::Pack* mutablePack, const Models::Pack& pack) {
+    mutablePack->set_id(boost::uuids::to_string(pack.id));
+    mutablePack->set_title(pack.title);
+}
+
+void FillMutableQuestion(::Models::Proto::Question* mutableQuestion, const Models::Question& question) {
+    mutableQuestion->set_id(boost::uuids::to_string(question.id));
+    mutableQuestion->set_pack_id(
+        boost::uuids::to_string(question.pack_id)
+    );
+    mutableQuestion->set_text(question.text);
+    if (!question.image_url.empty()) {
+        mutableQuestion->set_image_url(question.image_url);
+    }
+    mutableQuestion->set_question_type(
+        Models::ToString(question.question_type)
+    );
+}
+
+void FillMutableVariant(::Models::Proto::Variant* mutableVariant, const Models::Variant& variant) {
+    mutableVariant->set_id(boost::uuids::to_string(variant.id));
+    mutableVariant->set_question_id(
+        boost::uuids::to_string(variant.question_id)
+    );
+    mutableVariant->set_text(variant.text);
+    mutableVariant->set_is_correct(variant.is_correct);
+}
+
+} // anonymous namespace
+
 Service::Service(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& component_context
@@ -30,44 +62,40 @@ auto Service::CreatePack(
     if (!pack.has_value()) {
         return pack.error();
     }
-    const auto createdPackOpt = storage_.CreatePack(pack.value());
+    const auto created_pack_opt = storage_.CreatePack(pack.value());
 
-    if (!createdPackOpt.has_value()) {
+    if (!created_pack_opt.has_value()) {
         return grpc::Status{
             grpc::StatusCode::INTERNAL, "Failed to create pack"
         };
     }
-    auto createdPack = createdPackOpt.value();
+    const auto& created_pack = created_pack_opt.value();
 
     handlers::api::CreatePackResponse responce;
-    auto* mutualPack = responce.mutable_pack();
-    mutualPack->set_id(boost::uuids::to_string(createdPack.id));
-    mutualPack->set_title(std::move(createdPack.title));
+    FillMutablePack(responce.mutable_pack(), created_pack);
     return responce;
 }
 
 auto Service::GetPackById(
     CallContext& /*context*/, handlers::api::GetPackByIdRequest&& request
 ) -> Service::GetPackByIdResult {
-    auto pack_id = Utils::StringToUuid(request.id());
+    const auto pack_id = Utils::StringToUuid(request.id());
     if (pack_id.is_nil()) {
         return grpc::Status{
             grpc::StatusCode::INVALID_ARGUMENT,
             "Invalid UUID format: " + request.id()
         };
     }
-    auto getPackByIdOpt = storage_.GetPackById(pack_id);
+    const auto pack_opt = storage_.GetPackById(pack_id);
 
-    if (!getPackByIdOpt.has_value()) {
+    if (!pack_opt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Pack not found"};
     }
 
-    auto getPackById = getPackByIdOpt.value();
+    const auto& pack = pack_opt.value();
 
     handlers::api::GetPackByIdResponse responce;
-    auto* mutualPack = responce.mutable_pack();
-    mutualPack->set_id(boost::uuids::to_string(getPackById.id));
-    mutualPack->set_title(std::move(getPackById.title));
+    FillMutablePack(responce.mutable_pack(), pack);
     return responce;
 }
 
@@ -77,13 +105,12 @@ auto Service::GetAllPacks(
     auto getAllPacks = storage_.GetAllPacks();
 
     handlers::api::GetAllPacksResponse responce;
-    auto* mutualPacks = responce.mutable_packs();
+    auto* mutablePacks = responce.mutable_packs();
     for (auto&& pack : getAllPacks) {
         Models::Proto::Pack packResponse;
-        packResponse.set_id(boost::uuids::to_string(pack.id));
-        packResponse.set_title(std::move(pack.title));
+        FillMutablePack(&packResponse, pack);
 
-        mutualPacks->Add(std::move(packResponse));
+        mutablePacks->Add(std::move(packResponse));
     }
     return responce;
 }
@@ -104,22 +131,10 @@ auto Service::CreateQuestion(
             grpc::StatusCode::INTERNAL, "Failed to create question"
         };
     }
-    auto createdQuestion = createdQuestionOpt.value();
+    const auto& createdQuestion = createdQuestionOpt.value();
 
     handlers::api::CreateQuestionResponse response;
-    auto* mutableQuestion = response.mutable_question();
-    mutableQuestion->set_id(boost::uuids::to_string(createdQuestion.id));
-    mutableQuestion->set_pack_id(
-        boost::uuids::to_string(createdQuestion.pack_id)
-    );
-    mutableQuestion->set_text(std::move(createdQuestion.text));
-    if (!createdQuestion.image_url.empty()) {
-        mutableQuestion->set_image_url(createdQuestion.image_url);
-    }
-    mutableQuestion->set_question_type(
-        Models::ToString(createdQuestion.question_type)
-    );
-
+    FillMutableQuestion(response.mutable_question(), createdQuestion);
     return response;
 }
 
@@ -138,20 +153,10 @@ auto Service::GetQuestionById(
     if (!questionOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Question not found"};
     }
-    auto question = questionOpt.value();
+    const auto& question = questionOpt.value();
 
     handlers::api::GetQuestionByIdResponse response;
-    auto* mutableQuestion = response.mutable_question();
-    mutableQuestion->set_id(boost::uuids::to_string(question.id));
-    mutableQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
-    mutableQuestion->set_text(std::move(question.text));
-    if (!question.image_url.empty()) {
-        mutableQuestion->set_image_url(std::move(question.image_url));
-    }
-    mutableQuestion->set_question_type(
-        Models::ToString(question.question_type)
-    );
-
+    FillMutableQuestion(response.mutable_question(), question);
     return response;
 }
 
@@ -173,15 +178,7 @@ auto Service::GetQuestionsByPackId(
 
     for (auto&& question : questions) {
         auto* newQuestion = mutableQuestions->Add();
-        newQuestion->set_id(boost::uuids::to_string(question.id));
-        newQuestion->set_pack_id(boost::uuids::to_string(question.pack_id));
-        newQuestion->set_text(std::move(question.text));
-        if (!question.image_url.empty()) {
-            newQuestion->set_image_url(std::move(question.image_url));
-        }
-        newQuestion->set_question_type(
-            Models::ToString(question.question_type)
-        );
+        FillMutableQuestion(newQuestion, question);
     }
 
     return response;
@@ -201,17 +198,10 @@ auto Service::CreateVariant(
             grpc::StatusCode::INTERNAL, "Failed to create variant"
         };
     }
-    auto createdVariant = createdVariantOpt.value();
+    const auto& createdVariant = createdVariantOpt.value();
 
     handlers::api::CreateVariantResponse response;
-    auto* mutableVariant = response.mutable_variant();
-    mutableVariant->set_id(boost::uuids::to_string(createdVariant.id));
-    mutableVariant->set_question_id(
-        boost::uuids::to_string(createdVariant.question_id)
-    );
-    mutableVariant->set_text(std::move(createdVariant.text));
-    mutableVariant->set_is_correct(createdVariant.is_correct);
-
+    FillMutableVariant(response.mutable_variant(), createdVariant);
     return response;
 }
 
@@ -230,17 +220,10 @@ auto Service::GetVariantById(
     if (!variantOpt.has_value()) {
         return grpc::Status{grpc::StatusCode::NOT_FOUND, "Variant not found"};
     }
-    auto variant = variantOpt.value();
+    const auto& variant = variantOpt.value();
 
     handlers::api::GetVariantByIdResponse response;
-    auto* mutableVariant = response.mutable_variant();
-    mutableVariant->set_id(boost::uuids::to_string(variant.id));
-    mutableVariant->set_question_id(
-        boost::uuids::to_string(variant.question_id)
-    );
-    mutableVariant->set_text(std::move(variant.text));
-    mutableVariant->set_is_correct(variant.is_correct);
-
+    FillMutableVariant(response.mutable_variant(), variant);
     return response;
 }
 
@@ -262,12 +245,7 @@ auto Service::GetVariantsByQuestionId(
 
     for (auto&& variant : variants) {
         auto* newVariant = mutableVariants->Add();
-        newVariant->set_id(boost::uuids::to_string(variant.id));
-        newVariant->set_question_id(
-            boost::uuids::to_string(variant.question_id)
-        );
-        newVariant->set_text(std::move(variant.text));
-        newVariant->set_is_correct(variant.is_correct);
+        FillMutableVariant(newVariant, variant);
     }
 
     return response;
