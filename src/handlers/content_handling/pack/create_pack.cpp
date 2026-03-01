@@ -6,7 +6,6 @@
 #include <userver/logging/log.hpp>
 
 #include "components/storage/storage.hpp"
-#include "models/pack.hpp"
 #include "utils/pack.hpp"
 
 namespace game_userver {
@@ -25,8 +24,6 @@ auto CreatePack::HandleRequestThrow(
     userver::server::request::RequestContext&
     /*context*/
 ) const -> std::string {
-    using userver::logging::Level::kDebug;
-
     const auto pack = Utils::GetPackFromRequest(request);
 
     const auto createdPackOpt = storage_.CreatePack(pack);
@@ -36,10 +33,6 @@ auto CreatePack::HandleRequestThrow(
         );
         throw std::runtime_error("Failed to create pack");
     }
-    const auto& [id, title] = createdPackOpt.value();
-
-    LOG(kDebug) << "inserted pack:\n"
-                << boost::uuids::to_string(id) << " " << title;
 
     return userver::formats::json::ToPrettyString(
         userver::formats::json::ValueBuilder{createdPackOpt.value()}

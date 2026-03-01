@@ -3,7 +3,6 @@
 #include <userver/components/component_context.hpp>
 
 #include "components/storage/storage.hpp"
-#include "models/question.hpp"
 #include "utils/question.hpp"
 #include "utils/string_to_uuid.hpp"
 
@@ -24,8 +23,6 @@ auto CreateQuestion::HandleRequestThrow(
     /*context*/
 ) const -> std::string {
     auto question = Utils::GetQuestionFromRequest(request);
-    const auto& pack_id_str = request.GetPathArg("pack_id");
-    question.pack_id = Utils::StringToUuid(pack_id_str);
     const auto createdQuestionOpt =
         storage_.CreateQuestion(std::move(question));
 
